@@ -1,0 +1,28 @@
+services:
+  odpc:
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_DB=ODPC
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=localdev
+    image: ${DOCKER_REGISTRY-}odpc
+    build:
+      context: .
+      dockerfile: ODPC.Server/Dockerfile
+    ports:
+      - "62230:8080"
+    depends_on:
+      - postgres-db
+  postgres-db:
+    image: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=localdev
+    restart: always
+    ports:
+      - "5432:5432"
+
+volumes:
+  db:

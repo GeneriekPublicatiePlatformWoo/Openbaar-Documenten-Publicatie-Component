@@ -1,0 +1,6 @@
+@ODPC.Server_HostAddress = http://localhost:5252
+
+GET {{ODPC.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
