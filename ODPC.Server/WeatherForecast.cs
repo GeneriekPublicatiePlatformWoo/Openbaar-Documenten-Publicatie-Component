@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ODPC
 {
     public class WeatherForecast
     {
+        [Key]
         public Guid Guid { get; set; }
         public DateOnly Date { get; set; }
 
