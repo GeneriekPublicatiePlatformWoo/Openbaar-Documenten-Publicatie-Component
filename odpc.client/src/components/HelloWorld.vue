@@ -1,6 +1,6 @@
 <template>
   <div class="weather-component">
-    <h1>Weather forecast</h1>
+    <h1>Weather forecast component</h1>
     <p>This component demonstrates fetching data from the server.</p>
 
     <div v-if="loading" class="loading">
