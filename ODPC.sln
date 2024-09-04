@@ -8,6 +8,9 @@ EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "odpc.client", "odpc.client\odpc.client.esproj", "{8D0C4175-8DDF-47A4-9FCD-A5BA6B14FED9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9925AD0-DDDC-4AFC-95C5-E1BB3EA0BF21}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{6BA9B6D5-43C7-411A-A68B-BF6338CF60CD}"
 EndProject
