@@ -1,6 +1,5 @@
 ﻿using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ODPC.Authentication
