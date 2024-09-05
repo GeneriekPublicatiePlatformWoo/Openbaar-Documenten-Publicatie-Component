@@ -6,11 +6,11 @@ export const WAARDELIJST = {
   INFORMATIECATEGORIE: 'Informatiecategorie'
 } as const
 
-export type WaardeLijsten = keyof typeof WAARDELIJST
+export type Waardelijsten = keyof typeof WAARDELIJST
 
-export type WaardeLijstItem = {
+export type WaardelijstItem = {
   id: number
-  type: WaardeLijsten
+  type: Waardelijsten
   name: string
   checked?: boolean
 }
@@ -19,11 +19,21 @@ const mocks: MockHandler[] = [
   {
     pattern: '/api/waardelijsten',
     handle: (_req, res) => {
-      const data: WaardeLijstItem[] = [
+      const data: WaardelijstItem[] = [
         {
-          id: 1,
-          type: 'ORGANISATIE',
-          name: 'Organisatie 1'
+          id: 6,
+          type: 'THEMA',
+          name: 'arbeidsomstandigheden'
+        },
+        {
+          id: 8,
+          type: 'INFORMATIECATEGORIE',
+          name: 'wet of algemeen bindend voorschrift'
+        },
+        {
+          id: 5,
+          type: 'THEMA',
+          name: 'afval'
         },
         {
           id: 2,
@@ -41,24 +51,14 @@ const mocks: MockHandler[] = [
           name: 'europese zaken'
         },
         {
-          id: 5,
-          type: 'THEMA',
-          name: 'afval'
-        },
-        {
-          id: 6,
-          type: 'THEMA',
-          name: 'arbeidsomstandigheden'
-        },
-        {
           id: 7,
           type: 'THEMA',
           name: 'arbeidsongeschikheid'
         },
         {
-          id: 8,
-          type: 'INFORMATIECATEGORIE',
-          name: 'wet of algemeen bindend voorschrift'
+          id: 1,
+          type: 'ORGANISATIE',
+          name: 'Organisatie 1'
         }
       ]
 

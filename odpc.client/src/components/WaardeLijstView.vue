@@ -11,11 +11,11 @@
 </template>
 
 <script setup lang="ts">
-import { type WaardeLijstItem } from '@/../mock/api.mock'
+import { type WaardelijstItem } from '@/../mock/api.mock'
 
 defineProps<{
   title: string
-  items: WaardeLijstItem[] | null
+  items: WaardelijstItem[] | null
 }>()
 </script>
 

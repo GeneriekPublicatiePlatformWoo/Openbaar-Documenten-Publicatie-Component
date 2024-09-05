@@ -14,8 +14,6 @@
   --color-error-hover-text: var(--color-headings);
   --color-warning: orange;
   --color-success: #89cf5e;
-  --color-category-default: hsl(184deg 54% 70%);
-  --color-category-website: hsl(285deg 56% 83%);
   --color-white: #fff;
   --color-white-hover: #e4e8ee;
   --color-black: var(--color-headings);
@@ -51,9 +49,9 @@
   --outline-style: auto;
   --outline-offset: 3px;
 
-  // new categories colours
-  --new-color-category-website: hsl(210deg 57% 69%);
-  --new-color-category-smoelenboek: hsl(210deg 69% 79%);
-  --new-color-category-kennisartikel: hsl(0deg 0% 99%);
-  --new-color-category-vac: hsl(213deg 73% 94%);
+  --font-bold: 600;
+  --font-small: 0.75rem;
+  --font-medium: 1rem;
+  --font-large: 1.25rem;
+  --font-extralarge: 2rem;
 }
