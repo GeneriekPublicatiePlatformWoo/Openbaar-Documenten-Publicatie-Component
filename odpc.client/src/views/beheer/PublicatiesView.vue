@@ -1,5 +1,5 @@
 <template>
-  <h1>Welkom Home</h1>
+  <h1>Publicaties</h1>
 </template>
 
 <script setup lang="ts"></script>
