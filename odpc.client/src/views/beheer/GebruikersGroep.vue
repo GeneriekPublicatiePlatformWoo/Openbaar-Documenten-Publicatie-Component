@@ -3,28 +3,36 @@
 
   <simple-spinner v-if="isFetching"></simple-spinner>
 
-  <alert-view v-if="error"></alert-view>
+  <alert-view v-else-if="error"></alert-view>
 
-  <p v-if="error" class="notice">
-    Er is iets misgegaan met ophalen van de gegevens, probeer het opnieuw.
-  </p>
+  <form v-else aria-live="polite" @submit.prevent="submit">
+    <section>
+      <WaardelijstView
+        v-for="(value, key) in WAARDELIJSTEN"
+        :key="key"
+        :title="value"
+        :items="groupedItems?.[key] || null"
+        v-model="selectedItems"
+      />
+    </section>
 
-  <form v-if="!isFetching && !error" aria-live="polite">
-    <WaardelijstView
-      v-for="(value, key) in WAARDELIJST"
-      :key="key"
-      :title="value"
-      :items="groupedItems?.[key] || null"
-    />
+    <div class="form-submit">
+      <button type="submit" title="Opslaan">Opslaan</button>
+      <router-link :to="{ name: 'gebruikersgroepen' }" class="button">Annuleren</router-link>
+    </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useFetch } from '@vueuse/core'
 import SimpleSpinner from '@/components/SimpleSpinner.vue'
 import AlertView from '@/components/AlertView.vue'
-import { WAARDELIJST, type Waardelijsten, type WaardelijstItem } from '@/../mock/api.mock'
+import {
+  WAARDELIJSTEN,
+  type WaardelijstItem,
+  type GroupedWaardeLijstItems
+} from '@/../mock/api.mock'
 import WaardelijstView from '@/components/WaardelijstView.vue'
 
 defineProps<{
@@ -32,34 +40,43 @@ defineProps<{
 }>()
 
 const waardelijstenUrl = '/api/waardelijsten'
+const selectedItems = ref<number[]>([2, 4, 5, 7])
 
-const selectedItems: number[] = [2, 4, 5, 7]
-
-type WaardeLijst = {
-  [key in Waardelijsten]: WaardelijstItem[]
-}
-
-const groupedItems = computed<WaardeLijst | null>(
+const groupedItems = computed<GroupedWaardeLijstItems | null>(
   () =>
-    WaardeLijstItems.value?.reduce((result: WaardeLijst, current: WaardelijstItem) => {
-      current.checked = selectedItems.includes(current.id)
+    waardeLijstItems.value?.reduce((result: GroupedWaardeLijstItems, current: WaardelijstItem) => {
       ;(result[current.type] = result[current.type] || []).push(current)
       result[current.type].sort((a, b) => a.name.localeCompare(b.name))
       return result
-    }, {} as WaardeLijst) || null
+    }, {} as GroupedWaardeLijstItems) || null
 )
+
+const submit = (): void => {
+  console.log('submit', selectedItems.value)
+}
 
 const {
   isFetching,
   error,
-  data: WaardeLijstItems
-} = await useFetch(waardelijstenUrl).get().json<WaardelijstItem[]>()
+  data: waardeLijstItems
+} = useFetch(waardelijstenUrl).get().json<WaardelijstItem[]>()
 </script>
 
 <style lang="scss" scoped>
-form {
+section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
+  grid-gap: var(--spacing-default);
+
+  // ...
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.form-submit {
+  display: flex;
+  justify-content: flex-end;
   grid-gap: var(--spacing-default);
 }
 </style>

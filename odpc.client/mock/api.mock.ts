@@ -1,18 +1,23 @@
 import { type MockHandler } from 'vite-plugin-mock-server'
 
-export const WAARDELIJST = {
+export const WAARDELIJSTEN = {
   ORGANISATIE: 'Organisatie',
   THEMA: 'Thema',
-  INFORMATIECATEGORIE: 'Informatiecategorie'
+  INFORMATIECATEGORIE: 'Informatiecategorie',
+  // DOCUMENTSOORT: 'Documentsoort'
 } as const
 
-export type Waardelijsten = keyof typeof WAARDELIJST
+type Waardelijst = keyof typeof WAARDELIJSTEN
 
 export type WaardelijstItem = {
   id: number
-  type: Waardelijsten
+  type: Waardelijst
   name: string
   checked?: boolean
+}
+
+export type GroupedWaardeLijstItems = {
+  [key in Waardelijst]: WaardelijstItem[]
 }
 
 const mocks: MockHandler[] = [
@@ -63,7 +68,10 @@ const mocks: MockHandler[] = [
       ]
 
       res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify(data))
+
+      setTimeout((() => {
+        res.end(JSON.stringify(data))
+      }), 500)
     }
   }
   //   {

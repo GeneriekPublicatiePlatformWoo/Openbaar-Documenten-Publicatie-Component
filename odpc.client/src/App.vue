@@ -7,9 +7,7 @@ import TheFooter from './layout/TheFooter.vue'
 <template>
   <the-header />
   <main>
-    <Suspense>
-      <router-view />
-    </Suspense>
+    <router-view />
   </main>
   <the-footer />
 </template>
