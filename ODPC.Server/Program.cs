@@ -42,6 +42,7 @@ try
 
     var app = builder.Build();
 
+    app.UseSerilogRequestLogging();
     app.UseDefaultFiles();
     app.UseOdpcStaticFiles();
     app.UseOdpcSecurityHeaders();
