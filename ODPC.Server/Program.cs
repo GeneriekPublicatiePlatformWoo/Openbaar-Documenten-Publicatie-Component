@@ -1,28 +1,70 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using ODPC.Authentication;
 using ODPC.Data;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+using var logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information) //logeventlevel information voor Microsoft.AspNetCore.Authentication namespace omdat deze namespace de unauthorizations gooit, voorbeeld: Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler: Information: AuthenticationScheme: Bearer was challenged.
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .WriteTo.Console(new JsonFormatter())
+    .CreateLogger();
 
-builder.Services.AddControllers();
+logger.Information("Starting up");
 
-var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
-builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
-
-var app = builder.Build();
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.MapFallbackToFile("/index.html");
-await using (var scope = app.Services.CreateAsyncScope())
+try
 {
-    await scope.ServiceProvider.GetRequiredService<OdpcDbContext>().Database.MigrateAsync();
+    builder.Host.UseSerilog(logger);
+
+    // Add services to the container.
+    builder.Services.AddControllers();
+    builder.Services.AddHealthChecks();
+
+    string GetRequiredConfig(string key) => builder.Configuration[key] ?? throw new Exception($"Environment variable {key} is missing");
+
+    builder.Services.AddAuth(options =>
+    {
+        options.Authority = GetRequiredConfig("OIDC_AUTHORITY");
+        options.ClientId = GetRequiredConfig("OIDC_CLIENT_ID");
+        options.ClientSecret = GetRequiredConfig("OIDC_CLIENT_SECRET");
+        options.NameClaimType = builder.Configuration["OIDC_NAME_CLAIM_TYPE"];
+        options.RoleClaimType = builder.Configuration["OIDC_ROLE_CLAIM_TYPE"];
+        options.IdClaimType = builder.Configuration["OIDC_ID_CLAIM_TYPE"];
+    });
+
+    var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
+    builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
+
+    var app = builder.Build();
+
+    app.UseSerilogRequestLogging();
+    app.UseDefaultFiles();
+    app.UseOdpcStaticFiles();
+    app.UseOdpcSecurityHeaders();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.MapOdpcAuthEndpoints();
+    app.MapHealthChecks("/healthz").AllowAnonymous();
+    app.MapFallbackToIndexHtml();
+
+    await using (var scope = app.Services.CreateAsyncScope())
+    {
+        await scope.ServiceProvider.GetRequiredService<OdpcDbContext>().Database.MigrateAsync();
+    }
+
+    app.Run();
+}
+catch (Exception ex) when (ex is not HostAbortedException)
+{
+    logger.Write(LogEventLevel.Fatal, ex, "Application terminated unexpectedly");
 }
 
-app.Run();
+public partial class Program { }
