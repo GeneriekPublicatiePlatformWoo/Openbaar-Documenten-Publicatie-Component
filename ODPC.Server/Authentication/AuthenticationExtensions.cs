@@ -105,16 +105,6 @@ namespace ODPC.Authentication
             services.AddOpenIdConnectAccessTokenManagement();
         }
 
-        public static IApplicationBuilder UseOdpcAuthMiddlewares(this IApplicationBuilder app)
-        {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.All
-            });
-
-            return app;
-        }
-
         public static IEndpointRouteBuilder MapOdpcAuthEndpoints(this IEndpointRouteBuilder endpoints)
         {
             endpoints.MapGet("api/logoff", LogoffAsync).AllowAnonymous();

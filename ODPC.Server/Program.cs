@@ -46,7 +46,6 @@ try
     app.UseOdpcStaticFiles();
     app.UseOdpcSecurityHeaders();
 
-    app.UseOdpcAuthMiddlewares();
     app.UseAuthorization();
 
     app.MapControllers();
