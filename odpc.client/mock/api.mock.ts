@@ -69,23 +69,22 @@ const mocks: MockHandler[] = [
 
       res.setHeader('Content-Type', 'application/json')
 
-      setTimeout((() => {
-        res.end(JSON.stringify(data))
-      }), 500)
+      setTimeout(() => res.end(JSON.stringify(data)), 500)
+    }
+  },
+  {
+    pattern: '/api/gebruikersgroep/*',
+    method: 'PUT',
+    handle: (req, res) => {
+      res.setHeader('Content-Type', 'application/json')
+
+      req.on('data', (bodyString: string) => {
+        const body: object = JSON.parse(bodyString)
+
+        setTimeout(() => res.end(JSON.stringify(body)), 500)
+      })
     }
   }
-  //   {
-  //     pattern: '/api/test/json',
-  //     method: 'POST',
-  //     handle: (req, res) => {
-  //       res.setHeader('Content-Type', 'application/json')
-
-  //       req.on('data', (bodyString: string) => {
-  //         const body: object = JSON.parse(bodyString)
-  //         res.end(JSON.stringify(body))
-  //       })
-  //     }
-  //   }
 ]
 
 export default mocks

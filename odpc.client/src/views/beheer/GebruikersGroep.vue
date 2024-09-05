@@ -1,9 +1,9 @@
 <template>
   <h1>Gebruikersgroep &gt; Groep {{ id }}</h1>
 
-  <simple-spinner v-if="isFetching"></simple-spinner>
+  <simple-spinner v-if="getting || submitting"></simple-spinner>
 
-  <alert-view v-else-if="error"></alert-view>
+  <alert-view v-else-if="getError || submitError"></alert-view>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
     <section>
@@ -35,11 +35,10 @@ import {
 } from '@/../mock/api.mock'
 import WaardelijstView from '@/components/WaardelijstView.vue'
 
-defineProps<{
+const props = defineProps<{
   id: string
 }>()
 
-const waardelijstenUrl = '/api/waardelijsten'
 const selectedItems = ref<number[]>([2, 4, 5, 7])
 
 const groupedItems = computed<GroupedWaardeLijstItems | null>(
@@ -51,15 +50,27 @@ const groupedItems = computed<GroupedWaardeLijstItems | null>(
     }, {} as GroupedWaardeLijstItems) || null
 )
 
-const submit = (): void => {
-  console.log('submit', selectedItems.value)
-}
+// Get
+const {
+  data: waardeLijstItems,
+  isFetching: getting,
+  error: getError
+} = useFetch(`/api/waardelijsten`).get().json<WaardelijstItem[]>()
+
+// Post
+const formData = computed(() => ({
+  values: selectedItems.value
+}))
 
 const {
-  isFetching,
-  error,
-  data: waardeLijstItems
-} = useFetch(waardelijstenUrl).get().json<WaardelijstItem[]>()
+  isFetching: submitting,
+  error: submitError,
+  execute
+} = useFetch(`/api/gebruikersgroep/${props.id}`, {
+  immediate: false
+}).put(formData)
+
+const submit = async (): Promise<void> => await execute()
 </script>
 
 <style lang="scss" scoped>
