@@ -7,7 +7,7 @@ export const WAARDELIJSTEN = {
   // DOCUMENTSOORT: 'Documentsoort'
 } as const;
 
-type Waardelijst = keyof typeof WAARDELIJSTEN;
+export type Waardelijst = keyof typeof WAARDELIJSTEN;
 
 export type WaardelijstItem = {
   id: number;
@@ -66,6 +66,17 @@ const mocks: MockHandler[] = [
           name: "Organisatie 1"
         }
       ];
+
+      res.setHeader("Content-Type", "application/json");
+
+      setTimeout(() => res.end(JSON.stringify(data)), 500);
+    }
+  },
+  {
+    pattern: "/api/gebruikersgroep/*",
+    method: "GET",
+    handle: (_req, res) => {
+      const data: number[] = [2, 3, 4, 5, 7];
 
       res.setHeader("Content-Type", "application/json");
 

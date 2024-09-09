@@ -14,12 +14,12 @@ import { type WaardelijstItem } from "@/../mock/api.mock";
 
 const props = defineProps<{
   title: string;
-  items: WaardelijstItem[] | null;
-  modelValue: number[];
+  items: WaardelijstItem[];
+  modelValue: number[] | null;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", payload: number[]): void;
+  (e: "update:modelValue", payload: number[] | null): void;
 }>();
 
 const model = computed({

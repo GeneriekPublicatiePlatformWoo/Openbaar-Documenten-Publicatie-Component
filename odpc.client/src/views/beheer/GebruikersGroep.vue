@@ -1,35 +1,39 @@
 <template>
   <h1>Gebruikersgroep &gt; Groep {{ id }}</h1>
 
-  <simple-spinner v-if="getting || submitting"></simple-spinner>
-
-  <alert-view v-else-if="getError || submitError"></alert-view>
+  <simple-spinner v-if="loading"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <section>
+    <alert-view v-if="error"></alert-view>
+
+    <section v-else>
       <WaardelijstView
         v-for="(value, key) in WAARDELIJSTEN"
         :key="key"
         :title="value"
-        :items="groupedItems?.[key] || null"
+        :items="groupedItems[key]"
         v-model="selectedItems"
       />
     </section>
 
     <div class="form-submit">
-      <button type="submit" title="Opslaan">Opslaan</button>
-      <router-link :to="{ name: 'gebruikersgroepen' }" class="button">Annuleren</router-link>
+      <router-link :to="{ name: 'gebruikersgroepen' }" class="button">&lt; Terug</router-link>
+
+      <button v-if="!error" type="submit" title="Opslaan">Opslaan</button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { useFetch } from "@vueuse/core";
+import { computed } from "vue";
+import { useFetchApi } from "@/helpers/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertView from "@/components/AlertView.vue";
+import toast from "@/stores/toast";
+
 import {
   WAARDELIJSTEN,
+  type Waardelijst,
   type WaardelijstItem,
   type GroupedWaardeLijstItems
 } from "@/../mock/api.mock";
@@ -39,38 +43,56 @@ const props = defineProps<{
   id: string;
 }>();
 
-const selectedItems = ref<number[]>([2, 4, 5, 7]);
+const loading = computed<boolean>(() => loadingListItems.value || loadingSelectedItems.value);
+const error = computed<boolean>(() => listItemstError.value || selectedItemsError.value);
 
-const groupedItems = computed<GroupedWaardeLijstItems | null>(
-  () =>
-    waardeLijstItems.value?.reduce((result: GroupedWaardeLijstItems, current: WaardelijstItem) => {
-      (result[current.type] = result[current.type] || []).push(current);
-      result[current.type].sort((a, b) => a.name.localeCompare(b.name));
-      return result;
-    }, {} as GroupedWaardeLijstItems) || null
+// Grouped items
+const groupedItems = computed<GroupedWaardeLijstItems>(() =>
+  Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardeLijstItems, key) => {
+    result[key as Waardelijst] =
+      listItems.value
+        ?.filter((item) => item.type === key)
+        ?.sort((a, b) => a.name.localeCompare(b.name)) || [];
+    return result;
+  }, {} as GroupedWaardeLijstItems)
 );
 
-// Get
 const {
-  data: waardeLijstItems,
-  isFetching: getting,
-  error: getError
-} = useFetch(`/api/waardelijsten`).get().json<WaardelijstItem[]>();
+  data: listItems,
+  isFetching: loadingListItems,
+  error: listItemstError
+} = useFetchApi(`/waardelijsten`).json<WaardelijstItem[]>();
 
-// Post
-const formData = computed(() => ({
-  values: selectedItems.value
-}));
+// Selected items
+const formData = computed(() =>
+  JSON.stringify(
+    selectedItems.value?.filter((id) =>
+      Object.values(groupedItems.value)
+        .flat()
+        .map((item) => item.id)
+        .includes(id)
+    )
+  )
+);
 
 const {
-  isFetching: submitting,
-  error: submitError,
+  data: selectedItems,
+  isFetching: loadingSelectedItems,
+  error: selectedItemsError,
+  put,
   execute
-} = useFetch(`/api/gebruikersgroep/${props.id}`, {
-  immediate: false
-}).put(formData);
+} = useFetchApi(`/gebruikersgroep/${props.id}`).json<number[]>();
 
-const submit = async (): Promise<void> => await execute();
+const submit = async (): Promise<void> => {
+  put(formData);
+  await execute();
+
+  toast.add(
+    selectedItemsError.value
+      ? { text: "De gegevens konden niet worden opgeslagen.", type: "error" }
+      : { text: "De gegevens zijn succesvol opgeslagen." }
+  );
+};
 </script>
 
 <style lang="scss" scoped>
