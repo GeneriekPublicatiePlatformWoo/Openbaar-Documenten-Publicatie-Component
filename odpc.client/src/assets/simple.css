@@ -2,9 +2,9 @@
 :root,
 ::backdrop {
   /* Set sans-serif & mono fonts */
-  --sans-font: -apple-system, BlinkMacSystemFont, 'Avenir Next', Avenir, 'Nimbus Sans L', Roboto,
-    'Noto Sans', 'Segoe UI', Arial, Helvetica, 'Helvetica Neue', sans-serif;
-  --mono-font: Consolas, Menlo, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  --sans-font: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Nimbus Sans L", Roboto,
+    "Noto Sans", "Segoe UI", Arial, Helvetica, "Helvetica Neue", sans-serif;
+  --mono-font: Consolas, Menlo, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   --standard-border-radius: 5px;
 
   /* Default (light) theme */
@@ -216,7 +216,7 @@ label[type="button"] {
   line-height: normal;
 }
 
-.button[aria-disabled='true'],
+.button[aria-disabled="true"],
 input:disabled,
 textarea:disabled,
 select:disabled,
@@ -227,7 +227,7 @@ button[disabled] {
   color: var(--text-light);
 }
 
-input[type='range'] {
+input[type="range"] {
   padding: 0;
 }
 
@@ -239,11 +239,11 @@ abbr[title] {
 }
 
 button:enabled:hover,
-.button:not([aria-disabled='true']):hover,
-input[type='submit']:enabled:hover,
-input[type='reset']:enabled:hover,
-input[type='button']:enabled:hover,
-label[type='button']:hover {
+.button:not([aria-disabled="true"]):hover,
+input[type="submit"]:enabled:hover,
+input[type="reset"]:enabled:hover,
+input[type="button"]:enabled:hover,
+label[type="button"]:hover {
   background-color: var(--accent-hover);
   border-color: var(--accent-hover);
   cursor: pointer;
@@ -251,7 +251,7 @@ label[type='button']:hover {
 
 .button:focus-visible,
 button:focus-visible:where(:enabled),
-input:enabled:focus-visible:where([type='submit'], [type='reset'], [type='button']) {
+input:enabled:focus-visible:where([type="submit"], [type="reset"], [type="button"]) {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
@@ -296,8 +296,8 @@ header > nav a:visited {
 
 header > nav a:hover,
 header > nav a.current,
-header > nav a[aria-current='page'],
-header > nav a[aria-current='true'] {
+header > nav a[aria-current="page"],
+header > nav a[aria-current="true"] {
   border-color: var(--accent);
   color: var(--accent);
   cursor: pointer;
@@ -331,7 +331,7 @@ aside {
   margin-inline-start: 15px;
   float: right;
 }
-*[dir='rtl'] aside {
+*[dir="rtl"] aside {
   float: left;
 }
 
@@ -480,35 +480,35 @@ select:not([multiple]) {
   background-repeat: no-repeat;
   padding-inline-end: 25px;
 }
-*[dir='rtl'] select:not([multiple]) {
+*[dir="rtl"] select:not([multiple]) {
   background-position: 10px, 15px;
 }
 
 /* checkbox and radio button style */
-input[type='checkbox'],
-input[type='radio'] {
+input[type="checkbox"],
+input[type="radio"] {
   vertical-align: middle;
   position: relative;
   width: min-content;
 }
 
-input[type='checkbox'] + label,
-input[type='radio'] + label {
+input[type="checkbox"] + label,
+input[type="radio"] + label {
   display: inline-block;
 }
 
-input[type='radio'] {
+input[type="radio"] {
   border-radius: 100%;
 }
 
-input[type='checkbox']:checked,
-input[type='radio']:checked {
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
   background-color: var(--accent);
 }
 
-input[type='checkbox']:checked::after {
+input[type="checkbox"]:checked::after {
   /* Creates a rectangle with colored right and bottom borders which is rotated to look like a check mark */
-  content: ' ';
+  content: " ";
   width: 0.18em;
   height: 0.32em;
   border-radius: 0;
@@ -521,9 +521,9 @@ input[type='checkbox']:checked::after {
   font-size: 1.8em;
   transform: rotate(45deg);
 }
-input[type='radio']:checked::after {
+input[type="radio"]:checked::after {
   /* creates a colored circle for the checked radio button  */
-  content: ' ';
+  content: " ";
   width: 0.25em;
   height: 0.25em;
   border-radius: 100%;
@@ -544,13 +544,13 @@ input[type='radio']:checked::after {
 }
 
 /* Set a height for color input */
-input[type='color'] {
+input[type="color"] {
   height: 2.5rem;
   padding: 0.2rem;
 }
 
 /* do not show border around file selector button */
-input[type='file'] {
+input[type="file"] {
   border: 0;
 }
 

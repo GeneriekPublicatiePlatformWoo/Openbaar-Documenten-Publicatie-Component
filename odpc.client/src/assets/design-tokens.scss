@@ -23,10 +23,7 @@
 
   // spacing
   --container-width: 80rem;
-  --container-padding: max(
-    var(--spacing-large),
-    calc(50vw - var(--container-width) / 2)
-  );
+  --container-padding: max(var(--spacing-large), calc(50vw - var(--container-width) / 2));
   --section-width: 30.75rem;
   --section-width-small: 20rem;
   --section-width-large: 60rem;

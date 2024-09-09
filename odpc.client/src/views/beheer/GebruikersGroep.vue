@@ -24,43 +24,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useFetch } from '@vueuse/core'
-import SimpleSpinner from '@/components/SimpleSpinner.vue'
-import AlertView from '@/components/AlertView.vue'
+import { ref, computed } from "vue";
+import { useFetch } from "@vueuse/core";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import AlertView from "@/components/AlertView.vue";
 import {
   WAARDELIJSTEN,
   type WaardelijstItem,
   type GroupedWaardeLijstItems
-} from '@/../mock/api.mock'
-import WaardelijstView from '@/components/WaardelijstView.vue'
+} from "@/../mock/api.mock";
+import WaardelijstView from "@/components/WaardelijstView.vue";
 
 const props = defineProps<{
-  id: string
-}>()
+  id: string;
+}>();
 
-const selectedItems = ref<number[]>([2, 4, 5, 7])
+const selectedItems = ref<number[]>([2, 4, 5, 7]);
 
 const groupedItems = computed<GroupedWaardeLijstItems | null>(
   () =>
     waardeLijstItems.value?.reduce((result: GroupedWaardeLijstItems, current: WaardelijstItem) => {
-      ;(result[current.type] = result[current.type] || []).push(current)
-      result[current.type].sort((a, b) => a.name.localeCompare(b.name))
-      return result
+      (result[current.type] = result[current.type] || []).push(current);
+      result[current.type].sort((a, b) => a.name.localeCompare(b.name));
+      return result;
     }, {} as GroupedWaardeLijstItems) || null
-)
+);
 
 // Get
 const {
   data: waardeLijstItems,
   isFetching: getting,
   error: getError
-} = useFetch(`/api/waardelijsten`).get().json<WaardelijstItem[]>()
+} = useFetch(`/api/waardelijsten`).get().json<WaardelijstItem[]>();
 
 // Post
 const formData = computed(() => ({
   values: selectedItems.value
-}))
+}));
 
 const {
   isFetching: submitting,
@@ -68,9 +68,9 @@ const {
   execute
 } = useFetch(`/api/gebruikersgroep/${props.id}`, {
   immediate: false
-}).put(formData)
+}).put(formData);
 
-const submit = async (): Promise<void> => await execute()
+const submit = async (): Promise<void> => await execute();
 </script>
 
 <style lang="scss" scoped>
