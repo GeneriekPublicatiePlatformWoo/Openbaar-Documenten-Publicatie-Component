@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import ToastSection from "./components/ToastSection.vue";
-import TheHeader from "./layout/TheHeader.vue";
-import TheFooter from "./layout/TheFooter.vue";
+import HeaderView from "./components/HeaderView.vue";
+import FooterView from "./components/FooterView.vue";
 </script>
 
 <template>
   <toast-section />
-  <the-header />
+  <Suspense>
+    <header-view />
+  </Suspense>
   <main>
     <router-view />
   </main>
-  <the-footer />
+  <footer-view />
 </template>

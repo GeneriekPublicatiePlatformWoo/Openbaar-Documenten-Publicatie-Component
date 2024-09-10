@@ -19,7 +19,7 @@ export default defineConfig({
       proxyCalls.map((key) => [
         key,
         {
-          target: 'http://localhost:62230',
+          target: 'http://localhost:5252',
           secure: false
         }
       ])
