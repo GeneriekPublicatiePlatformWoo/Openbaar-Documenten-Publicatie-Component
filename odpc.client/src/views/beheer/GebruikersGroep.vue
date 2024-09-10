@@ -39,7 +39,7 @@ import {
   type WaardelijstItem,
   type GroupedWaardeLijstItems
 } from "@/../mock/api.mock";
-import WaardelijstView from "@/components/WaardelijstView.vue";
+import WaardelijstView from "@/components/WaardeLijstView.vue";
 
 const props = defineProps<{
   id: string;
