@@ -2,8 +2,8 @@ import { type MockHandler } from "vite-plugin-mock-server";
 
 export const WAARDELIJSTEN = {
   ORGANISATIE: "Organisatie",
+  INFORMATIECATEGORIE: "Informatiecategorie",
   THEMA: "Thema",
-  INFORMATIECATEGORIE: "Informatiecategorie"
   // DOCUMENTSOORT: 'Documentsoort'
 } as const;
 

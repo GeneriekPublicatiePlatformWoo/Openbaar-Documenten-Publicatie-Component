@@ -1,6 +1,6 @@
 <template>
   <p class="notice" aria-live="polite" role="alert">
-    Er is iets misgegaan bij het ophalen van de gegevens...
+    <slot></slot>
   </p>
 </template>
 

@@ -4,7 +4,9 @@
   <simple-spinner v-if="loading"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <alert-view v-if="error"></alert-view>
+    <alert-view v-if="error">
+      Er is iets misgegaan bij het ophalen van de waardelijsten, probeer het nogmaals...
+    </alert-view>
 
     <section v-else>
       <WaardelijstView
