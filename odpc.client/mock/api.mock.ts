@@ -22,7 +22,7 @@ export type GroupedWaardeLijstItems = {
 
 const mocks: MockHandler[] = [
   {
-    pattern: "/api/waardelijsten",
+    pattern: "/api-mock/waardelijsten",
     handle: (_req, res) => {
       const data: WaardelijstItem[] = [
         {
@@ -73,7 +73,7 @@ const mocks: MockHandler[] = [
     }
   },
   {
-    pattern: "/api/gebruikersgroep/*",
+    pattern: "/api-mock/gebruikersgroep/*",
     method: "GET",
     handle: (_req, res) => {
       const data: number[] = [2, 3, 4, 5, 7];
@@ -84,7 +84,7 @@ const mocks: MockHandler[] = [
     }
   },
   {
-    pattern: "/api/gebruikersgroep/*",
+    pattern: "/api-mock/gebruikersgroep/*",
     method: "PUT",
     handle: (req, res) => {
       res.setHeader("Content-Type", "application/json");
