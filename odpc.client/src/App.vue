@@ -7,11 +7,14 @@ import FooterView from "./components/FooterView.vue";
 
 <template>
   <toast-section />
+
   <Suspense>
     <header-view />
   </Suspense>
+
   <main>
     <router-view />
   </main>
+
   <footer-view />
 </template>

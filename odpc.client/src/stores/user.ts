@@ -1,5 +1,4 @@
 import { ref } from "vue";
-import { fetchLoggedIn } from "@/api/fetch-logged-in";
 
 export type User = {
   isLoggedIn: boolean;
@@ -18,7 +17,7 @@ export default async function getUser() {
   }
 
   try {
-    user.value = await fetchLoggedIn("/api/me").then((r) => r.json());
+    user.value = await fetch("/api/me").then((r) => r.json());
 
     return user.value;
   } catch {
