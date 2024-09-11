@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
+import PublicatiesView from "../views/beheer/PublicatiesView.vue";
 import getUser, { type User } from "@/stores/user";
 
 const user = ref<User | null>(await getUser());
@@ -11,38 +11,50 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "home",
-      component: HomeView
+      redirect: { name: "publicaties" }
     },
     {
       path: "/login",
       name: "login",
-      component: LoginView
+      component: LoginView,
+      meta: {
+        title: "Login"
+      }
     },
     {
       path: "/beheer/publicaties",
       name: "publicaties",
-      component: () => import("../views/beheer/PublicatiesView.vue"),
-      props: true,
+      component: PublicatiesView,
       meta: {
+        title: "Publicaties",
         requiresAuth: true
       }
     },
     {
       path: "/beheer/gebruikersgroepen",
       name: "gebruikersgroepen",
-      component: () => import("../views/beheer/GebruikersGroepen.vue")
+      component: () => import("../views/beheer/GebruikersGroepen.vue"),
+      meta: {
+        title: "Gebruikersgroepen",
+        requiresAuth: true
+      }
     },
     {
       path: "/beheer/gebruikersgroep/:id",
       name: "gebruikersgroep",
       component: () => import("../views/beheer/GebruikersGroep.vue"),
-      props: true
+      props: true,
+      meta: {
+        title: "Gebruikersgroep",
+        requiresAuth: true
+      }
     }
   ]
 });
 
 router.beforeEach(async (to) => {
+  document.title = `${to.meta?.title || ''} | ${import.meta.env.VITE_APP_TITLE}`;
+
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
 
   if (requiresAuth && !user.value?.isLoggedIn) {

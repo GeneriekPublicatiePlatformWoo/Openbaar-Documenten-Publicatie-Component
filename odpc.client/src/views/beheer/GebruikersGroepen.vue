@@ -1,4 +1,6 @@
 <template>
+  <h1>Gebruikersgroepen</h1>
+
   <ul>
     <li>
       <router-link :to="{ name: 'gebruikersgroep', params: { id: 1 } }"
