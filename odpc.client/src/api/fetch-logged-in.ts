@@ -61,3 +61,12 @@ export async function fetchLoggedIn(...args: FetchArgs): FetchReturn {
 
   return r;
 }
+
+export function throwIfNotOk(response: Response) {
+  if (!response.ok) throw new Error(response.statusText);
+  return response as Response & { ok: true };
+}
+
+export function parseJson(response: Response) {
+  return response.json();
+}

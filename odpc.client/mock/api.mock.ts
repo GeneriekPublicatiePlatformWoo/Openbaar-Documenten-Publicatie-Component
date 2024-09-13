@@ -3,14 +3,14 @@ import { type MockHandler } from "vite-plugin-mock-server";
 export const WAARDELIJSTEN = {
   ORGANISATIE: "Organisatie",
   INFORMATIECATEGORIE: "Informatiecategorie",
-  THEMA: "Thema",
+  THEMA: "Thema"
   // DOCUMENTSOORT: 'Documentsoort'
 } as const;
 
 export type Waardelijst = keyof typeof WAARDELIJSTEN;
 
 export type WaardelijstItem = {
-  id: number;
+  id: string;
   type: Waardelijst;
   name: string;
   checked?: boolean;
@@ -21,57 +21,6 @@ export type GroupedWaardeLijstItems = {
 };
 
 const mocks: MockHandler[] = [
-  {
-    pattern: "/api-mock/waardelijsten",
-    handle: (_req, res) => {
-      const data: WaardelijstItem[] = [
-        {
-          id: 6,
-          type: "THEMA",
-          name: "arbeidsomstandigheden"
-        },
-        {
-          id: 8,
-          type: "INFORMATIECATEGORIE",
-          name: "wet of algemeen bindend voorschrift"
-        },
-        {
-          id: 5,
-          type: "THEMA",
-          name: "afval"
-        },
-        {
-          id: 2,
-          type: "ORGANISATIE",
-          name: "Organisatie 2"
-        },
-        {
-          id: 3,
-          type: "ORGANISATIE",
-          name: "Organisatie 3"
-        },
-        {
-          id: 4,
-          type: "THEMA",
-          name: "europese zaken"
-        },
-        {
-          id: 7,
-          type: "THEMA",
-          name: "arbeidsongeschikheid"
-        },
-        {
-          id: 1,
-          type: "ORGANISATIE",
-          name: "Organisatie 1"
-        }
-      ];
-
-      res.setHeader("Content-Type", "application/json");
-
-      setTimeout(() => res.end(JSON.stringify(data)), 500);
-    }
-  },
   {
     pattern: "/api-mock/gebruikersgroep/*",
     method: "GET",

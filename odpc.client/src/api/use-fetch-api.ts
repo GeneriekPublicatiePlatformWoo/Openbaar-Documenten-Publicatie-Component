@@ -1,15 +1,16 @@
 import { createFetch } from "@vueuse/core";
 
 export const useFetchApi = createFetch({
-  baseUrl: "/api-mock",
+  baseUrl: "/api",
   options: {
     beforeFetch({ options }) {
       //   const token = "token";
 
-      //   options.headers = {
-      //     ...options.headers,
-      //     Authorization: `Bearer ${token}`
-      //   };
+      options.headers = {
+        ...options.headers,
+        "content-type": "application/json"
+        //  Authorization: `Bearer ${token}`
+      };
 
       return { options };
     },

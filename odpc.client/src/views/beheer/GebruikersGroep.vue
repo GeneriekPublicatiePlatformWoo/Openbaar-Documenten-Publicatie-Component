@@ -1,5 +1,5 @@
 <template>
-  <h1>Gebruikersgroep &gt; Groep {{ id }}</h1>
+  <h1>Gebruikersgroep &gt; {{ gebruikersgroep?.name }}</h1>
 
   <simple-spinner v-if="loading"></simple-spinner>
 
@@ -8,14 +8,12 @@
       Er is iets misgegaan bij het ophalen van de waardelijsten, probeer het nogmaals...
     </alert-view>
 
-    <section v-else>
-      <WaardelijstView
-        v-for="(value, key) in WAARDELIJSTEN"
-        :key="key"
-        :title="value"
-        :items="groupedItems[key]"
-        v-model="selectedItems"
-      />
+
+    <section v-else-if="gebruikersgroep">
+
+
+      <WaardelijstView v-for="(value, key) in WAARDELIJSTEN" :key="key" :title="value" :items="groupedItems[key]"
+        v-model="waardelijstenModel" />
     </section>
 
     <div class="form-submit">
@@ -27,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertView from "@/components/AlertView.vue";
@@ -45,8 +43,40 @@ const props = defineProps<{
   id: string;
 }>();
 
-const loading = computed<boolean>(() => loadingListItems.value || loadingSelectedItems.value);
-const error = computed<boolean>(() => listItemstError.value || selectedItemsError.value);
+const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
+const error = computed<boolean>(() => listItemstError.value || gebruikersgroepError.value);
+
+type Gebruikersgroep = {
+  id: string,
+  name: string,
+  gekoppeldeWaardelijsten: Array<string>
+}
+
+const {
+  data: gebruikersgroep,
+  isFetching: loadingGebruikersgroep,
+  error: gebruikersgroepError,
+  put,
+  execute
+} = useFetchApi(`/gebruikersgroepen/${props.id}`).json<Gebruikersgroep>();
+
+
+const {
+  data: listItems,
+  isFetching: loadingListItems,
+  error: listItemstError
+} = useFetchApi(`/waardelijsten`).json<WaardelijstItem[]>();
+
+const waardelijstenModel = ref<Array<string>>([]);
+
+watchEffect(async () => {
+  waardelijstenModel.value = gebruikersgroep?.value?.gekoppeldeWaardelijsten || [];
+})
+
+
+
+
+
 
 // Grouped items
 const groupedItems = computed<GroupedWaardeLijstItems>(() =>
@@ -59,38 +89,44 @@ const groupedItems = computed<GroupedWaardeLijstItems>(() =>
   }, {} as GroupedWaardeLijstItems)
 );
 
-const {
-  data: listItems,
-  isFetching: loadingListItems,
-  error: listItemstError
-} = useFetchApi(`/waardelijsten`).json<WaardelijstItem[]>();
+
 
 // Selected items
-const formData = computed(() =>
-  JSON.stringify(
-    selectedItems.value?.filter((id) =>
-      Object.values(groupedItems.value)
-        .flat()
-        .map((item) => item.id)
-        .includes(id)
-    )
-  )
-);
+// const formData = computed(() => {
+//   console.log(gebruikersgroep?.value?.gekoppeldeWaardelijsten)
+//   return JSON.stringify(
+//     {
+//       gekoppeldeWaardelijsten: gebruikersgroep?.value?.gekoppeldeWaardelijsten?.filter((id) =>
+//         Object.values(groupedItems.value)
+//           .flat()
+//           .map((item) => item.id)
+//           .includes(id)
+//       )
+//     }
+//   )
+// }
+// );
 
-const {
-  data: selectedItems,
-  isFetching: loadingSelectedItems,
-  error: selectedItemsError,
-  put,
-  execute
-} = useFetchApi(`/gebruikersgroep/${props.id}`).json<number[]>();
+
 
 const submit = async (): Promise<void> => {
+
+
+  const formData = JSON.stringify(
+    {
+      gekoppeldeWaardelijsten: waardelijstenModel?.value?.filter((id) =>
+        Object.values(groupedItems.value)
+          .flat()
+          .map((item) => item.id)
+          .includes(id)
+      )
+    });
+
   put(formData);
   await execute();
 
   toast.add(
-    selectedItemsError.value
+    gebruikersgroepError.value
       ? { text: "De gegevens konden niet worden opgeslagen.", type: "error" }
       : { text: "De gegevens zijn succesvol opgeslagen." }
   );

@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ODPC.Data;
 using ODPC.Data.Entities;
-using ODPC.Features.GebruikersgroepDetails;
+using ODPC.Features.Gebruikersgroep.GebruikersgroepDetails;
 
-namespace ODPC.Features.GebruikersgroepBijwerken
-{    
+namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
+{
     [ApiController]
     public class GebruikersgroepBijwerkenController : ControllerBase
     {
@@ -21,30 +21,38 @@ namespace ODPC.Features.GebruikersgroepBijwerken
         }
 
 
-        [HttpPut("api/gebruikersgroep/{id}")]
-        public GebruikersgroepDetailsModel Put(Guid id, GebruikersgroepDetailsModel model)
+        [HttpPut("api/gebruikersgroepen/{id}")]
+        public GebruikersgroepDetailsModel Put(Guid id, [FromBody] GebruikersgroepPutModel model)
         {
+            var groep = _context.Gebruikersgroepen
+                .Single(x => x.Id == id);
+
             //verwijder bestaande waardelijsten voor deze groep
             var gebruikersGroepen = _context
                 .GebruikersgroepWaardelijsten
-                .Where(x => x.GebruikersgroepId == id);
+                .Where(x => x.GebruikersgroepId == id)
+                .ToList();
 
             _context.GebruikersgroepWaardelijsten
                 .RemoveRange(gebruikersGroepen);
 
-            //voeg de nieuwe set waardelijsten toe aan deze groep
-            var groep = _context.Gebruikersgroepen
-                .Single(x => x.Id == id);
 
+            var test = model.GekoppeldeWaardelijsten.Select(x => new GebruikersgroepWaardelijst { Gebruikersgroep = groep, WaardelijstId = x }).ToList();
+
+            var x = _context.GebruikersgroepWaardelijsten.ToList();
+
+
+            //voeg de nieuwe set waardelijsten toe aan deze groep
             _context.GebruikersgroepWaardelijsten
-                .AddRange(model.BeschikbareWaardelijsten
-                .Select(x => new GebruikersgroepWaardelijst { Gebruikersgroep = groep, WaardelijstId = x }));
+                .AddRange(model.GekoppeldeWaardelijsten.Select(x => new GebruikersgroepWaardelijst { Gebruikersgroep = groep, WaardelijstId = x }));
 
             _context.SaveChanges();
 
             return new GebruikersgroepDetailsModel
             {
-                BeschikbareWaardelijsten = _context
+                Id = groep.Id,
+                Name = groep.Name,
+                GekoppeldeWaardelijsten = _context
                     .GebruikersgroepWaardelijsten
                     .Where(x => x.GebruikersgroepId == id)
                     .Select(x => x.WaardelijstId)
@@ -52,4 +60,12 @@ namespace ODPC.Features.GebruikersgroepBijwerken
             };
         }
     }
+}
+
+
+
+
+public class GebruikersgroepPutModel
+{
+    public required List<string> GekoppeldeWaardelijsten { get; set; }
 }

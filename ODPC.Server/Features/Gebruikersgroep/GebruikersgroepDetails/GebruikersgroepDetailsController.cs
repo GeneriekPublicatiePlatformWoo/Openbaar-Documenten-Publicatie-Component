@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using ODPC.Data;
 using ODPC.Features.Gebruikersgroepen;
 
-namespace ODPC.Features.GebruikersgroepDetails
+namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
 {
-  
+
     [ApiController]
     public class GebruikersgroepDetailsController : ControllerBase
     {
@@ -20,12 +20,16 @@ namespace ODPC.Features.GebruikersgroepDetails
         }
 
 
-        [HttpGet("api/gebruikersgroep/")]
+        [HttpGet("api/gebruikersgroepen/{Id}")]
         public GebruikersgroepDetailsModel Get(Guid id)
         {
+            var groep = _context.Gebruikersgroepen.Single(x => x.Id == id);
+
             return new GebruikersgroepDetailsModel
             {
-                BeschikbareWaardelijsten = _context
+                Id = groep.Id,
+                Name = groep.Name,
+                GekoppeldeWaardelijsten = _context
                     .GebruikersgroepWaardelijsten
                     .Where(x => x.GebruikersgroepId == id)
                     .Select(x => x.WaardelijstId)

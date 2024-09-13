@@ -1,10 +1,8 @@
 <template>
   <fieldset>
     <legend>{{ title }}</legend>
-
     <div class="form-field check-all">
-      <label
-        ><input type="checkbox" @click="toggleAll" :checked="allSelected" /> selecteer alles
+      <label><input type="checkbox" @click="toggleAll" :checked="allSelected" /> selecteer alles
       </label>
     </div>
 
@@ -21,11 +19,11 @@ import { type WaardelijstItem } from "@/../mock/api.mock";
 const props = defineProps<{
   title: string;
   items: WaardelijstItem[];
-  modelValue: number[] | null;
+  modelValue: string[] | undefined;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", payload: number[] | null): void;
+  (e: "update:modelValue", payload: string[] | undefined): void;
 }>();
 
 const model = computed({
