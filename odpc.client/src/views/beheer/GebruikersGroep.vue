@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useFetchApi } from "@/helpers/use-fetch-api";
+import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertView from "@/components/AlertView.vue";
 import toast from "@/stores/toast";

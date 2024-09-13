@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <p>&copy; GeneriekPublicatiePlatformWoo</p>
+    <p>GPP-Woo</p>
   </footer>
 </template>
 
