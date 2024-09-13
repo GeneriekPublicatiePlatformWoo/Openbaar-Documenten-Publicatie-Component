@@ -8,17 +8,10 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
 {
 
     [ApiController]
-    public class GebruikersgroepDetailsController : ControllerBase
+    public class GebruikersgroepDetailsController(OdpcDbContext context, ILogger<GebruikersgroepDetailsController> logger) : ControllerBase
     {
-        private readonly OdpcDbContext _context;
-        private readonly ILogger<GebruikersgroepDetailsController> _logger;
-
-        public GebruikersgroepDetailsController(OdpcDbContext context, ILogger<GebruikersgroepDetailsController> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
-
+        private readonly OdpcDbContext _context = context;
+        private readonly ILogger<GebruikersgroepDetailsController> _logger = logger;
 
         [HttpGet("api/gebruikersgroepen/{Id}")]
         public GebruikersgroepDetailsModel Get(Guid id)

@@ -8,18 +8,18 @@ using ODPC.Features.Gebruikersgroep.GebruikersgroepDetails;
 namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
 {
     [ApiController]
-    public class GebruikersgroepBijwerkenController : ControllerBase
+    public class GebruikersgroepBijwerkenController(OdpcDbContext context, ILogger<GebruikersgroepDetailsController> logger) : ControllerBase
     {
 
-        private readonly OdpcDbContext _context;
-        private readonly ILogger<GebruikersgroepDetailsController> _logger;
+        private readonly OdpcDbContext _context = context;
+        private readonly ILogger<GebruikersgroepDetailsController> _logger = logger;
 
-        public GebruikersgroepBijwerkenController(OdpcDbContext context, ILogger<GebruikersgroepDetailsController> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
-
+        /// <summary>
+        /// Updates (vooralsnog) alleen de waardelijsten die gebruikt mogen worden binnen een groep 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
 
         [HttpPut("api/gebruikersgroepen/{id}")]
         public GebruikersgroepDetailsModel Put(Guid id, [FromBody] GebruikersgroepPutModel model)
@@ -35,12 +35,6 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
 
             _context.GebruikersgroepWaardelijsten
                 .RemoveRange(gebruikersGroepen);
-
-
-            var test = model.GekoppeldeWaardelijsten.Select(x => new GebruikersgroepWaardelijst { Gebruikersgroep = groep, WaardelijstId = x }).ToList();
-
-            var x = _context.GebruikersgroepWaardelijsten.ToList();
-
 
             //voeg de nieuwe set waardelijsten toe aan deze groep
             _context.GebruikersgroepWaardelijsten
@@ -60,12 +54,4 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
             };
         }
     }
-}
-
-
-
-
-public class GebruikersgroepPutModel
-{
-    public required List<string> GekoppeldeWaardelijsten { get; set; }
 }

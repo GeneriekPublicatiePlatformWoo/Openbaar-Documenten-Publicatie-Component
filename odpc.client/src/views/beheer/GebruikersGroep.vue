@@ -1,26 +1,23 @@
 <template>
   <h1>Gebruikersgroep &gt; {{ gebruikersgroep?.name }}</h1>
 
-  <simple-spinner v-if="loading"></simple-spinner>
+  <simple-spinner v-if="loadingListItems || loadingGebruikersgroep"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <alert-view v-if="error">
+    <alert-view v-if="listItemstError || gebruikersgroepError">
       Er is iets misgegaan bij het ophalen van de waardelijsten, probeer het nogmaals...
     </alert-view>
 
-
-    <section v-else-if="gebruikersgroep">
-
-
-      <WaardelijstView v-for="(value, key) in WAARDELIJSTEN" :key="key" :title="value" :items="groupedItems[key]"
-        v-model="waardelijstenModel" />
-    </section>
-
-    <div class="form-submit">
-      <router-link :to="{ name: 'gebruikersgroepen' }" class="button">&lt; Terug</router-link>
-
-      <button v-if="!error" type="submit" title="Opslaan">Opslaan</button>
-    </div>
+    <template v-else-if="gebruikersgroep">
+      <section>
+        <WaardelijstView v-for="(value, key) in WAARDELIJSTEN" :key="key" :title="value" :items="groupedItems[key]"
+          v-model="waardelijstenModel" />
+      </section>
+      <div class="form-submit">
+        <router-link :to="{ name: 'gebruikersgroepen' }" class="button">&lt; Terug</router-link>
+        <button type="submit" title="Opslaan">Opslaan</button>
+      </div>
+    </template>
   </form>
 </template>
 
@@ -42,9 +39,6 @@ import WaardelijstView from "@/components/WaardeLijstView.vue";
 const props = defineProps<{
   id: string;
 }>();
-
-const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
-const error = computed<boolean>(() => listItemstError.value || gebruikersgroepError.value);
 
 type Gebruikersgroep = {
   id: string,
@@ -74,10 +68,6 @@ watchEffect(async () => {
 })
 
 
-
-
-
-
 // Grouped items
 const groupedItems = computed<GroupedWaardeLijstItems>(() =>
   Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardeLijstItems, key) => {
@@ -91,26 +81,7 @@ const groupedItems = computed<GroupedWaardeLijstItems>(() =>
 
 
 
-// Selected items
-// const formData = computed(() => {
-//   console.log(gebruikersgroep?.value?.gekoppeldeWaardelijsten)
-//   return JSON.stringify(
-//     {
-//       gekoppeldeWaardelijsten: gebruikersgroep?.value?.gekoppeldeWaardelijsten?.filter((id) =>
-//         Object.values(groupedItems.value)
-//           .flat()
-//           .map((item) => item.id)
-//           .includes(id)
-//       )
-//     }
-//   )
-// }
-// );
-
-
-
 const submit = async (): Promise<void> => {
-
 
   const formData = JSON.stringify(
     {
