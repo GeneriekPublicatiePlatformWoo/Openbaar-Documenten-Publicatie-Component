@@ -11,8 +11,8 @@ export type User = {
 const user = ref<User | null>(null);
 
 // returns gecachede user
-export default async function getUser() {
-  if (user.value) {
+export default async function getUser(useCache: boolean = true) {
+  if (useCache && user.value) {
     return user.value;
   }
 

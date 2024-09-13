@@ -4,8 +4,6 @@ import LoginView from "@/views/LoginView.vue";
 import PublicatiesView from "../views/beheer/PublicatiesView.vue";
 import getUser, { type User } from "@/stores/user";
 
-const user = ref<User | null>(await getUser());
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -53,11 +51,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  document.title = `${to.meta?.title || ''} | ${import.meta.env.VITE_APP_TITLE}`;
+  document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
 
-  if (requiresAuth && !user.value?.isLoggedIn) {
+  const user = await getUser(false);
+  if (requiresAuth && !user?.isLoggedIn) {
     return { name: "login" };
   }
 });
