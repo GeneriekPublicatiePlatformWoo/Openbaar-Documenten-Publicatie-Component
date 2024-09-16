@@ -1,0 +1,38 @@
+<template>
+  <simple-spinner v-if="isFetching"></simple-spinner>
+
+  <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
+
+  <ul v-else>
+    <li v-for="{ id, name } in data" :key="id">
+      <router-link :to="{ name: 'gebruikersgroep', params: { id } }">{{ name }}</router-link>
+    </li>
+  </ul>
+</template>
+
+<script setup lang="ts">
+import { useFetchApi } from "@/api/use-fetch-api";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import AlertInline from "@/components/AlertInline.vue";
+import type { Gebruikersgroep } from "./types";
+
+const { data, isFetching, error } = useFetchApi("/gebruikersgroepen").json<Gebruikersgroep[]>();
+</script>
+
+<style lang="scss" scoped>
+ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
+  grid-gap: var(--spacing-default);
+
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    border: 1px solid var(--color-grey);
+    padding: var(--spacing-large);
+    text-align: center;
+  }
+}
+</style>

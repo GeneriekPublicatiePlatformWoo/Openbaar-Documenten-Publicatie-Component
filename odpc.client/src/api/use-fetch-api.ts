@@ -4,22 +4,22 @@ export const useFetchApi = createFetch({
   baseUrl: "/api",
   options: {
     beforeFetch({ options }) {
-      //   const token = "token";
+      // const token = "token";
 
       options.headers = {
         ...options.headers,
         "content-type": "application/json"
-        //  Authorization: `Bearer ${token}`
+        // Authorization: `Bearer ${token}`
       };
 
       return { options };
     },
     afterFetch(ctx) {
-      //   console.log(ctx);
+      // console.log(ctx);
       return ctx;
     },
     onFetchError(ctx) {
-      //   console.log(ctx);
+      // console.log(ctx);
       return ctx;
     }
   }
