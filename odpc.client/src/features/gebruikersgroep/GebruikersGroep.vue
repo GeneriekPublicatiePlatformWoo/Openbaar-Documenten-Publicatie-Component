@@ -21,7 +21,7 @@
     <div class="form-submit">
       <router-link :to="{ name: 'gebruikersgroepen' }" class="button">&lt; Terug</router-link>
 
-      <button v-if="!error && gebruikersgroep" type="submit" title="Opslaan">Opslaan</button>
+      <button v-if="gebruikersgroep && !error" type="submit" title="Opslaan">Opslaan</button>
     </div>
   </form>
 </template>
@@ -34,9 +34,8 @@ import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import CheckboxList from "@/components/CheckboxList.vue";
 
-import type { Gebruikersgroep } from "@/features/gebruikersgroep/types";
-import { getWaardelijsten } from "@/features/waardelijst/service";
-import { WAARDELIJSTEN } from "@/features/waardelijst/types";
+import type { Gebruikersgroep } from "./types";
+import { WAARDELIJSTEN, getWaardelijsten } from "@/features/waardelijst";
 
 const props = defineProps<{ id: string }>();
 const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
@@ -85,7 +84,6 @@ section {
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
   grid-gap: var(--spacing-default);
 
-  // ...
   padding: 0;
   margin: 0;
   border: none;

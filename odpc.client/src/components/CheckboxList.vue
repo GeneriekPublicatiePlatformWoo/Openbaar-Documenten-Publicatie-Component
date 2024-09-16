@@ -28,7 +28,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", payload: string[] | undefined): void;
+  (e: "update:modelValue", payload: string[]): void;
 }>();
 
 const model = computed({

@@ -54,8 +54,8 @@ router.beforeEach(async (to) => {
   document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
-
   const user = await getUser(false);
+
   if (requiresAuth && !user?.isLoggedIn) {
     return { name: "login" };
   }
