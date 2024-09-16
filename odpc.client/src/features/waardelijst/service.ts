@@ -2,7 +2,7 @@ import { computed } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import {
   WAARDELIJSTEN,
-  type GroupedWaardeLijstItems,
+  type GroupedWaardelijstItems,
   type Waardelijst,
   type WaardelijstItem
 } from "./types";
@@ -14,15 +14,17 @@ export const getWaardelijsten = () => {
     error: listItemstError
   } = useFetchApi(`/waardelijsten`).json<WaardelijstItem[]>();
 
-  const groupedItems = computed<GroupedWaardeLijstItems>(() =>
-    Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardeLijstItems, key) => {
+  const groupedWaardelijstItems = computed<GroupedWaardelijstItems>(() =>
+    Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardelijstItems, key) => {
       result[key as Waardelijst] =
         data.value
           ?.filter((item) => item.type === key)
           ?.sort((a, b) => a.name.localeCompare(b.name)) || [];
       return result;
-    }, {} as GroupedWaardeLijstItems)
+    }, {} as GroupedWaardelijstItems)
   );
 
-  return { groupedItems, loadingListItems, listItemstError };
+  const waardelijstIds = computed(() => data.value?.map((item) => item.id) || []);
+
+  return { groupedWaardelijstItems, waardelijstIds, loadingListItems, listItemstError };
 };

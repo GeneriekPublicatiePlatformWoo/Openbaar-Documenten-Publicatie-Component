@@ -13,7 +13,7 @@
         v-for="(value, key) in WAARDELIJSTEN"
         :key="key"
         :title="value"
-        :options="groupedItems[key]"
+        :options="groupedWaardelijstItems[key]"
         v-model="waardelijstenModel"
       />
     </section>
@@ -41,7 +41,8 @@ const props = defineProps<{ id: string }>();
 const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
 const error = computed<boolean>(() => listItemstError.value || gebruikersgroepError.value);
 
-const { groupedItems, loadingListItems, listItemstError } = getWaardelijsten();
+const { groupedWaardelijstItems, waardelijstIds, loadingListItems, listItemstError } =
+  getWaardelijsten();
 
 const waardelijstenModel = ref<string[]>([]);
 
@@ -51,23 +52,21 @@ const {
   error: gebruikersgroepError,
   put,
   execute
-} = useFetchApi(`/gebruikersgroepen/${props.id}`).json<Gebruikersgroep>();
+} = useFetchApi(() => `/gebruikersgroepen/${props.id}`).json<Gebruikersgroep>();
 
 watchEffect(() => {
   waardelijstenModel.value = gebruikersgroep.value?.gekoppeldeWaardelijsten || [];
 });
 
-const formData = computed(() => ({
-  gekoppeldeWaardelijsten: waardelijstenModel.value?.filter((id) =>
-    Object.values(groupedItems.value)
-      .flat()
-      .map((item) => item.id)
-      .includes(id)
-  )
-}));
-
 const submit = async (): Promise<void> => {
+  const formData = {
+    gekoppeldeWaardelijsten: waardelijstenModel.value?.filter((id) =>
+      waardelijstIds.value.includes(id)
+    )
+  };
+
   put(formData);
+
   await execute();
 
   toast.add(

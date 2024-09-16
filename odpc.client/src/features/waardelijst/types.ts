@@ -13,6 +13,6 @@ export type WaardelijstItem = {
   type: Waardelijst;
 } & OptionProps;
 
-export type GroupedWaardeLijstItems = {
+export type GroupedWaardelijstItems = {
   [key in Waardelijst]: WaardelijstItem[];
 };
