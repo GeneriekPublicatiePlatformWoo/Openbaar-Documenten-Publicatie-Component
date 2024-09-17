@@ -52,7 +52,7 @@ const {
   error: gebruikersgroepError,
   put,
   execute
-} = useFetchApi(() => `/gebruikersgroepen/${props.id}`).json<Gebruikersgroep>();
+} = useFetchApi(() => `/api/gebruikersgroepen/${props.id}`).json<Gebruikersgroep>();
 
 watchEffect(() => {
   waardelijstenModel.value = gebruikersgroep.value?.gekoppeldeWaardelijsten || [];

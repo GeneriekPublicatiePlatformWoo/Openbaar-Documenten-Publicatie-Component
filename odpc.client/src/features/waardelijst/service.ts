@@ -12,7 +12,7 @@ export const getWaardelijsten = () => {
     data,
     isFetching: loadingListItems,
     error: listItemstError
-  } = useFetchApi(`/waardelijsten`).json<WaardelijstItem[]>();
+  } = useFetchApi(`/api/waardelijsten`).json<WaardelijstItem[]>();
 
   const groupedWaardelijstItems = computed<GroupedWaardelijstItems>(() =>
     Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardelijstItems, key) => {

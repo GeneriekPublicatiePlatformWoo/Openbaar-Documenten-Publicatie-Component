@@ -1,7 +1,6 @@
 import { createFetch } from "@vueuse/core";
 
 export const useFetchApi = createFetch({
-  baseUrl: "/api",
   options: {
     beforeFetch({ options }) {
       // const token = "token";
