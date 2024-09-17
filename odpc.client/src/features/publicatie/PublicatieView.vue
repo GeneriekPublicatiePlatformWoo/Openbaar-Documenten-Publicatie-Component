@@ -61,7 +61,7 @@ const publicatie = ref<Publicatie | null>({
 });
 
 const { data, isFetching, error, post, put, execute } = useFetchApi(
-  `/api-mock/publicaties${props.id ? "/" + props.id : ""}`,
+  () => `/api-mock/publicaties${props.id ? "/" + props.id : ""}`,
   { immediate: false }
 ).json<Publicatie>();
 
