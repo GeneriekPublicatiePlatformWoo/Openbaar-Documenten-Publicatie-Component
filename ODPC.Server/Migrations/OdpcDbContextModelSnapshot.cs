@@ -22,61 +22,60 @@ namespace ODPC.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ODPC.WeatherForecast", b =>
+            modelBuilder.Entity("ODPC.Data.Entities.Gebruikersgroep", b =>
                 {
-                    b.Property<Guid>("Guid")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Summary")
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TemperatureC")
-                        .HasColumnType("integer");
+                    b.HasKey("Id");
 
-                    b.HasKey("Guid");
-
-                    b.ToTable("WeatherForecasts");
+                    b.ToTable("Gebruikersgroepen");
 
                     b.HasData(
                         new
                         {
-                            Guid = new Guid("e31771d6-c6c4-4ff8-a2da-72b90847ac27"),
-                            Date = new DateOnly(2024, 8, 30),
-                            Summary = "Mild",
-                            TemperatureC = 20
+                            Id = new Guid("d3da5277-ea07-4921-97b8-e9a181390c76"),
+                            Name = "Groep 1"
                         },
                         new
                         {
-                            Guid = new Guid("4fa89832-2627-412e-b749-4b4da3ee0f93"),
-                            Date = new DateOnly(2024, 8, 31),
-                            Summary = "Warm",
-                            TemperatureC = 25
+                            Id = new Guid("8f939b51-dad3-436d-a5fa-495b42317d64"),
+                            Name = "Groep 2"
                         },
                         new
                         {
-                            Guid = new Guid("66a7c17a-2822-4dd1-b9cd-b18d6ebc4bb9"),
-                            Date = new DateOnly(2024, 9, 1),
-                            Summary = "Cool",
-                            TemperatureC = 15
-                        },
-                        new
-                        {
-                            Guid = new Guid("cc957f44-67fb-43ee-9eb9-8a263fd80375"),
-                            Date = new DateOnly(2024, 9, 2),
-                            Summary = "Hot",
-                            TemperatureC = 30
-                        },
-                        new
-                        {
-                            Guid = new Guid("535309b4-d6ef-42eb-8306-9ab834b795d8"),
-                            Date = new DateOnly(2024, 9, 3),
-                            Summary = "Chilly",
-                            TemperatureC = 10
+                            Id = new Guid("0e7a0023-423a-421a-8700-359232fef584"),
+                            Name = "Groep 3"
                         });
+                });
+
+            modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepWaardelijst", b =>
+                {
+                    b.Property<Guid>("GebruikersgroepId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("WaardelijstId")
+                        .HasColumnType("text");
+
+                    b.HasKey("GebruikersgroepId", "WaardelijstId");
+
+                    b.ToTable("GebruikersgroepWaardelijsten");
+                });
+
+            modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepWaardelijst", b =>
+                {
+                    b.HasOne("ODPC.Data.Entities.Gebruikersgroep", "Gebruikersgroep")
+                        .WithMany()
+                        .HasForeignKey("GebruikersgroepId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gebruikersgroep");
                 });
 #pragma warning restore 612, 618
         }

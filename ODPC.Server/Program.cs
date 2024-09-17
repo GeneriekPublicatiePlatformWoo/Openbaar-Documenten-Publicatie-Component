@@ -49,7 +49,7 @@ try
 
     app.UseAuthorization();
 
-    app.MapControllers();
+    app.MapControllers().RequireAuthorization();
 
     app.MapOdpcAuthEndpoints();
     app.MapHealthChecks("/healthz").AllowAnonymous();

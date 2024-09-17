@@ -1,0 +1,153 @@
+.icon-only {
+  --utrecht-button-inline-size: var(--spacing-large);
+  --utrecht-button-padding-inline-start: 0;
+  --utrecht-button-padding-inline-end: 0;
+  --utrecht-button-padding-block-start: 0;
+  --utrecht-button-padding-block-end: 0;
+  --utrecht-button-min-inline-size: var(--spacing-default);
+  --utrecht-button-active-color: var(--color-black);
+  --utrecht-button-active-border-color: currentcolor;
+  --utrecht-button-hover-color: var(--color-black);
+  --utrecht-button-hover-border-color: currentcolor;
+  --utrecht-button-focus-color: var(--color-black);
+  --utrecht-button-focus-border-color: transparent;
+
+  aspect-ratio: 1;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.icon-before,
+.icon-after {
+  align-items: center;
+}
+
+.icon-after::after,
+.icon-before::before {
+  display: inline-block;
+  content: "";
+  background-color: currentcolor;
+  mask-repeat: no-repeat;
+  min-inline-size: 1rem;
+  min-block-size: 1rem;
+}
+
+.icon-large::after,
+.icon-large::before {
+  min-inline-size: 1.5rem !important;
+  min-block-size: 1.5rem !important;
+}
+
+.icon-before.chevron-down::before,
+.icon-after.chevron-down::after,
+.icon-before.chevron-right::before,
+.icon-after.chevron-right::after,
+.icon-before.chevron-left::before,
+.icon-after.chevron-left::after {
+  min-block-size: 0.6rem;
+  mask-image: url("@/assets/icons/chevron-down.svg");
+}
+
+.icon-before.chevron-right::before,
+.icon-after.chevron-right::after {
+  rotate: (-90deg);
+}
+
+.icon-before.chevron-left::before,
+.icon-after.chevron-left::after {
+  rotate: (90deg);
+}
+
+.icon-before.circle-xmark::before,
+.icon-after.circle-xmark::after {
+  mask-image: url("@/assets/icons/circle-xmark.svg");
+}
+
+.icon-before.filter::before,
+.icon-after.filter::after {
+  mask-image: url("@/assets/icons/filter.svg");
+}
+
+.icon-before.check::before,
+.icon-after.check::after {
+  mask-image: url("@/assets/icons/check.svg");
+}
+
+.icon-before.phone-flip::before,
+.icon-after.phone-flip::after {
+  mask-image: url("@/assets/icons/phone-flip.svg");
+}
+
+.icon-before.note::before,
+.icon-after.note::after {
+  mask-image: url("@/assets/icons/note.svg");
+}
+
+.icon-before.book::before,
+.icon-after.book::after {
+  mask-image: url("@/assets/icons/book.svg");
+}
+
+.icon-before.pen::before,
+.icon-after.pen::after {
+  mask-image: url("@/assets/icons/pen.svg");
+}
+
+.icon-before.xmark::before,
+.icon-after.xmark::after {
+  min-inline-size: 0.75rem;
+  min-block-size: 0.75rem;
+  mask-image: url("@/assets/icons/xmark.svg");
+}
+
+.icon-before.plus::before,
+.icon-after.plus::after {
+  mask-image: url("@/assets/icons/plus.svg");
+}
+
+.icon-before.alert::before,
+.icon-after.alert::after {
+  mask-image: url("@/assets/icons/alert.svg");
+}
+
+.icon-before.trash::before,
+.icon-after.trash::after {
+  mask-image: url("@/assets/icons/trash.svg");
+}
+
+.icon-before.loupe::before,
+.icon-after.loupe::after {
+  mask-image: url("@/assets/icons/loupe.svg");
+}
+
+.icon-before.sort-descending::before,
+.icon-after.sort-descending::after,
+.icon-before.sort-ascending::before,
+.icon-after.sort-ascending::after {
+  mask-image: url("@/assets/icons/sort.svg");
+  min-inline-size: 0.5rem;
+  min-block-size: 0.5rem;
+}
+
+.icon-before.sort-descending::before,
+.icon-before.sort-ascending::before {
+  margin-inline-end: 0.5ch;
+}
+
+.icon-after.sort-descending::after,
+.icon-after.sort-ascending::after {
+  margin-inline-start: 0.5ch;
+}
+
+.icon-before.sort-ascending::before,
+.icon-after.sort-ascending::after {
+  rotate: 180deg;
+}
+
+.icon-before.exit::before,
+.icon-after.exit::after {
+  mask-image: url("@/assets/icons/exit.svg");
+}
