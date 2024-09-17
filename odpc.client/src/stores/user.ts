@@ -1,5 +1,3 @@
-import { ref } from "vue";
-
 export type User = {
   isLoggedIn: boolean;
   id: string;
@@ -8,18 +6,18 @@ export type User = {
 };
 
 // cache de gefetchde user, zodat deze niet onnodig opnieuw wordt opgevraagd van de server
-const user = ref<User | null>(null);
+let user: User | null = null;
 
 // returns gecachede user
 export default async function getUser(useCache: boolean = true) {
-  if (useCache && user.value) {
-    return user.value;
+  if (useCache && user) {
+    return user;
   }
 
   try {
-    user.value = await fetch("/api/me").then((r) => r.json());
+    user = await fetch("/api/me").then((r) => r.json());
 
-    return user.value;
+    return user;
   } catch {
     return null;
   }

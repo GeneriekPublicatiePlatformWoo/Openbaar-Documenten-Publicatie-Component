@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ODPC.Features.Gebruikersgroepen;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace ODPC.Features.WaardeLijstenOverzicht
 {

@@ -1,18 +1,15 @@
-﻿using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ODPC.Data;
 using ODPC.Data.Entities;
-using ODPC.Features.Gebruikersgroep.GebruikersgroepDetails;
 
 namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
 {
     [ApiController]
-    public class GebruikersgroepBijwerkenController(OdpcDbContext context, ILogger<GebruikersgroepDetailsController> logger) : ControllerBase
+    public class GebruikersgroepBijwerkenController(OdpcDbContext context) : ControllerBase
     {
 
         private readonly OdpcDbContext _context = context;
-        private readonly ILogger<GebruikersgroepDetailsController> _logger = logger;
 
         /// <summary>
         /// Updates (vooralsnog) alleen de waardelijsten die gebruikt mogen worden binnen een groep 
@@ -22,36 +19,32 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
         /// <returns></returns>
 
         [HttpPut("api/gebruikersgroepen/{id}")]
-        public GebruikersgroepDetailsModel Put(Guid id, [FromBody] GebruikersgroepPutModel model)
+        public async Task<IActionResult> Put(Guid id, [FromBody] GebruikersgroepPutModel model, CancellationToken token)
         {
-            var groep = _context.Gebruikersgroepen
-                .Single(x => x.Id == id);
+            var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Id == id, cancellationToken: token);
+
+            if (groep == null) return NotFound();
 
             //verwijder bestaande waardelijsten voor deze groep
-            var gebruikersGroepen = _context
+            await _context
                 .GebruikersgroepWaardelijsten
-                .Where(x => x.GebruikersgroepId == id)
-                .ToList();
-
-            _context.GebruikersgroepWaardelijsten
-                .RemoveRange(gebruikersGroepen);
+                .Where(x=> x.GebruikersgroepId == id)
+                .ExecuteDeleteAsync(cancellationToken: token);
 
             //voeg de nieuwe set waardelijsten toe aan deze groep
             _context.GebruikersgroepWaardelijsten
-                .AddRange(model.GekoppeldeWaardelijsten.Select(x => new GebruikersgroepWaardelijst { Gebruikersgroep = groep, WaardelijstId = x }));
+                .AddRange(model.GekoppeldeWaardelijsten.Select(x => new GebruikersgroepWaardelijst { GebruikersgroepId = id, WaardelijstId = x }));
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync(token);
 
-            return new GebruikersgroepDetailsModel
+            var result = new GebruikersgroepDetailsModel
             {
                 Id = groep.Id,
                 Name = groep.Name,
-                GekoppeldeWaardelijsten = _context
-                    .GebruikersgroepWaardelijsten
-                    .Where(x => x.GebruikersgroepId == id)
-                    .Select(x => x.WaardelijstId)
-                    .AsEnumerable()
+                GekoppeldeWaardelijsten = model.GekoppeldeWaardelijsten
             };
+
+            return Ok(result);
         }
     }
 }
