@@ -8,7 +8,8 @@ export const useFetchApi = createFetch({
 
       options.headers = {
         ...options.headers,
-        "content-type": "application/json"
+        "content-type": "application/json",
+        "is-api": "true"
         // Authorization: `Bearer ${token}`
       };
 
