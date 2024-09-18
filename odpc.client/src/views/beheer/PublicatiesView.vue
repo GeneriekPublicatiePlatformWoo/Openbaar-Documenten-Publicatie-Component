@@ -1,11 +1,11 @@
 <template>
   <h1>Publicaties</h1>
 
-  <publicaties-view />
+  <publicaties-overview />
 </template>
 
 <script setup lang="ts">
-import PublicatiesView from "@/features/publicatie/PublicatiesView.vue";
+import PublicatiesOverview from "@/features/publicatie/PublicatiesOverview.vue";
 </script>
 
 <style lang="scss" scoped></style>

@@ -28,6 +28,8 @@
 
         <textarea id="omschrijving" v-model="publicatie.omschrijving" rows="4"></textarea>
       </div>
+
+      <!-- <file-upload /> -->
     </fieldset>
 
     <div class="form-submit" :class="{ error }">
@@ -47,6 +49,7 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
+import FileUpload from "./components/FileUpload.vue";
 
 import type { Publicatie } from "./types";
 

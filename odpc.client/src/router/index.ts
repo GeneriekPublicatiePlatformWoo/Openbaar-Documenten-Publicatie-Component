@@ -41,7 +41,7 @@ const router = createRouter({
     {
       path: "/beheer/gebruikersgroepen/overzicht",
       name: "gebruikersgroepen",
-      component: () => import("../views/beheer/GebruikersGroepen.vue"),
+      component: () => import("../views/beheer/GebruikersgroepenView.vue"),
       meta: {
         title: "Gebruikersgroepen",
         requiresAuth: true
@@ -50,7 +50,7 @@ const router = createRouter({
     {
       path: "/beheer/gebruikersgroepen/:id",
       name: "gebruikersgroep",
-      component: () => import("../views/beheer/GebruikersGroep.vue"),
+      component: () => import("../views/beheer/GebruikersgroepView.vue"),
       props: true,
       meta: {
         title: "Gebruikersgroep",

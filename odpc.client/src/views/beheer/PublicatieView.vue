@@ -1,11 +1,11 @@
 <template>
   <h1>{{ !id ? `Nieuwe publicatie` : `Publicatie` }}</h1>
 
-  <publicatie-view :id="id" />
+  <publicatie-details :id="id" />
 </template>
 
 <script setup lang="ts">
-import PublicatieView from "@/features/publicatie/PublicatieView.vue";
+import PublicatieDetails from "@/features/publicatie/PublicatieDetails.vue";
 
 defineProps<{ id?: string }>();
 </script>
