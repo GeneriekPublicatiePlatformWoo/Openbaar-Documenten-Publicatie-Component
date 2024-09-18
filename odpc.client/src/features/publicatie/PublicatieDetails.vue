@@ -33,7 +33,7 @@
     </fieldset>
 
     <div class="form-submit" :class="{ error }">
-      <router-link :to="{ name: 'publicaties' }" class="button">{{
+      <router-link :to="{ name: 'publicaties' }" class="button button-secondary">{{
         error ? "&lt; Terug" : "Annuleren"
       }}</router-link>
 

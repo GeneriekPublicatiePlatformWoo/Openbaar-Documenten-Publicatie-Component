@@ -17,7 +17,7 @@
     </section>
 
     <div class="form-submit" :class="{ error }">
-      <router-link :to="{ name: 'gebruikersgroepen' }" class="button">{{
+      <router-link :to="{ name: 'gebruikersgroepen' }" class="button button-secondary">{{
         error ? "&lt; Terug" : "Annuleren"
       }}</router-link>
 
