@@ -4,24 +4,24 @@ export const PUBLICATIESTATUS = {
   retracted: "Ingetrokken"
 } as const;
 
-type OrganisatieReference = {
-  name: string;
-  identifier: string;
-};
+// type OrganisatieReference = {
+//   name: string;
+//   identifier: string;
+// };
 
-export type Doc = {
-  uitgever: OrganisatieReference;
-  verantwoordelijke: OrganisatieReference;
-  titel: string;
-  informatiecategorie: {
-    name: string;
-    identifier: string;
-    origin: string;
-  }
-};
+// export type Doc = {
+//   uitgever: OrganisatieReference;
+//   verantwoordelijke: OrganisatieReference;
+//   titel: string;
+//   informatiecategorie: {
+//     name: string;
+//     identifier: string;
+//     origin: string;
+//   }
+// };
 
 export type Publicatie = {
-  identifier?: string;
+  uuid?: string;
   officieleTitel: string;
   verkorteTitel: string;
   omschrijving: string;

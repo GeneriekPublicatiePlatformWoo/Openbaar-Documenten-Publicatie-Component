@@ -5,7 +5,7 @@ const getIndex = (url: string | undefined) => +(url?.substring(url.lastIndexOf("
 
 const publicaties: Publicatie[] = [
   {
-    identifier: "0",
+    uuid: "0",
     officieleTitel:
       "Openbaarheid en Verantwoording: De Impact van de Wet open overheid op Bestuurlijke Transparantie",
     verkorteTitel: "Openbaarheid en Verantwoording",
@@ -13,7 +13,7 @@ const publicaties: Publicatie[] = [
     creatiedatum: "2024-08-24"
   },
   {
-    identifier: "1",
+    uuid: "1",
     officieleTitel: "Inzicht voor Iedereen: Toepassing en Resultaten van de Wet open overheid",
     verkorteTitel: "Inzicht voor Iedereen",
     omschrijving: "",
@@ -39,7 +39,7 @@ const mocks: MockHandler[] = [
 
       req.on("data", (bodyString: string) => {
         const publicatie = {
-          identifier: "" + publicaties.length,
+          uuid: "" + publicaties.length,
           ...(JSON.parse(bodyString) as Publicatie)
         };
 

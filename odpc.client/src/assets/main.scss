@@ -18,12 +18,6 @@
 //   overflow-y: scroll;
 // }
 
-.reset {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
 // Link card
 .card-link {
   display: flex;
@@ -79,4 +73,10 @@
   &.error {
     justify-content: flex-start;
   }
+}
+
+.reset {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
