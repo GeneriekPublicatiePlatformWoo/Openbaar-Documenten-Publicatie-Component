@@ -5,7 +5,11 @@
 
   <ul v-else class="reset">
     <li v-for="{ id, name } in data" :key="id">
-      <router-link :to="{ name: 'gebruikersgroep', params: { id } }" class="card-link">
+      <router-link
+        :to="{ name: 'gebruikersgroep', params: { id } }"
+        :title="name"
+        class="card-link icon-after pen"
+      >
         <h2>{{ name }}</h2></router-link
       >
     </li>
@@ -28,7 +32,7 @@ ul {
   grid-gap: var(--spacing-default);
 }
 
-h2 {
-  text-align: center;
+.card-link {
+  align-items: center;
 }
 </style>

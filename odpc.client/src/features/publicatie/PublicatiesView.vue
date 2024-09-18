@@ -9,7 +9,11 @@
 
   <ul v-else class="reset">
     <li v-for="{ identifier, officieleTitel, creatiedatum } in data" :key="identifier">
-      <router-link :to="{ name: 'publicatie', params: { id: identifier } }" class="card-link">
+      <router-link
+        :to="{ name: 'publicatie', params: { id: identifier } }"
+        :title="officieleTitel"
+        class="card-link icon-after pen"
+      >
         <h2>{{ officieleTitel }}</h2>
 
         <dl>
