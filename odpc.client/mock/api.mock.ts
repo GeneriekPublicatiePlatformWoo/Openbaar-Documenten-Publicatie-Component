@@ -1,16 +1,19 @@
 import { type MockHandler } from "vite-plugin-mock-server";
 import type { Publicatie } from "@/features/publicatie/types";
 
-export const publicaties: Publicatie[] = [
+const getIndex = (url: string | undefined) => +(url?.substring(url.lastIndexOf("/") + 1) || 0); // ...
+
+const publicaties: Publicatie[] = [
   {
-    identifier: "a0-b1",
-    officieleTitel: "Openbaarheid en Verantwoording: De Impact van de Wet open overheid op Bestuurlijke Transparantie",
+    identifier: "0",
+    officieleTitel:
+      "Openbaarheid en Verantwoording: De Impact van de Wet open overheid op Bestuurlijke Transparantie",
     verkorteTitel: "Openbaarheid en Verantwoording",
     omschrijving: "",
     creatiedatum: "2024-08-24"
   },
   {
-    identifier: "c2-d3",
+    identifier: "1",
     officieleTitel: "Inzicht voor Iedereen: Toepassing en Resultaten van de Wet open overheid",
     verkorteTitel: "Inzicht voor Iedereen",
     omschrijving: "",
@@ -35,9 +38,14 @@ const mocks: MockHandler[] = [
       res.setHeader("Content-Type", "application/json");
 
       req.on("data", (bodyString: string) => {
-        const body: object = JSON.parse(bodyString);
+        const publicatie = {
+          identifier: "" + publicaties.length,
+          ...(JSON.parse(bodyString) as Publicatie)
+        };
 
-        setTimeout(() => res.end(JSON.stringify({ identifier: "a0-b1", ...body })), 500);
+        publicaties.push(publicatie);
+
+        setTimeout(() => res.end(JSON.stringify(publicatie)), 500);
       });
     }
   },
@@ -45,11 +53,9 @@ const mocks: MockHandler[] = [
     pattern: "/api-mock/publicaties/*",
     method: "GET",
     handle: (req, res) => {
-      const index = +!req.url?.includes("a0-b1");
-
       res.setHeader("Content-Type", "application/json");
 
-      setTimeout(() => res.end(JSON.stringify(publicaties[index])), 500);
+      setTimeout(() => res.end(JSON.stringify(publicaties[getIndex(req.url)])), 500);
     }
   },
   {
@@ -59,9 +65,11 @@ const mocks: MockHandler[] = [
       res.setHeader("Content-Type", "application/json");
 
       req.on("data", (bodyString: string) => {
-        const body: object = JSON.parse(bodyString);
+        const publicatie = JSON.parse(bodyString) as Publicatie;
 
-        setTimeout(() => res.end(JSON.stringify(body)), 500);
+        publicaties[getIndex(req.url)] = publicatie;
+
+        setTimeout(() => res.end(JSON.stringify(publicatie)), 500);
       });
     }
   }

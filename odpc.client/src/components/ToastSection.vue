@@ -28,7 +28,7 @@ section {
   inset-inline: 0;
   // ...
   padding: 0;
-  padding-block-start: 10rem;
+  padding-block-start: 11rem;
   margin: 0;
   border: none;
 }
