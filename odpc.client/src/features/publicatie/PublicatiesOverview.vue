@@ -8,9 +8,9 @@
   <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
   <ul v-else class="reset">
-    <li v-for="{ identifier, officieleTitel, creatiedatum } in data" :key="identifier">
+    <li v-for="{ uuid, officieleTitel, creatiedatum } in data" :key="uuid">
       <router-link
-        :to="{ name: 'publicatie', params: { id: identifier } }"
+        :to="{ name: 'publicatie', params: { id: uuid } }"
         :title="officieleTitel"
         class="card-link icon-after pen"
       >
