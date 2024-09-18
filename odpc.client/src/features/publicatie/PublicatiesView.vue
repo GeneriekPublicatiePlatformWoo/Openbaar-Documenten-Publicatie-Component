@@ -7,9 +7,9 @@
 
   <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
-  <ul v-else>
+  <ul v-else class="reset">
     <li v-for="{ identifier, officieleTitel, creatiedatum } in data" :key="identifier">
-      <router-link :to="{ name: 'publicatie', params: { id: identifier } }">
+      <router-link :to="{ name: 'publicatie', params: { id: identifier } }" class="card-link">
         <h2>{{ officieleTitel }}</h2>
 
         <dl>
@@ -32,40 +32,14 @@ const { data, isFetching, error } = useFetchApi("/api-mock/publicaties").json<Pu
 
 <style lang="scss" scoped>
 ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  li {
-    margin-block: var(--spacing-default);
-  }
-
-  h2 {
-    margin-block-start: 0;
-  }
-
-  a {
-    display: flex;
-    flex-direction: column;
-
-    color: var(--text);
-    text-decoration: none;
-    padding: var(--spacing-large);
-    border: 1px solid var(--color-grey);
-
-    h2 {
-      text-decoration: underline;
-    }
-
-    &:hover h2 {
-      text-decoration: none;
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-default);
 }
 
 dl {
   display: flex;
-  margin-block: 0;
+  margin-block: var(--spacing-default) 0;
 
   dd {
     color: var(--text-light);
