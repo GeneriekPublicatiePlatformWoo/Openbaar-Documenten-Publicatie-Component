@@ -4,9 +4,7 @@
   <simple-spinner v-if="loading"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error">
-      Er is iets misgegaan bij het ophalen van de waardelijsten, probeer het nogmaals...
-    </alert-inline>
+    <alert-inline v-if="error"> Er is iets misgegaan, probeer het nogmaals... </alert-inline>
 
     <section v-else-if="gebruikersgroep">
       <CheckboxList
@@ -18,8 +16,10 @@
       />
     </section>
 
-    <div class="form-submit">
-      <router-link :to="{ name: 'gebruikersgroepen' }" class="button">&lt; Terug</router-link>
+    <div class="form-submit" :class="{ error }">
+      <router-link :to="{ name: 'gebruikersgroepen' }" class="button">{{
+        error ? "&lt; Terug" : "Annuleren"
+      }}</router-link>
 
       <button v-if="gebruikersgroep && !error" type="submit" title="Opslaan">Opslaan</button>
     </div>
@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect } from "vue";
+import { useRouter } from "vue-router";
 import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
@@ -37,7 +38,9 @@ import CheckboxList from "@/components/CheckboxList.vue";
 import type { Gebruikersgroep } from "./types";
 import { WAARDELIJSTEN, getWaardelijsten } from "@/features/waardelijst";
 
+const router = useRouter();
 const props = defineProps<{ id: string }>();
+
 const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
 const error = computed<boolean>(() => listItemstError.value || gebruikersgroepError.value);
 
@@ -74,6 +77,8 @@ const submit = async (): Promise<void> => {
       ? { text: "De gegevens konden niet worden opgeslagen.", type: "error" }
       : { text: "De gegevens zijn succesvol opgeslagen." }
   );
+
+  !error.value && router.push({ name: "gebruikersgroepen" });
 };
 </script>
 
@@ -81,16 +86,6 @@ const submit = async (): Promise<void> => {
 section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
-  grid-gap: var(--spacing-default);
-
-  padding: 0;
-  margin: 0;
-  border: none;
-}
-
-.form-submit {
-  display: flex;
-  justify-content: flex-end;
   grid-gap: var(--spacing-default);
 }
 </style>

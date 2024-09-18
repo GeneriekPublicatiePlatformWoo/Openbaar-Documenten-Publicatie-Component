@@ -63,6 +63,10 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 
+  document.body.setAttribute("tabindex", "-1");
+  document.body.focus();
+  document.body.removeAttribute("tabindex");
+
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
   const user = await getUser(true);
 

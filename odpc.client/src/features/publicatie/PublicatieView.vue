@@ -5,7 +5,7 @@
     <alert-inline v-if="error">Er is iets misgegaan, probeer het nogmaals...</alert-inline>
 
     <fieldset v-else-if="publicatie">
-      <div class="form-field">
+      <div class="form-group">
         <label for="titel">Titel</label>
 
         <input
@@ -17,13 +17,13 @@
         />
       </div>
 
-      <div class="form-field">
+      <div class="form-group">
         <label for="verkorte_titel">Verkorte titel</label>
 
         <input id="verkorte_titel" type="text" v-model="publicatie.verkorteTitel" class="small" />
       </div>
 
-      <div class="form-field">
+      <div class="form-group">
         <label for="omschrijving">Omschrijving</label>
 
         <textarea id="omschrijving" v-model="publicatie.omschrijving" rows="4"></textarea>
@@ -84,29 +84,4 @@ const submit = async (): Promise<void> => {
 onMounted(() => props.id && execute());
 </script>
 
-<style lang="scss" scoped>
-.form-field {
-  display: flex;
-  flex-direction: column;
-  margin-block-end: var(--spacing-default);
-
-  label {
-    font-weight: var(--font-bold);
-    margin-block-end: var(--spacing-small);
-  }
-
-  input[type="text"].small {
-    max-width: var(--section-width);
-  }
-}
-
-.form-submit {
-  display: flex;
-  justify-content: flex-end;
-  grid-gap: var(--spacing-default);
-
-  &.error {
-    justify-content: flex-start;
-  }
-}
-</style>
+<style lang="scss" scoped></style>
