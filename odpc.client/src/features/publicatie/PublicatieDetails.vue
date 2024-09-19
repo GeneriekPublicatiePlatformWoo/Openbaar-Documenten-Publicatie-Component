@@ -1,7 +1,7 @@
 <template>
-  <simple-spinner v-if="isFetching"></simple-spinner>
+  <simple-spinner v-show="isFetching"></simple-spinner>
 
-  <form v-else aria-live="polite" @submit.prevent="submit">
+  <form  v-show="!isFetching" aria-live="polite" @submit.prevent="submit">
     <alert-inline v-if="error"
       >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
     >
@@ -9,7 +9,7 @@
     <section v-else-if="publicatie">
       <publicatie-form v-model="publicatie" />
 
-      <file-upload-form v-model="publicatie.documenten[0]" />
+      <file-upload-form ref="fileUpload" />
     </section>
 
     <div class="form-submit" :class="{ error }">
@@ -37,14 +37,13 @@ import type { Publicatie } from "./types";
 const router = useRouter();
 const props = defineProps<{ id?: string }>();
 
+const fileUpload = ref<{ submit: (publicatie: string) => Promise<string> }>();
+
 const publicatie = ref<Publicatie | null>({
   officieleTitel: "",
   verkorteTitel: "",
   omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0],
-  documenten: [{
-    officieleTitel: ""
-  }]
+  creatiedatum: new Date().toISOString().split("T")[0]
 });
 
 const { data, isFetching, error, post, put, execute } = useFetchApi(

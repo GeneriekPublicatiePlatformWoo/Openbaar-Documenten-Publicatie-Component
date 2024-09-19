@@ -1,6 +1,6 @@
 import { type MockHandler } from "vite-plugin-mock-server";
 import { randomUUID } from "crypto";
-import type { Publicatie, MimeType } from "@/features/publicatie/types";
+import type { Publicatie, MimeTypes } from "@/features/publicatie/types";
 
 import publicatiesJson from "./publicaties.json";
 import mimeTypesJson from "./mimeTypes.json";
@@ -8,7 +8,7 @@ import mimeTypesJson from "./mimeTypes.json";
 const getIndex = (url: string | undefined) => +(url?.substring(url.lastIndexOf("/") + 1) || 0); // ...
 
 const publicaties: Publicatie[] = publicatiesJson;
-const mimeTypes: MimeType[] = mimeTypesJson;
+const mimeTypes: MimeTypes[] = mimeTypesJson;
 
 const mocks: MockHandler[] = [
   {
@@ -89,6 +89,7 @@ const mocks: MockHandler[] = [
             }
           ]
         };
+
         setTimeout(() => res.end(JSON.stringify(responseBody)), 500);
       });
     }

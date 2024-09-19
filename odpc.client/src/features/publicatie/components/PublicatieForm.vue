@@ -19,6 +19,8 @@
 
       <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
     </div>
+
+    <!-- <pre>{{ model }}</pre> -->
   </fieldset>
 </template>
 
@@ -26,13 +28,8 @@
 import { computed } from "vue";
 import type { Publicatie } from "../types";
 
-const props = defineProps<{
-  modelValue: Publicatie;
-}>();
-
-const emit = defineEmits<{
-  (e: "update:modelValue", payload: Publicatie): void;
-}>();
+const props = defineProps<{ modelValue: Publicatie }>();
+const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();
 
 const model = computed({
   get: () => props.modelValue,
