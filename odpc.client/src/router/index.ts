@@ -4,8 +4,19 @@ import PublicatiesView from "../views/beheer/PublicatiesView.vue";
 import PublicatieView from "../views/beheer/PublicatieView.vue";
 import getUser from "@/stores/user";
 
+const resetFocus = () => {
+  document.body.setAttribute("tabindex", "-1");
+  document.body.focus();
+  document.body.removeAttribute("tabindex");
+};
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior() {
+    resetFocus();
+
+    return { top: 0 };
+  },
   routes: [
     {
       path: "/",
@@ -63,12 +74,8 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 
-  document.body.setAttribute("tabindex", "-1");
-  document.body.focus();
-  document.body.removeAttribute("tabindex");
-
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
-  const user = await getUser(true);
+  const user = await getUser(false);
 
   if (requiresAuth && !user?.isLoggedIn) {
     return { name: "login" };

@@ -2,7 +2,9 @@
   <simple-spinner v-if="isFetching"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error">Er is iets misgegaan, probeer het nogmaals...</alert-inline>
+    <alert-inline v-if="error"
+      >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
+    >
 
     <fieldset v-else-if="publicatie">
       <div class="form-group">
@@ -28,8 +30,6 @@
 
         <textarea id="omschrijving" v-model="publicatie.omschrijving" rows="4"></textarea>
       </div>
-
-      <!-- <file-upload /> -->
     </fieldset>
 
     <div class="form-submit" :class="{ error }">
@@ -49,8 +49,6 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
-import FileUpload from "./components/FileUpload.vue";
-
 import type { Publicatie } from "./types";
 
 const router = useRouter();
@@ -77,14 +75,20 @@ const submit = async (): Promise<void> => {
 
   toast.add(
     error.value
-      ? { text: "De gegevens konden niet worden opgeslagen.", type: "error" }
-      : { text: "De gegevens zijn succesvol opgeslagen." }
+      ? { text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...", type: "error" }
+      : { text: "De publicatie is succesvol opgeslagen." }
   );
 
-  !error.value && router.push({ name: "publicaties" });
+  if (!error.value) {
+    // redirect
+    router.push({ name: "publicaties" });
+  } else {
+    // retry
+    error.value = null;
+  }
 };
 
-onMounted(() => props.id && execute());
+onMounted(async () => props.id && (await execute()));
 </script>
 
 <style lang="scss" scoped></style>

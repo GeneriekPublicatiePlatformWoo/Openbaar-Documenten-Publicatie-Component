@@ -4,7 +4,7 @@
   <simple-spinner v-if="loading"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error"> Er is iets misgegaan, probeer het nogmaals... </alert-inline>
+    <alert-inline v-if="error">Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline>
 
     <section v-else-if="gebruikersgroep">
       <CheckboxList
@@ -74,11 +74,17 @@ const submit = async (): Promise<void> => {
 
   toast.add(
     gebruikersgroepError.value
-      ? { text: "De gegevens konden niet worden opgeslagen.", type: "error" }
+      ? { text: "De gegevens kon niet worden opgeslagen, probeer het nogmaals...", type: "error" }
       : { text: "De gegevens zijn succesvol opgeslagen." }
   );
 
-  !error.value && router.push({ name: "gebruikersgroepen" });
+  if (!gebruikersgroepError.value) {
+    // redirect
+    router.push({ name: "gebruikersgroepen" });
+  } else {
+    // retry
+    gebruikersgroepError.value = null;
+  }
 };
 </script>
 
