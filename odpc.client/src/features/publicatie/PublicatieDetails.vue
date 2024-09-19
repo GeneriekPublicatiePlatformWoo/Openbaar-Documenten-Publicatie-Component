@@ -4,33 +4,11 @@
   <form v-else aria-live="polite" @submit.prevent="submit">
     <alert-inline v-if="error">Er is iets misgegaan, probeer het nogmaals...</alert-inline>
 
-    <fieldset v-else-if="publicatie">
-      <div class="form-group">
-        <label for="titel">Titel</label>
+    <section v-else-if="publicatie">
+      <publicatie-form v-model="publicatie" />
 
-        <input
-          id="titel"
-          type="text"
-          v-model="publicatie.officieleTitel"
-          required
-          aria-required="true"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="verkorte_titel">Verkorte titel</label>
-
-        <input id="verkorte_titel" type="text" v-model="publicatie.verkorteTitel" class="small" />
-      </div>
-
-      <div class="form-group">
-        <label for="omschrijving">Omschrijving</label>
-
-        <textarea id="omschrijving" v-model="publicatie.omschrijving" rows="4"></textarea>
-      </div>
-
-      <!-- <file-upload /> -->
-    </fieldset>
+      <file-upload-form v-model="publicatie.documenten[0]" />
+    </section>
 
     <div class="form-submit" :class="{ error }">
       <router-link :to="{ name: 'publicaties' }" class="button button-secondary">{{
@@ -49,7 +27,8 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
-import FileUpload from "./components/FileUpload.vue";
+import PublicatieForm from "./components/PublicatieForm.vue";
+import FileUploadForm from "./components/FileUploadForm.vue";
 
 import type { Publicatie } from "./types";
 
@@ -60,11 +39,14 @@ const publicatie = ref<Publicatie | null>({
   officieleTitel: "",
   verkorteTitel: "",
   omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0]
+  creatiedatum: new Date().toISOString().split("T")[0],
+  documenten: [{
+    officieleTitel: ""
+  }]
 });
 
 const { data, isFetching, error, post, put, execute } = useFetchApi(
-  () => `/api-mock/publicaties${props.id ? "/" + props.id : ""}`,
+  () => `/api-mock/v1/publicaties${props.id ? "/" + props.id : ""}`,
   { immediate: false }
 ).json<Publicatie>();
 
@@ -87,4 +69,10 @@ const submit = async (): Promise<void> => {
 onMounted(() => props.id && execute());
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
+  grid-gap: var(--spacing-default);
+}
+</style>
