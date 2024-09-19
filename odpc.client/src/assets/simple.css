@@ -216,6 +216,12 @@ label[type="button"] {
   line-height: normal;
 }
 
+.button.secondary,
+a.button-secondary {
+  background-color: var(--bg);
+  color: var(--accent);
+}
+
 .button[aria-disabled="true"],
 input:disabled,
 textarea:disabled,
@@ -244,6 +250,7 @@ input[type="submit"]:enabled:hover,
 input[type="reset"]:enabled:hover,
 input[type="button"]:enabled:hover,
 label[type="button"]:hover {
+  color: var(--accent-text);
   background-color: var(--accent-hover);
   border-color: var(--accent-hover);
   cursor: pointer;
@@ -252,6 +259,8 @@ label[type="button"]:hover {
 .button:focus-visible,
 button:focus-visible:where(:enabled),
 input:enabled:focus-visible:where([type="submit"], [type="reset"], [type="button"]) {
+  color: var(--accent-text);
+  background-color: var(--accent-hover);
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
@@ -358,29 +367,6 @@ section h2:first-child,
 article h3:first-child,
 section h3:first-child {
   margin-top: 1rem;
-}
-
-section {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 2rem 1rem;
-  margin: 3rem 0;
-}
-
-/* Don't double separators when chaining sections */
-section + section,
-section:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-section + section {
-  margin-top: 0;
-}
-
-section:last-child {
-  border-bottom: 0;
-  padding-bottom: 0;
 }
 
 details {

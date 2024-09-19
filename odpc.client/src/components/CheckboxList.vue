@@ -1,13 +1,13 @@
 <template>
   <fieldset>
     <legend>{{ title }}</legend>
-    <div class="form-field check-all">
+    <div class="checkbox check-all">
       <label
         ><input type="checkbox" @click="toggleAll" :checked="allSelected" /> selecteer alles
       </label>
     </div>
 
-    <div class="form-field" v-for="({ id, name }, key) in options" :key="key">
+    <div class="checkbox" v-for="({ id, name }, key) in options" :key="key">
       <label><input type="checkbox" :value="id" v-model="model" /> {{ name }} </label>
     </div>
   </fieldset>

@@ -17,3 +17,66 @@
 //   height: 100%;
 //   overflow-y: scroll;
 // }
+
+// Link card
+.card-link {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  text-decoration: none;
+  padding: var(--spacing-large);
+  border: 1px solid var(--color-grey);
+
+  h2 {
+    font-weight: normal;
+    text-decoration: underline;
+    margin-block: 0;
+  }
+
+  &:hover h2 {
+    text-decoration: none;
+  }
+
+  &.icon-after {
+    align-items: flex-start;
+
+    &::after {
+      position: absolute;
+      color: var(--text);
+      top: var(--spacing-small);
+      right: var(--spacing-small);
+    }
+  }
+}
+
+// Forms
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-block-end: var(--spacing-default);
+
+  label {
+    font-weight: var(--font-bold);
+    margin-block-end: var(--spacing-small);
+  }
+
+  input[type="text"].small {
+    max-width: var(--section-width);
+  }
+}
+
+.form-submit {
+  display: flex;
+  justify-content: flex-end;
+  grid-gap: var(--spacing-default);
+
+  &.error {
+    justify-content: flex-start;
+  }
+}
+
+.reset {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
