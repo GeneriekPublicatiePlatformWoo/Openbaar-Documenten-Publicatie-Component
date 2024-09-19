@@ -2,7 +2,9 @@
   <simple-spinner v-if="isFetching"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error">Er is iets misgegaan, probeer het nogmaals...</alert-inline>
+    <alert-inline v-if="error"
+      >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
+    >
 
     <section v-else-if="publicatie">
       <publicatie-form v-model="publicatie" />
@@ -59,14 +61,20 @@ const submit = async (): Promise<void> => {
 
   toast.add(
     error.value
-      ? { text: "De gegevens konden niet worden opgeslagen.", type: "error" }
-      : { text: "De gegevens zijn succesvol opgeslagen." }
+      ? { text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...", type: "error" }
+      : { text: "De publicatie is succesvol opgeslagen." }
   );
 
-  !error.value && router.push({ name: "publicaties" });
+  if (!error.value) {
+    // redirect
+    router.push({ name: "publicaties" });
+  } else {
+    // retry
+    error.value = null;
+  }
 };
 
-onMounted(() => props.id && execute());
+onMounted(async () => props.id && (await execute()));
 </script>
 
 <style lang="scss" scoped>
