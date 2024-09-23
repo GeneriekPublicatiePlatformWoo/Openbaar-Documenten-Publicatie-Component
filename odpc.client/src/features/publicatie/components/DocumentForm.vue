@@ -1,44 +1,78 @@
 <template>
-  <fieldset v-if="publicatieDocument">
+  <fieldset>
     <legend>Document</legend>
 
-    <div class="form-group">
-      <label for="titel">Titel</label>
+    <alert-inline v-if="error"
+      >Er is iets misgegaan bij het ophalen van het document...</alert-inline
+    >
 
-      <input
-        id="titel"
-        type="text"
-        v-model="publicatieDocument.officieleTitel"
-        required
-        aria-required="true"
-      />
-    </div>
+    <section v-else-if="publicatieDocument">
+      <template v-if="publicatieDocument.uuid">
+        <dl>
+          <dt>Titel</dt>
+          <dd>{{ publicatieDocument.officieleTitel }}</dd>
 
-    <div class="form-group">
-      <label for="verkorte_titel">Verkorte titel</label>
+          <dt>Verkorte titel</dt>
+          <dd>{{ publicatieDocument.verkorteTitel }}</dd>
 
-      <input id="verkorte_titel" type="text" v-model="publicatieDocument.verkorteTitel" />
-    </div>
+          <dt>Omschrijving</dt>
+          <dd>{{ publicatieDocument.omschrijving || "-" }}</dd>
 
-    <div class="form-group">
-      <label for="omschrijving">Omschrijving</label>
+          <dt>Bestandsnaam</dt>
+          <dd>{{ publicatieDocument.bestandsnaam }}</dd>
+        </dl>
 
-      <textarea id="omschrijving" v-model="publicatieDocument.omschrijving" rows="4"></textarea>
-    </div>
+        <button @click="reset" class="button secondary icon-after trash">
+          Verwijder document
+        </button>
+      </template>
 
-    <div class="form-group">
-      <label for="bestand">Bestand toevoegen</label>
+      <template v-else>
+        <div class="form-group">
+          <label for="titel">Titel</label>
 
-      <input id="bestand" type="file" title="Voeg bestand toe" @change="onFileSelected" />
-    </div>
+          <input
+            id="titel"
+            type="text"
+            v-model="publicatieDocument.officieleTitel"
+            required
+            aria-required="true"
+          />
+        </div>
 
-    <pre>{{ publicatieDocument }}</pre>
+        <div class="form-group">
+          <label for="verkorte_titel">Verkorte titel</label>
+
+          <input id="verkorte_titel" type="text" v-model="publicatieDocument.verkorteTitel" />
+        </div>
+
+        <div class="form-group">
+          <label for="omschrijving">Omschrijving</label>
+
+          <textarea id="omschrijving" v-model="publicatieDocument.omschrijving" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="bestand">Bestand toevoegen</label>
+
+          <input
+            id="bestand"
+            type="file"
+            title="Voeg bestand toe"
+            required
+            aria-required="true"
+            @change="onFileSelected"
+          />
+        </div>
+      </template>
+    </section>
   </fieldset>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
+import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import type { PublicatieDocument } from "../types";
 import { mimeTypesMap, uploadDocument } from "../service";
@@ -49,7 +83,7 @@ defineExpose({ upload });
 
 const file = ref<File | null>();
 
-const publicatieDocument = ref<PublicatieDocument | null>({
+const initialDocument = (): PublicatieDocument => ({
   publicatie: "",
   officieleTitel: "",
   verkorteTitel: "",
@@ -61,7 +95,9 @@ const publicatieDocument = ref<PublicatieDocument | null>({
   bestandsdelen: []
 });
 
-const { data, isFetching, error, post, put, execute } = useFetchApi(
+const publicatieDocument = ref<PublicatieDocument | null>(initialDocument());
+
+const { data, isFetching, error, post, execute } = useFetchApi(
   () => `/api-mock/v1/documenten${uuid ? "/" + uuid : ""}`,
   { immediate: false }
 ).json<PublicatieDocument>();
@@ -72,24 +108,27 @@ watch(isFetching, (value) => emit("update:loading", value));
 const onFileSelected = (event: Event) => {
   const target = event.target as HTMLInputElement;
 
-  if (target.files === null) return;
+  // ErrorHandling
+  if (target.files === null || !publicatieDocument.value || !mimeTypesMap.value) return;
 
   file.value = target.files[0];
 
-  if (publicatieDocument.value) {
-    publicatieDocument.value.bestandsnaam = file.value.name;
-    publicatieDocument.value.bestandsformaat =
-      mimeTypesMap.value?.get(file.value.type)?.identifier || "onbekend";
-    publicatieDocument.value.bestandsomvang = file.value.size;
-  }
+  publicatieDocument.value.bestandsnaam = file.value.name;
+  publicatieDocument.value.bestandsomvang = file.value.size;
+  publicatieDocument.value.bestandsformaat =
+    mimeTypesMap.value.get(file.value.type)?.identifier || "unknown";
 };
 
 async function upload(publicatie: string): Promise<void> {
-  if (publicatieDocument.value) {
-    publicatieDocument.value.publicatie = publicatie;
+  if (error.value || !publicatieDocument.value) {
+    throw new Error();
+  } else if (publicatieDocument.value.uuid) {
+    return;
   }
 
-  uuid ? put(publicatieDocument) : post(publicatieDocument);
+  publicatieDocument.value.publicatie = publicatie;
+
+  post(publicatieDocument);
 
   await execute();
 
@@ -99,16 +138,16 @@ async function upload(publicatie: string): Promise<void> {
       type: "error"
     });
 
+    error.value = null;
+
     throw new Error();
   }
 
-  const bestandsdelen = data.value?.bestandsdelen || [];
-
-  if (file.value && bestandsdelen.length) {
+  if (file.value && publicatieDocument.value.bestandsdelen?.length) {
     emit("update:loading", true);
 
     try {
-      await uploadDocument(file.value, bestandsdelen);
+      await uploadDocument(file.value, publicatieDocument.value.bestandsdelen);
     } catch {
       toast.add({
         text: "Het document kon niet worden geupload, probeer het nogmaals...",
@@ -122,7 +161,26 @@ async function upload(publicatie: string): Promise<void> {
   }
 }
 
+const reset = () => (publicatieDocument.value = initialDocument());
+
 onMounted(async () => uuid && (await execute()));
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+button {
+  display: flex;
+  column-gap: var(--spacing-small);
+}
+dl {
+  margin-block: 0;
+}
+
+dt {
+  font-weight: var(--font-bold);
+}
+
+dd {
+  margin-inline-start: 0;
+  margin-block-end: var(--spacing-default);
+}
+</style>

@@ -1,38 +1,43 @@
 <template>
-  <fieldset v-if="publicatie">
+  <fieldset>
     <legend>Publicatie</legend>
 
-    <div class="form-group">
-      <label for="titel">Titel</label>
+    <alert-inline v-if="error"
+      >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
+    >
 
-      <input
-        id="titel"
-        type="text"
-        v-model="publicatie.officieleTitel"
-        required
-        aria-required="true"
-      />
-    </div>
+    <section v-else-if="publicatie">
+      <div class="form-group">
+        <label for="titel">Titel</label>
 
-    <div class="form-group">
-      <label for="verkorte_titel">Verkorte titel</label>
+        <input
+          id="titel"
+          type="text"
+          v-model="publicatie.officieleTitel"
+          required
+          aria-required="true"
+        />
+      </div>
 
-      <input id="verkorte_titel" type="text" v-model="publicatie.verkorteTitel" />
-    </div>
+      <div class="form-group">
+        <label for="verkorte_titel">Verkorte titel</label>
 
-    <div class="form-group">
-      <label for="omschrijving">Omschrijving</label>
+        <input id="verkorte_titel" type="text" v-model="publicatie.verkorteTitel" />
+      </div>
 
-      <textarea id="omschrijving" v-model="publicatie.omschrijving" rows="4"></textarea>
-    </div>
+      <div class="form-group">
+        <label for="omschrijving">Omschrijving</label>
 
-    <!-- <pre>{{ model }}</pre> -->
+        <textarea id="omschrijving" v-model="publicatie.omschrijving" rows="4"></textarea>
+      </div>
+    </section>
   </fieldset>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
+import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import type { Publicatie } from "../types";
 
@@ -56,6 +61,8 @@ watch(data, (value) => (publicatie.value = value), { immediate: false });
 watch(isFetching, (value) => emit("update:loading", value));
 
 async function submit(): Promise<string> {
+  if (error.value) throw new Error();
+
   uuid ? put(publicatie) : post(publicatie);
 
   await execute();
@@ -65,6 +72,8 @@ async function submit(): Promise<string> {
       text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...",
       type: "error"
     });
+
+    error.value = null;
 
     throw new Error();
   }

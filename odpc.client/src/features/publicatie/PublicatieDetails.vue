@@ -1,5 +1,5 @@
 <template>
-  <simple-spinner v-show="loading"></simple-spinner>
+  <simple-spinner v-if="loading"></simple-spinner>
 
   <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
     <section>
@@ -39,8 +39,6 @@ const loadingDocument = ref<boolean>(false);
 const documentFormRef = ref<InstanceType<typeof DocumentForm> | null>(null);
 
 const submit = async (): Promise<void> => {
-  console.log(publicatieFormRef.value);
-  
   const responseUuid = await publicatieFormRef.value?.submit().catch(() => null);
 
   if (!responseUuid) return;
@@ -52,7 +50,6 @@ const submit = async (): Promise<void> => {
   }
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });
-
   router.push({ name: "publicaties" });
 };
 </script>

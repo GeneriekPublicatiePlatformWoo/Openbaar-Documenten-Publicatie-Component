@@ -1,13 +1,15 @@
 import { type MockHandler } from "vite-plugin-mock-server";
 import { randomUUID } from "crypto";
-import type { Publicatie, MimeTypes } from "@/features/publicatie/types";
+import type { Publicatie, MimeTypes, PublicatieDocument } from "@/features/publicatie/types";
 
 import publicatiesJson from "./publicaties.json";
-import mimeTypesJson from "./mimeTypes.json";
+import documentenJson from "./documenten.json";
+import mimeTypesJson from "./mime-types.json";
 
 const getIndex = (url: string | undefined) => +(url?.substring(url.lastIndexOf("/") + 1) || 0); // ...
 
 const publicaties: Publicatie[] = publicatiesJson;
+const documenten: PublicatieDocument[] = documentenJson;
 const mimeTypes: MimeTypes[] = mimeTypesJson;
 
 const mocks: MockHandler[] = [
@@ -63,7 +65,16 @@ const mocks: MockHandler[] = [
     }
   },
   {
-    pattern: "/api-mock/v1/documenten",
+    pattern: "/api-mock/v1/documenten/*",
+    method: "GET",
+    handle: (_req, res) => {
+      res.setHeader("Content-Type", "application/json");
+
+      setTimeout(() => res.end(JSON.stringify(documenten[0])), 500);
+    }
+  },
+  {
+    pattern: "/api-mock/v1/documenten/**",
     method: "POST",
     handle: (req, res) => {
       res.setHeader("Content-Type", "application/json");
@@ -71,11 +82,14 @@ const mocks: MockHandler[] = [
       req.on("data", (bodyString: string) => {
         const body: any = JSON.parse(bodyString);
         const { bestandsomvang } = body;
+
+        const uuid = randomUUID();
         const halve = bestandsomvang / 2;
         const firstSize = Math.ceil(halve);
         const secondSize = Math.floor(halve);
-        const uuid = randomUUID();
+
         const responseBody = {
+          ...documenten[0],
           bestandsdelen: [
             {
               url: `/api-mock/v1/documenten/${uuid}/bestandsdelen/1`,
