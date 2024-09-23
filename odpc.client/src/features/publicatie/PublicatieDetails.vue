@@ -1,5 +1,5 @@
 <template>
-  <simple-spinner v-if="loading"></simple-spinner>
+  <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
     <section>
