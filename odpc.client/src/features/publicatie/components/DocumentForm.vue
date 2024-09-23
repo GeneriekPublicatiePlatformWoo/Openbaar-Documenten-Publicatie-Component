@@ -75,7 +75,7 @@ import toast from "@/stores/toast";
 import type { PublicatieDocument } from "../types";
 import { mimeTypesMap, uploadDocument } from "../service";
 
-const { uuid } = defineProps<{ uuid?: string; loading: boolean }>();
+const { uuid } = defineProps<{ uuid?: string }>();
 
 const emit = defineEmits<{
   (e: "update:loading", payload: boolean): void;
@@ -106,7 +106,9 @@ const { data, isFetching, error, post, execute } = useFetchApi(
 ).json<PublicatieDocument>();
 
 watch(data, (value) => (publicatieDocument.value = value), { immediate: false });
+
 watch(isFetching, (value) => emit("update:loading", value));
+
 watch(error, (value) => emit("update:error", !!value));
 
 const onFileSelected = (event: Event) => {

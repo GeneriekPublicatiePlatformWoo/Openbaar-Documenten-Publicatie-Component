@@ -41,7 +41,7 @@ import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import type { Publicatie } from "../types";
 
-const { uuid } = defineProps<{ uuid?: string; loading: boolean }>();
+const { uuid } = defineProps<{ uuid?: string }>();
 
 const emit = defineEmits<{
   (e: "update:loading", payload: boolean): void;
@@ -63,7 +63,9 @@ const { data, isFetching, error, post, put, execute } = useFetchApi(
 ).json<Publicatie>();
 
 watch(data, (value) => (publicatie.value = value), { immediate: false });
+
 watch(isFetching, (value) => emit("update:loading", value));
+
 watch(error, (value) => emit("update:error", !!value));
 
 async function submit(): Promise<string> {
