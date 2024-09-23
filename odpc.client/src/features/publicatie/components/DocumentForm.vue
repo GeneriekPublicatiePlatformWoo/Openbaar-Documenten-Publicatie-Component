@@ -22,9 +22,7 @@
           <dd>{{ publicatieDocument.bestandsnaam }}</dd>
         </dl>
 
-        <button @click="reset" class="button secondary icon-after trash">
-          Verwijder document
-        </button>
+        <button @click="reset" class="button secondary icon-after trash">Verwijder document</button>
       </template>
 
       <template v-else>
@@ -78,7 +76,12 @@ import type { PublicatieDocument } from "../types";
 import { mimeTypesMap, uploadDocument } from "../service";
 
 const { uuid } = defineProps<{ uuid?: string; loading: boolean }>();
-const emit = defineEmits<{ (e: "update:loading", payload: boolean): void }>();
+
+const emit = defineEmits<{
+  (e: "update:loading", payload: boolean): void;
+  (e: "update:error", payload: boolean): void;
+}>();
+
 defineExpose({ upload });
 
 const file = ref<File | null>();
@@ -104,37 +107,45 @@ const { data, isFetching, error, post, execute } = useFetchApi(
 
 watch(data, (value) => (publicatieDocument.value = value), { immediate: false });
 watch(isFetching, (value) => emit("update:loading", value));
+watch(error, (value) => emit("update:error", !!value));
 
 const onFileSelected = (event: Event) => {
   const target = event.target as HTMLInputElement;
 
-  // ErrorHandling
-  if (target.files === null || !publicatieDocument.value || !mimeTypesMap.value) return;
+  if (target.files === null) return;
 
   file.value = target.files[0];
 
-  publicatieDocument.value.bestandsnaam = file.value.name;
-  publicatieDocument.value.bestandsomvang = file.value.size;
-  publicatieDocument.value.bestandsformaat =
-    mimeTypesMap.value.get(file.value.type)?.identifier || "unknown";
-};
+  const bestandsformaat = mimeTypesMap.value?.get(file.value.type)?.identifier;
 
-async function upload(publicatie: string): Promise<void> {
-  if (error.value || !publicatieDocument.value) {
-    throw new Error();
-  } else if (publicatieDocument.value.uuid) {
+  if (!publicatieDocument.value || !bestandsformaat) {
+    toast.add({
+      text: "Het document is van een onbekend type, probeer het nogmaals...",
+      type: "error"
+    });
+
+    target.value = "";
     return;
   }
 
+  publicatieDocument.value.bestandsnaam = file.value.name;
+  publicatieDocument.value.bestandsomvang = file.value.size;
+  publicatieDocument.value.bestandsformaat = bestandsformaat;
+};
+
+async function upload(publicatie: string): Promise<void> {
+  if (!publicatieDocument.value || publicatieDocument.value.uuid) return;
+
   publicatieDocument.value.publicatie = publicatie;
 
+  // Metadata
   post(publicatieDocument);
 
   await execute();
 
   if (error.value) {
     toast.add({
-      text: "De meta data bij het document kon niet worden opgeslagen, probeer het nogmaals...",
+      text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
       type: "error"
     });
 
@@ -143,6 +154,7 @@ async function upload(publicatie: string): Promise<void> {
     throw new Error();
   }
 
+  // File
   if (file.value && publicatieDocument.value.bestandsdelen?.length) {
     emit("update:loading", true);
 
@@ -153,6 +165,8 @@ async function upload(publicatie: string): Promise<void> {
         text: "Het document kon niet worden geupload, probeer het nogmaals...",
         type: "error"
       });
+
+      reset();
 
       throw new Error();
     } finally {
@@ -171,16 +185,17 @@ button {
   display: flex;
   column-gap: var(--spacing-small);
 }
+
 dl {
   margin-block: 0;
-}
 
-dt {
-  font-weight: var(--font-bold);
-}
+  dt {
+    font-weight: var(--font-bold);
+  }
 
-dd {
-  margin-inline-start: 0;
-  margin-block-end: var(--spacing-default);
+  dd {
+    margin-inline-start: 0;
+    margin-block-end: var(--spacing-default);
+  }
 }
 </style>

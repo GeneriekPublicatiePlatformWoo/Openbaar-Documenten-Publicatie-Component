@@ -3,9 +3,19 @@
 
   <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
     <section>
-      <publicatie-form ref="publicatieFormRef" :uuid="uuid" v-model:loading="loadingPublicatie" />
+      <publicatie-form
+        ref="publicatieFormRef"
+        :uuid="uuid"
+        v-model:loading="loadingPublicatie"
+        v-model:error="publicatieError"
+      />
 
-      <document-form ref="documentFormRef" :uuid="uuid" v-model:loading="loadingDocument" />
+      <document-form
+        ref="documentFormRef"
+        :uuid="uuid"
+        v-model:loading="loadingDocument"
+        v-model:error="documentError"
+      />
     </section>
 
     <div class="form-submit">
@@ -13,7 +23,7 @@
         >Annuleren</router-link
       >
 
-      <button type="submit" title="Opslaan">Opslaan</button>
+      <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
     </div>
   </form>
 </template>
@@ -31,11 +41,14 @@ const router = useRouter();
 const { uuid } = defineProps<{ uuid?: string }>();
 
 const loading = computed(() => loadingPublicatie.value || loadingDocument.value);
+const error = computed(() => publicatieError.value || documentError.value);
 
 const loadingPublicatie = ref<boolean>(false);
+const publicatieError = ref<boolean>(false);
 const publicatieFormRef = ref<InstanceType<typeof PublicatieForm> | null>(null);
 
 const loadingDocument = ref<boolean>(false);
+const documentError = ref<boolean>(false);
 const documentFormRef = ref<InstanceType<typeof DocumentForm> | null>(null);
 
 const submit = async (): Promise<void> => {
@@ -50,6 +63,7 @@ const submit = async (): Promise<void> => {
   }
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });
+
   router.push({ name: "publicaties" });
 };
 </script>

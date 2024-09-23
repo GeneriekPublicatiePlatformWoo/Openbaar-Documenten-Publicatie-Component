@@ -21,7 +21,7 @@ export type PublicatieDocument = {
   omschrijving?: string;
   creatiedatum: string;
   bestandsnaam: string;
-  bestandsformaat?: string;
+  bestandsformaat: string;
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[];
 };

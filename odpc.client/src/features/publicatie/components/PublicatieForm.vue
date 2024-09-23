@@ -42,7 +42,12 @@ import toast from "@/stores/toast";
 import type { Publicatie } from "../types";
 
 const { uuid } = defineProps<{ uuid?: string; loading: boolean }>();
-const emit = defineEmits<{ (e: "update:loading", payload: boolean): void }>();
+
+const emit = defineEmits<{
+  (e: "update:loading", payload: boolean): void;
+  (e: "update:error", payload: boolean): void;
+}>();
+
 defineExpose({ submit });
 
 const publicatie = ref<Publicatie | null>({
@@ -59,10 +64,9 @@ const { data, isFetching, error, post, put, execute } = useFetchApi(
 
 watch(data, (value) => (publicatie.value = value), { immediate: false });
 watch(isFetching, (value) => emit("update:loading", value));
+watch(error, (value) => emit("update:error", !!value));
 
 async function submit(): Promise<string> {
-  if (error.value) throw new Error();
-
   uuid ? put(publicatie) : post(publicatie);
 
   await execute();
