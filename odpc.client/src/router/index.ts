@@ -40,7 +40,7 @@ const router = createRouter({
       }
     },
     {
-      path: "/beheer/publicaties/:id?",
+      path: "/beheer/publicaties/:uuid?",
       name: "publicatie",
       component: PublicatieView,
       props: true,

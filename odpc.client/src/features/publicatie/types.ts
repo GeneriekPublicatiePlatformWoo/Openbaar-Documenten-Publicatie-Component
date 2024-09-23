@@ -23,6 +23,13 @@ export type PublicatieDocument = {
   bestandsnaam: string;
   bestandsformaat?: string;
   bestandsomvang: number;
+  bestandsdelen?: Bestandsdeel[];
+};
+
+export type Bestandsdeel = {
+  url: string;
+  volgnummer: number;
+  omvang: number;
 };
 
 export type MimeTypes = {

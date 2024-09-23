@@ -1,79 +1,60 @@
 <template>
-  <simple-spinner v-show="isFetching"></simple-spinner>
+  <simple-spinner v-show="loading"></simple-spinner>
 
-  <form  v-show="!isFetching" aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error"
-      >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
-    >
+  <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
+    <section>
+      <publicatie-form ref="publicatieFormRef" :uuid="uuid" v-model:loading="loadingPublicatie" />
 
-    <section v-else-if="publicatie">
-      <publicatie-form v-model="publicatie" />
-
-      <file-upload-form ref="fileUpload" />
+      <document-form ref="documentFormRef" :uuid="uuid" v-model:loading="loadingDocument" />
     </section>
 
-    <div class="form-submit" :class="{ error }">
-      <router-link :to="{ name: 'publicaties' }" class="button button-secondary">{{
-        error ? "&lt; Terug" : "Annuleren"
-      }}</router-link>
+    <div class="form-submit">
+      <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
+        >Annuleren</router-link
+      >
 
-      <button v-if="publicatie && !error" type="submit" title="Opslaan">Opslaan</button>
+      <button type="submit" title="Opslaan">Opslaan</button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
-import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
-import FileUploadForm from "./components/FileUploadForm.vue";
-
-import type { Publicatie } from "./types";
+import DocumentForm from "./components/DocumentForm.vue";
 
 const router = useRouter();
-const props = defineProps<{ id?: string }>();
 
-const fileUpload = ref<{ submit: (publicatie: string) => Promise<string> }>();
+const { uuid } = defineProps<{ uuid?: string }>();
 
-const publicatie = ref<Publicatie | null>({
-  officieleTitel: "",
-  verkorteTitel: "",
-  omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0]
-});
+const loading = computed(() => loadingPublicatie.value || loadingDocument.value);
 
-const { data, isFetching, error, post, put, execute } = useFetchApi(
-  () => `/api-mock/v1/publicaties${props.id ? "/" + props.id : ""}`,
-  { immediate: false }
-).json<Publicatie>();
+const loadingPublicatie = ref<boolean>(false);
+const publicatieFormRef = ref<InstanceType<typeof PublicatieForm> | null>(null);
 
-watch(data, () => (publicatie.value = data.value), { immediate: false });
+const loadingDocument = ref<boolean>(false);
+const documentFormRef = ref<InstanceType<typeof DocumentForm> | null>(null);
 
 const submit = async (): Promise<void> => {
-  props.id ? put(publicatie) : post(publicatie);
+  console.log(publicatieFormRef.value);
+  
+  const responseUuid = await publicatieFormRef.value?.submit().catch(() => null);
 
-  await execute();
+  if (!responseUuid) return;
 
-  toast.add(
-    error.value
-      ? { text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...", type: "error" }
-      : { text: "De publicatie is succesvol opgeslagen." }
-  );
-
-  if (!error.value) {
-    // redirect
-    router.push({ name: "publicaties" });
-  } else {
-    // retry
-    error.value = null;
+  try {
+    await documentFormRef.value?.upload(responseUuid);
+  } catch {
+    return;
   }
-};
 
-onMounted(async () => props.id && (await execute()));
+  toast.add({ text: "De publicatie is succesvol opgeslagen." });
+
+  router.push({ name: "publicaties" });
+};
 </script>
 
 <style lang="scss" scoped>

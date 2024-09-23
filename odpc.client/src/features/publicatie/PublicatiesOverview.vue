@@ -10,7 +10,7 @@
   <ul v-else class="reset">
     <li v-for="{ uuid, officieleTitel, creatiedatum } in data" :key="uuid">
       <router-link
-        :to="{ name: 'publicatie', params: { id: uuid } }"
+        :to="{ name: 'publicatie', params: { uuid } }"
         :title="officieleTitel"
         class="card-link icon-after pen"
       >
