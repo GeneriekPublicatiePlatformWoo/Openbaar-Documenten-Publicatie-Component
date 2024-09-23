@@ -82,7 +82,7 @@ const emit = defineEmits<{
   (e: "update:error", payload: boolean): void;
 }>();
 
-defineExpose({ upload });
+defineExpose({ submit });
 
 const file = ref<File | null>();
 
@@ -99,6 +99,8 @@ const initialDocument = (): PublicatieDocument => ({
 });
 
 const publicatieDocument = ref<PublicatieDocument | null>(initialDocument());
+
+const reset = () => (publicatieDocument.value = initialDocument());
 
 const { data, isFetching, error, post, execute } = useFetchApi(
   () => `/api-mock/v1/documenten${uuid ? "/" + uuid : ""}`,
@@ -135,7 +137,7 @@ const onFileSelected = (event: Event) => {
   publicatieDocument.value.bestandsformaat = bestandsformaat;
 };
 
-async function upload(publicatie: string): Promise<void> {
+async function submit(publicatie: string): Promise<void> {
   if (!publicatieDocument.value || publicatieDocument.value.uuid) return;
 
   publicatieDocument.value.publicatie = publicatie;
@@ -157,11 +159,11 @@ async function upload(publicatie: string): Promise<void> {
   }
 
   // File
-  if (file.value && publicatieDocument.value.bestandsdelen?.length) {
+  if (file.value && data.value?.bestandsdelen?.length) {
     emit("update:loading", true);
 
     try {
-      await uploadDocument(file.value, publicatieDocument.value.bestandsdelen);
+      await uploadDocument(file.value, data.value.bestandsdelen);
     } catch {
       toast.add({
         text: "Het document kon niet worden geupload, probeer het nogmaals...",
@@ -176,8 +178,6 @@ async function upload(publicatie: string): Promise<void> {
     }
   }
 }
-
-const reset = () => (publicatieDocument.value = initialDocument());
 
 onMounted(async () => uuid && (await execute()));
 </script>

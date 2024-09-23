@@ -57,7 +57,7 @@ const submit = async (): Promise<void> => {
   if (!responseUuid) return;
 
   try {
-    await documentFormRef.value?.upload(responseUuid);
+    await documentFormRef.value?.submit(responseUuid);
   } catch {
     return;
   }
