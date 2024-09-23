@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ODPC.Data.Entities
+﻿namespace ODPC.Data.Entities
 {
     public class Gebruikersgroep
     {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ODPC.Authentication;
 using ODPC.Data;
+using ODPC.Features;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -24,6 +25,11 @@ try
     // Add services to the container.
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks();
+    builder.Services.AddScoped<CurrentRequestUri>(s =>
+    {
+        var request = s.GetRequiredService<IHttpContextAccessor>().HttpContext!.Request;
+        return new($"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}");
+    });
 
     string GetRequiredConfig(string key) => builder.Configuration[key] ?? throw new Exception($"Environment variable {key} is missing");
 
