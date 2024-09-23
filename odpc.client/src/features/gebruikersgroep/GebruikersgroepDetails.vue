@@ -74,7 +74,7 @@ const submit = async (): Promise<void> => {
 
   toast.add(
     gebruikersgroepError.value
-      ? { text: "De gegevens kon niet worden opgeslagen, probeer het nogmaals...", type: "error" }
+      ? { text: "De gegevens konden niet worden opgeslagen, probeer het nogmaals...", type: "error" }
       : { text: "De gegevens zijn succesvol opgeslagen." }
   );
 
