@@ -31,7 +31,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import type { Publicatie } from "./types";
 
-const { data, isFetching, error } = useFetchApi("/api-mock/v1/publicaties").json<Publicatie[]>();
+const { data, isFetching, error } = useFetchApi("/api/v1/publicaties").json<Publicatie[]>();
 </script>
 
 <style lang="scss" scoped>

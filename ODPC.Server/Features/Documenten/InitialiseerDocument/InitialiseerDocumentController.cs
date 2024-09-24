@@ -9,6 +9,8 @@ namespace ODPC.Features.Documenten.InitialiseerDocument
         public IActionResult Post(PublicatieDocument document)
         {
             document.Uuid = Guid.NewGuid();
+            document.Creatiedatum = DateOnly.FromDateTime(DateTime.Now);
+
             var halve = document.Bestandsomvang / 2;
             var firstSize = Math.Ceiling(halve);
             var secondSize = Math.Floor(halve);
@@ -18,13 +20,13 @@ namespace ODPC.Features.Documenten.InitialiseerDocument
                 new()
                 {
                     Omvang = firstSize,
-                    Url = $"/api/v1/{document.Uuid}/1",
+                    Url = $"/api/v1/documenten/{document.Uuid}/bestandsdelen/1",
                     Volgnummer = 0
                 },
                 new()
                 {
                     Omvang = secondSize,
-                    Url = $"/api/v1/{document.Uuid}/2",
+                    Url = $"/api/v1/documenten/{document.Uuid}/bestandsdelen/2",
                     Volgnummer = 1
                 }
             ];

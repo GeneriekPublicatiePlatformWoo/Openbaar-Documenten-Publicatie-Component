@@ -10,6 +10,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
         {
             var documenten = DocumentenMock.Documenten.Values
                 .Where(x=> x.Publicatie == publicatie)
+                .OrderBy(x=> x.Creatiedatum)
                 .ToList();
 
             return Ok(documenten);

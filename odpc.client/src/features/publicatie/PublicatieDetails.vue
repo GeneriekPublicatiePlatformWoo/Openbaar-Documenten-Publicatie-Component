@@ -56,7 +56,7 @@ const {
   post: postPublicatie,
   put: putPublicatie,
   execute: execPublicatie
-} = useFetchApi(() => `/api-mock/v1/publicaties${uuid ? "/" + uuid : ""}`, {
+} = useFetchApi(() => `/api/v1/publicaties${uuid ? "/" + uuid : ""}`, {
   immediate: false
 }).json<Publicatie>();
 
@@ -81,17 +81,22 @@ const publicatieDocument = ref<PublicatieDocument | null>(initialDocument());
 
 const resetDocument = () => (publicatieDocument.value = initialDocument());
 
+const { post: postDocument } = useFetchApi(() => "/api/v1/documenten", {
+  immediate: false
+});
+
 const {
   data: documentData,
   isFetching: loadingDocument,
   error: documentError,
-  post: postDocument,
   execute: execDocument
-} = useFetchApi(() => `/api-mock/v1/documenten${uuid ? "/" + uuid : ""}`, {
+} = useFetchApi(() => `/api/v1/documenten?publicatie=${uuid}`, {
   immediate: false
-}).json<PublicatieDocument>();
+}).json<PublicatieDocument[]>();
 
-watch(documentData, (value) => (publicatieDocument.value = value), { immediate: false });
+watch(documentData, (value) => (publicatieDocument.value = value?.at(-1) || null), {
+  immediate: false
+});
 
 // Submit
 const submitPublicatie = async (): Promise<void> => {
@@ -112,13 +117,11 @@ const submitPublicatie = async (): Promise<void> => {
 };
 
 const submitDocument = async (): Promise<void> => {
-  if (!publicatie.value?.uuid || !publicatieDocument.value || publicatieDocument.value.uuid)
-    return;
+  if (!publicatie.value?.uuid || !publicatieDocument.value || publicatieDocument.value.uuid) return;
 
   publicatieDocument.value.publicatie = publicatie.value?.uuid;
 
-  postDocument(publicatieDocument);
-
+  await postDocument(publicatieDocument).execute();
   await execDocument();
 
   if (documentError.value) {
@@ -134,11 +137,12 @@ const submitDocument = async (): Promise<void> => {
 };
 
 const uploadDocument = async (): Promise<void> => {
-  if (file.value && documentData.value?.bestandsdelen?.length) {
+  const lastDoc = documentData.value?.at(-1);
+  if (file.value && lastDoc?.bestandsdelen?.length) {
     uploading.value = true;
 
     try {
-      await uploadFile(file.value, documentData.value.bestandsdelen);
+      await uploadFile(file.value, lastDoc.bestandsdelen);
     } catch {
       toast.add({
         text: "Het document kon niet worden geupload, probeer het nogmaals...",

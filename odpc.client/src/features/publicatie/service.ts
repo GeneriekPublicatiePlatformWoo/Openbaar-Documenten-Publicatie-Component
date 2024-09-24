@@ -5,7 +5,7 @@ import type { Bestandsdeel, MimeTypes } from "./types";
 const mimeTypesMap = ref<Map<string, MimeTypes> | null>(null);
 
 (async () => {
-  const { data } = await useFetchApi(() => `/api-mock/v1/formats`).json<MimeTypes[]>();
+  const { data } = await useFetchApi(() => `/api/v1/formats`).json<MimeTypes[]>();
 
   mimeTypesMap.value = new Map(data.value?.map((type) => [type.mimeType, type]));
 })();
