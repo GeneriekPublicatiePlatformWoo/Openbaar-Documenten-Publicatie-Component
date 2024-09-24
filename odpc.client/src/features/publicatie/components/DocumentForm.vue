@@ -57,6 +57,7 @@
             title="Voeg bestand toe"
             required
             aria-required="true"
+            :accept="accept"
             @change="onFileSelected"
           />
         </div>
@@ -82,6 +83,8 @@ const model = computed({
   get: () => props.publicatieDocument,
   set: (value) => emit("update:publicatieDocument", value)
 });
+
+const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(','));
 
 const onFileSelected = (event: Event) => {
   const target = event.target as HTMLInputElement;
