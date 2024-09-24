@@ -31,14 +31,16 @@ import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import type { Publicatie, PublicatieDocument } from "./types";
 import { useFetchApi } from "@/api/use-fetch-api";
-import { uploadDocument } from "./service";
+import { uploadFile } from "./service";
 
 const router = useRouter();
 
 const { uuid } = defineProps<{ uuid?: string }>();
 
-const loading = computed(() => loadingPublicatie.value || loadingDocument.value);
+const loading = computed(() => loadingPublicatie.value || loadingDocument.value || uploading.value);
 const error = computed(() => publicatieError.value || documentError.value);
+
+const uploading = ref(false);
 
 // Publicatie
 const publicatie = ref<Publicatie | null>({
@@ -92,12 +94,13 @@ const {
 
 watch(documentData, (value) => (publicatieDocument.value = value), { immediate: false });
 
-const submit = async (): Promise<void> => {
+// Submit
+const submitPublicatie = async (): Promise<void> => {
   uuid ? putPublicatie(publicatie) : postPublicatie(publicatie);
 
   await executePublicatie();
 
-  if (publicatieError.value || !publicatieData.value?.uuid) {
+  if (publicatieError.value) {
     toast.add({
       text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...",
       type: "error"
@@ -105,19 +108,21 @@ const submit = async (): Promise<void> => {
 
     publicatieError.value = null;
 
-    return;
+    throw new Error();
   }
+};
 
-  if (!publicatie.value?.uuid || !publicatieDocument.value || publicatieDocument.value.uuid) return;
+const submitDocument = async (): Promise<void> => {
+  if (!publicatie.value?.uuid || !publicatieDocument.value || publicatieDocument.value.uuid)
+    return;
 
   publicatieDocument.value.publicatie = publicatie.value?.uuid;
 
-  // Metadata
   postDocument(publicatieDocument);
 
   await executeDocument();
 
-  if (error.value) {
+  if (documentError.value) {
     toast.add({
       text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
       type: "error"
@@ -125,15 +130,16 @@ const submit = async (): Promise<void> => {
 
     documentError.value = null;
 
-    return;
+    throw new Error();
   }
+};
 
-  // File
+const uploadDocument = async (): Promise<void> => {
   if (file.value && documentData.value?.bestandsdelen?.length) {
-    // start loading
+    uploading.value = true;
 
     try {
-      await uploadDocument(file.value, documentData.value.bestandsdelen);
+      await uploadFile(file.value, documentData.value.bestandsdelen);
     } catch {
       toast.add({
         text: "Het document kon niet worden geupload, probeer het nogmaals...",
@@ -142,10 +148,22 @@ const submit = async (): Promise<void> => {
 
       reset();
 
-      return;
+      throw new Error();
     } finally {
-      // stop loading
+      uploading.value = false;
     }
+  }
+};
+
+const submit = async (): Promise<void> => {
+  try {
+    await submitPublicatie();
+
+    await submitDocument();
+
+    await uploadDocument();
+  } catch {
+    return;
   }
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });

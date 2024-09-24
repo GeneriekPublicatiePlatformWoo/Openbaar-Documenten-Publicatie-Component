@@ -67,7 +67,6 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import toast from "@/stores/toast";
 import type { PublicatieDocument } from "../types";
 import { mimeTypesMap } from "../service";
 
@@ -94,11 +93,6 @@ const onFileSelected = (event: Event) => {
   const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
 
   if (!model.value || !bestandsformaat) {
-    toast.add({
-      text: "Het document is van een onbekend type, probeer het nogmaals...",
-      type: "error"
-    });
-
     target.value = "";
     return;
   }
