@@ -8,7 +8,7 @@
       <document-form
         v-model:publicatieDocument="publicatieDocument"
         v-model:file="file"
-        @reset="reset"
+        @reset="resetDocument"
       />
     </section>
 
@@ -37,10 +37,9 @@ const router = useRouter();
 
 const { uuid } = defineProps<{ uuid?: string }>();
 
+const uploading = ref(false);
 const loading = computed(() => loadingPublicatie.value || loadingDocument.value || uploading.value);
 const error = computed(() => publicatieError.value || documentError.value);
-
-const uploading = ref(false);
 
 // Publicatie
 const publicatie = ref<Publicatie | null>({
@@ -56,7 +55,7 @@ const {
   error: publicatieError,
   post: postPublicatie,
   put: putPublicatie,
-  execute: executePublicatie
+  execute: execPublicatie
 } = useFetchApi(() => `/api-mock/v1/publicaties${uuid ? "/" + uuid : ""}`, {
   immediate: false
 }).json<Publicatie>();
@@ -80,14 +79,14 @@ const initialDocument = (): PublicatieDocument => ({
 
 const publicatieDocument = ref<PublicatieDocument | null>(initialDocument());
 
-const reset = () => (publicatieDocument.value = initialDocument());
+const resetDocument = () => (publicatieDocument.value = initialDocument());
 
 const {
   data: documentData,
   isFetching: loadingDocument,
   error: documentError,
   post: postDocument,
-  execute: executeDocument
+  execute: execDocument
 } = useFetchApi(() => `/api-mock/v1/documenten${uuid ? "/" + uuid : ""}`, {
   immediate: false
 }).json<PublicatieDocument>();
@@ -98,7 +97,7 @@ watch(documentData, (value) => (publicatieDocument.value = value), { immediate: 
 const submitPublicatie = async (): Promise<void> => {
   uuid ? putPublicatie(publicatie) : postPublicatie(publicatie);
 
-  await executePublicatie();
+  await execPublicatie();
 
   if (publicatieError.value) {
     toast.add({
@@ -120,7 +119,7 @@ const submitDocument = async (): Promise<void> => {
 
   postDocument(publicatieDocument);
 
-  await executeDocument();
+  await execDocument();
 
   if (documentError.value) {
     toast.add({
@@ -146,7 +145,7 @@ const uploadDocument = async (): Promise<void> => {
         type: "error"
       });
 
-      reset();
+      resetDocument();
 
       throw new Error();
     } finally {
@@ -171,7 +170,7 @@ const submit = async (): Promise<void> => {
   router.push({ name: "publicaties" });
 };
 
-onMounted(async () => uuid && (await executePublicatie()) && (await executeDocument()));
+onMounted(async () => uuid && (await execPublicatie()) && (await execDocument()));
 </script>
 
 <style lang="scss" scoped>
