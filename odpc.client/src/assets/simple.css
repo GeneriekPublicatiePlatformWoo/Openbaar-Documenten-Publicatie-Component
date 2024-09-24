@@ -709,5 +709,6 @@ sub {
   border: 2px solid var(--border);
   border-radius: var(--standard-border-radius);
   padding: 1.5rem;
-  margin: 2rem 0;
+  margin-block-start: 0;
+  margin-block-end: 2rem;
 }

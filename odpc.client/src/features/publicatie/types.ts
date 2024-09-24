@@ -4,22 +4,6 @@ export const PUBLICATIESTATUS = {
   retracted: "Ingetrokken"
 } as const;
 
-// type OrganisatieReference = {
-//   name: string;
-//   identifier: string;
-// };
-
-// export type Doc = {
-//   uitgever: OrganisatieReference;
-//   verantwoordelijke: OrganisatieReference;
-//   titel: string;
-//   informatiecategorie: {
-//     name: string;
-//     identifier: string;
-//     origin: string;
-//   }
-// };
-
 export type Publicatie = {
   uuid?: string;
   officieleTitel: string;
@@ -29,14 +13,27 @@ export type Publicatie = {
   status?: keyof typeof PUBLICATIESTATUS;
 };
 
-// export type Publicatie = {
-//   uuid: string;
-//   name: string;
-//   status: keyof typeof PUBLICATIESTATUS;
-//   documenten: Doc[];
-//   createdOn: Date;
-//   creator: {
-//     displayName: string;
-//     identifier: string;
-//   }
-// };
+export type PublicatieDocument = {
+  uuid?: string;
+  publicatie: string;
+  officieleTitel: string;
+  verkorteTitel?: string;
+  omschrijving?: string;
+  creatiedatum: string;
+  bestandsnaam: string;
+  bestandsformaat: string;
+  bestandsomvang: number;
+  bestandsdelen?: Bestandsdeel[];
+};
+
+export type Bestandsdeel = {
+  url: string;
+  volgnummer: number;
+  omvang: number;
+};
+
+export type MimeTypes = {
+  identifier: string;
+  name: string;
+  mimeType: string;
+};

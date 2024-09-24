@@ -1,59 +1,51 @@
 <template>
-  <simple-spinner v-if="isFetching"></simple-spinner>
+  <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-else aria-live="polite" @submit.prevent="submit">
+  <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
     <alert-inline v-if="error"
-      >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
+      >Er is iets misgegaan bij het ophalen van de gegevens...</alert-inline
     >
+    <section v-else-if="publicatie && publicatieDocument">
+      <publicatie-form v-model="publicatie" />
 
-    <fieldset v-else-if="publicatie">
-      <div class="form-group">
-        <label for="titel">Titel</label>
+      <document-form
+        v-model:publicatieDocument="publicatieDocument"
+        v-model:file="file"
+        @reset="resetDocument"
+      />
+    </section>
 
-        <input
-          id="titel"
-          type="text"
-          v-model="publicatie.officieleTitel"
-          required
-          aria-required="true"
-        />
-      </div>
+    <div class="form-submit">
+      <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
+        >Annuleren</router-link
+      >
 
-      <div class="form-group">
-        <label for="verkorte_titel">Verkorte titel</label>
-
-        <input id="verkorte_titel" type="text" v-model="publicatie.verkorteTitel" class="small" />
-      </div>
-
-      <div class="form-group">
-        <label for="omschrijving">Omschrijving</label>
-
-        <textarea id="omschrijving" v-model="publicatie.omschrijving" rows="4"></textarea>
-      </div>
-    </fieldset>
-
-    <div class="form-submit" :class="{ error }">
-      <router-link :to="{ name: 'publicaties' }" class="button button-secondary">{{
-        error ? "&lt; Terug" : "Annuleren"
-      }}</router-link>
-
-      <button v-if="publicatie && !error" type="submit" title="Opslaan">Opslaan</button>
+      <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
-import type { Publicatie } from "./types";
+import PublicatieForm from "./components/PublicatieForm.vue";
+import DocumentForm from "./components/DocumentForm.vue";
+import type { Publicatie, PublicatieDocument } from "./types";
+import { useFetchApi } from "@/api/use-fetch-api";
+import { uploadFile } from "./service";
 
 const router = useRouter();
-const props = defineProps<{ id?: string }>();
 
+const { uuid } = defineProps<{ uuid?: string }>();
+
+const uploading = ref(false);
+const loading = computed(() => loadingPublicatie.value || loadingDocument.value || uploading.value);
+const error = computed(() => publicatieError.value || documentError.value);
+
+// Publicatie
 const publicatie = ref<Publicatie | null>({
   officieleTitel: "",
   verkorteTitel: "",
@@ -61,34 +53,138 @@ const publicatie = ref<Publicatie | null>({
   creatiedatum: new Date().toISOString().split("T")[0]
 });
 
-const { data, isFetching, error, post, put, execute } = useFetchApi(
-  () => `/api/v1/publicaties${props.id ? "/" + props.id : ""}`,
-  { immediate: false }
-).json<Publicatie>();
+const {
+  data: publicatieData,
+  isFetching: loadingPublicatie,
+  error: publicatieError,
+  post: postPublicatie,
+  put: putPublicatie,
+  execute: execPublicatie
+} = useFetchApi(() => `/api/v1/publicaties${uuid ? "/" + uuid : ""}`, {
+  immediate: false
+}).json<Publicatie>();
 
-watch(data, () => (publicatie.value = data.value), { immediate: false });
+watch(publicatieData, (value) => (publicatie.value = value), { immediate: false });
 
-const submit = async (): Promise<void> => {
-  props.id ? put(publicatie) : post(publicatie);
+// Document
+const file = ref<File | null>();
 
-  await execute();
+const initialDocument = (): PublicatieDocument => ({
+  publicatie: "",
+  officieleTitel: "",
+  verkorteTitel: "",
+  omschrijving: "",
+  creatiedatum: new Date().toISOString().split("T")[0],
+  bestandsnaam: "",
+  bestandsformaat: "",
+  bestandsomvang: 0,
+  bestandsdelen: []
+});
 
-  toast.add(
-    error.value
-      ? { text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...", type: "error" }
-      : { text: "De publicatie is succesvol opgeslagen." }
-  );
+const publicatieDocument = ref<PublicatieDocument | null>(initialDocument());
 
-  if (!error.value) {
-    // redirect
-    router.push({ name: "publicaties" });
-  } else {
-    // retry
-    error.value = null;
+const resetDocument = () => (publicatieDocument.value = initialDocument());
+
+const { post: postDocument } = useFetchApi(() => "/api/v1/documenten", {
+  immediate: false
+});
+
+const {
+  data: documentData,
+  isFetching: loadingDocument,
+  error: documentError,
+  execute: execDocument
+} = useFetchApi(() => `/api/v1/documenten?publicatie=${uuid}`, {
+  immediate: false
+}).json<PublicatieDocument[]>();
+
+watch(documentData, (value) => (publicatieDocument.value = value?.at(-1) || null), {
+  immediate: false
+});
+
+// Submit
+const submitPublicatie = async (): Promise<void> => {
+  uuid ? putPublicatie(publicatie) : postPublicatie(publicatie);
+
+  await execPublicatie();
+
+  if (publicatieError.value) {
+    toast.add({
+      text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...",
+      type: "error"
+    });
+
+    publicatieError.value = null;
+
+    throw new Error();
   }
 };
 
-onMounted(async () => props.id && (await execute()));
+const submitDocument = async (): Promise<void> => {
+  if (!publicatie.value?.uuid || !publicatieDocument.value || publicatieDocument.value.uuid) return;
+
+  publicatieDocument.value.publicatie = publicatie.value?.uuid;
+
+  await postDocument(publicatieDocument).execute();
+  await execDocument();
+
+  if (documentError.value) {
+    toast.add({
+      text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
+      type: "error"
+    });
+
+    documentError.value = null;
+
+    throw new Error();
+  }
+};
+
+const uploadDocument = async (): Promise<void> => {
+  const lastDoc = documentData.value?.at(-1);
+  if (file.value && lastDoc?.bestandsdelen?.length) {
+    uploading.value = true;
+
+    try {
+      await uploadFile(file.value, lastDoc.bestandsdelen);
+    } catch {
+      toast.add({
+        text: "Het document kon niet worden geupload, probeer het nogmaals...",
+        type: "error"
+      });
+
+      resetDocument();
+
+      throw new Error();
+    } finally {
+      uploading.value = false;
+    }
+  }
+};
+
+const submit = async (): Promise<void> => {
+  try {
+    await submitPublicatie();
+
+    await submitDocument();
+
+    await uploadDocument();
+  } catch {
+    return;
+  }
+
+  toast.add({ text: "De publicatie is succesvol opgeslagen." });
+
+  router.push({ name: "publicaties" });
+};
+
+onMounted(async () => uuid && (await execPublicatie()) && (await execDocument()));
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
+  grid-gap: var(--spacing-default);
+}
+</style>

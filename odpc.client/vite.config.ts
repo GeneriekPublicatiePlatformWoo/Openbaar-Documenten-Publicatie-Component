@@ -8,7 +8,7 @@ const proxyCalls = ["/api", "/signin-oidc", "/signout-callback-oidc", "/healthz"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), mockServer({ urlPrefixes: ["/api-mock/"] })],
+  plugins: [vue(), mockServer({ urlPrefixes: ["/api-mock"] })],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url))
