@@ -2,7 +2,10 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
-    <section v-if="publicatie && publicatieDocument">
+    <alert-inline v-if="error"
+      >Er is iets misgegaan bij het ophalen van de gegevens...</alert-inline
+    >
+    <section v-else-if="publicatie && publicatieDocument">
       <publicatie-form v-model="publicatie" />
 
       <document-form
@@ -26,6 +29,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
