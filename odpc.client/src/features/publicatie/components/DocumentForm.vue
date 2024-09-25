@@ -1,36 +1,39 @@
 <template>
-  <fieldset>
+  <fieldset v-if="model">
     <legend>Document</legend>
 
-    <section v-if="model">
-      <template v-if="model.uuid">
+    <ul class="reset" v-for="(doc, index) in model" :key="index">
+      <li v-if="doc.uuid">
         <dl>
           <dt>Titel</dt>
-          <dd>{{ model.officieleTitel }}</dd>
+          <dd>{{ doc.officieleTitel }}</dd>
 
           <dt>Verkorte titel</dt>
-          <dd>{{ model.verkorteTitel }}</dd>
+          <dd>{{ doc.verkorteTitel }}</dd>
 
           <dt>Omschrijving</dt>
-          <dd>{{ model.omschrijving || "-" }}</dd>
+          <dd>{{ doc.omschrijving || "-" }}</dd>
 
           <dt>Bestandsnaam</dt>
-          <dd>{{ model.bestandsnaam }}</dd>
+          <dd>{{ doc.bestandsnaam }}</dd>
         </dl>
 
-        <button @click="$emit('reset')" class="button secondary icon-after trash">
+        <button
+          @click.prevent="$emit('removeDocument', doc.uuid)"
+          class="button secondary icon-after trash"
+        >
           Verwijder document
         </button>
-      </template>
+      </li>
 
-      <template v-else>
+      <li v-else>
         <div class="form-group">
           <label for="titel">Titel</label>
 
           <input
             id="titel"
             type="text"
-            v-model="model.officieleTitel"
+            v-model="doc.officieleTitel"
             required
             aria-required="true"
           />
@@ -39,13 +42,13 @@
         <div class="form-group">
           <label for="verkorte_titel">Verkorte titel</label>
 
-          <input id="verkorte_titel" type="text" v-model="model.verkorteTitel" />
+          <input id="verkorte_titel" type="text" v-model="doc.verkorteTitel" />
         </div>
 
         <div class="form-group">
           <label for="omschrijving">Omschrijving</label>
 
-          <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
+          <textarea id="omschrijving" v-model="doc.omschrijving" rows="4"></textarea>
         </div>
 
         <div class="form-group">
@@ -61,8 +64,8 @@
             @change="onFileSelected"
           />
         </div>
-      </template>
-    </section>
+      </li>
+    </ul>
   </fieldset>
 </template>
 
@@ -71,20 +74,20 @@ import { computed } from "vue";
 import type { PublicatieDocument } from "../types";
 import { mimeTypesMap } from "../service";
 
-const props = defineProps<{ publicatieDocument: PublicatieDocument }>();
+const props = defineProps<{ documenten: PublicatieDocument[] }>();
 
 const emit = defineEmits<{
-  (e: "update:publicatieDocument", payload: PublicatieDocument): void;
-  (e: "update:file", payload: File): void;
-  (e: "reset"): void;
+  (e: "update:documenten", payload: PublicatieDocument[]): void;
+  (e: "update:files", payload: File[]): void;
+  (e: "removeDocument", payload: string): void;
 }>();
 
 const model = computed({
-  get: () => props.publicatieDocument,
-  set: (value) => emit("update:publicatieDocument", value)
+  get: () => props.documenten,
+  set: (value) => emit("update:documenten", value)
 });
 
-const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(','));
+const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(","));
 
 const onFileSelected = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -100,11 +103,11 @@ const onFileSelected = (event: Event) => {
     return;
   }
 
-  model.value.bestandsnaam = file.name;
-  model.value.bestandsomvang = file.size;
-  model.value.bestandsformaat = bestandsformaat;
+  model.value[0].bestandsnaam = file.name;
+  model.value[0].bestandsomvang = file.size;
+  model.value[0].bestandsformaat = bestandsformaat;
 
-  emit("update:file", file);
+  emit("update:files", [file]);
 };
 </script>
 

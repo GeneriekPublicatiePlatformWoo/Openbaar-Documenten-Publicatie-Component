@@ -2,16 +2,22 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error"
-      >Er is iets misgegaan bij het ophalen van de gegevens...</alert-inline
-    >
-    <section v-else-if="publicatie && publicatieDocument">
-      <publicatie-form v-model="publicatie" />
+    <section>
+      <alert-inline v-if="publicatieError"
+        >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
+      >
+
+      <publicatie-form v-else v-model="publicatie" />
+
+      <alert-inline v-if="documentenError"
+        >Er is iets misgegaan bij het ophalen van de documenten...</alert-inline
+      >
 
       <document-form
-        v-model:publicatieDocument="publicatieDocument"
-        v-model:file="file"
-        @reset="resetDocument"
+        v-else
+        v-model:documenten="documenten"
+        v-model:files="files"
+        @removeDocument="removeDocument"
       />
     </section>
 
@@ -42,11 +48,16 @@ const router = useRouter();
 const { uuid } = defineProps<{ uuid?: string }>();
 
 const uploading = ref(false);
-const loading = computed(() => loadingPublicatie.value || loadingDocument.value || uploading.value);
-const error = computed(() => publicatieError.value || documentError.value);
+
+const loading = computed(
+  () =>
+    loadingPublicatie.value || loadingDocumenten.value || loadingDocument.value || uploading.value
+);
+
+const error = computed(() => publicatieError.value || documentenError.value);
 
 // Publicatie
-const publicatie = ref<Publicatie | null>({
+const publicatie = ref<Publicatie>({
   officieleTitel: "",
   verkorteTitel: "",
   omschrijving: "",
@@ -54,59 +65,69 @@ const publicatie = ref<Publicatie | null>({
 });
 
 const {
-  data: publicatieData,
-  isFetching: loadingPublicatie,
-  error: publicatieError,
+  get: getPublicatie,
   post: postPublicatie,
   put: putPublicatie,
-  execute: execPublicatie
+  data: publicatieData,
+  isFetching: loadingPublicatie,
+  error: publicatieError
 } = useFetchApi(() => `/api/v1/publicaties${uuid ? "/" + uuid : ""}`, {
   immediate: false
 }).json<Publicatie>();
 
-watch(publicatieData, (value) => (publicatie.value = value), { immediate: false });
-
-// Document
-const file = ref<File | null>();
-
-const initialDocument = (): PublicatieDocument => ({
-  publicatie: "",
-  officieleTitel: "",
-  verkorteTitel: "",
-  omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0],
-  bestandsnaam: "",
-  bestandsformaat: "",
-  bestandsomvang: 0,
-  bestandsdelen: []
+watch(publicatieData, (value) => (publicatie.value = value || publicatie.value), {
+  immediate: false
 });
 
-const publicatieDocument = ref<PublicatieDocument | null>(initialDocument());
+// Documenten
+const files = ref<File[]>([]);
 
-const resetDocument = () => (publicatieDocument.value = initialDocument());
+const initialDocuments = (): PublicatieDocument[] => [
+  {
+    publicatie: "",
+    officieleTitel: "",
+    verkorteTitel: "",
+    omschrijving: "",
+    creatiedatum: new Date().toISOString().split("T")[0],
+    bestandsnaam: "",
+    bestandsformaat: "",
+    bestandsomvang: 0,
+    bestandsdelen: []
+  }
+];
 
-const { post: postDocument } = useFetchApi(() => "/api/v1/documenten", {
+const documenten = ref<PublicatieDocument[]>(initialDocuments());
+
+const {
+  get: getDocumenten,
+  data: documentenData,
+  isFetching: loadingDocumenten,
+  error: documentenError
+} = useFetchApi(() => `/api/v1/documenten/?publicatie=${uuid || publicatie.value?.uuid}`, {
+  immediate: false
+}).json<PublicatieDocument[]>();
+
+watch(documentenData, (value) => (documenten.value = value || documenten.value), {
   immediate: false
 });
 
 const {
+  post: postDocument,
+  // delete: deleteDocument,
   data: documentData,
   isFetching: loadingDocument,
-  error: documentError,
-  execute: execDocument
-} = useFetchApi(() => `/api/v1/documenten?publicatie=${uuid}`, {
+  error: documentError
+} = useFetchApi(() => `/api/v1/documenten`, {
   immediate: false
-}).json<PublicatieDocument[]>();
+}).json<PublicatieDocument>();
 
-watch(documentData, (value) => (publicatieDocument.value = value?.at(-1) || null), {
-  immediate: false
-});
+// deleteDocument
+const removeDocument = (uuid: string) =>
+  (documenten.value = documenten.value?.filter((doc) => doc.uuid !== uuid));
 
 // Submit
 const submitPublicatie = async (): Promise<void> => {
-  uuid ? putPublicatie(publicatie) : postPublicatie(publicatie);
-
-  await execPublicatie();
+  uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();
 
   if (publicatieError.value) {
     toast.add({
@@ -121,12 +142,11 @@ const submitPublicatie = async (): Promise<void> => {
 };
 
 const submitDocument = async (): Promise<void> => {
-  if (!publicatie.value?.uuid || !publicatieDocument.value || publicatieDocument.value.uuid) return;
+  if (!publicatie.value?.uuid || !documenten.value || documenten.value[0].uuid) return;
 
-  publicatieDocument.value.publicatie = publicatie.value?.uuid;
+  documenten.value[0].publicatie = publicatie.value?.uuid;
 
-  await postDocument(publicatieDocument).execute();
-  await execDocument();
+  await postDocument(documenten.value[0]).execute();
 
   if (documentError.value) {
     toast.add({
@@ -134,26 +154,23 @@ const submitDocument = async (): Promise<void> => {
       type: "error"
     });
 
-    documentError.value = null;
-
     throw new Error();
   }
 };
 
 const uploadDocument = async (): Promise<void> => {
-  const lastDoc = documentData.value?.at(-1);
-  if (file.value && lastDoc?.bestandsdelen?.length) {
+  if (files.value && documentData.value?.uuid && documentData.value?.bestandsdelen?.length) {
     uploading.value = true;
 
     try {
-      await uploadFile(file.value, lastDoc.bestandsdelen);
+      await uploadFile(files.value[0], documentData.value.bestandsdelen);
     } catch {
       toast.add({
         text: "Het document kon niet worden geupload, probeer het nogmaals...",
         type: "error"
       });
 
-      resetDocument();
+      removeDocument(documentData.value.uuid);
 
       throw new Error();
     } finally {
@@ -178,7 +195,10 @@ const submit = async (): Promise<void> => {
   router.push({ name: "publicaties" });
 };
 
-onMounted(async () => uuid && (await execPublicatie()) && (await execDocument()));
+onMounted(
+  async () =>
+    uuid && (await Promise.allSettled([getPublicatie().execute(), getDocumenten().execute()]))
+);
 </script>
 
 <style lang="scss" scoped>
