@@ -4,7 +4,7 @@
   <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
   <ul v-else class="reset">
-    <li v-for="{ id, name } in data" :key="id">
+    <li v-for="{ uuid: id, naam: name } in data" :key="id">
       <router-link
         :to="{ name: 'gebruikersgroep', params: { id } }"
         :title="name"

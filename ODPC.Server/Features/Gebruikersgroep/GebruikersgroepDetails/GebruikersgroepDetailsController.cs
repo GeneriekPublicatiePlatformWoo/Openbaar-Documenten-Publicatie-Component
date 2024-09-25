@@ -10,20 +10,21 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
     {
         private readonly OdpcDbContext _context = context;
 
-        [HttpGet("api/gebruikersgroepen/{Id}")]
-        public async Task<IActionResult> Get(Guid id, CancellationToken token)
+        [HttpGet("api/gebruikersgroepen/{uuid:guid}")]
+        public async Task<IActionResult> Get(Guid uuid, CancellationToken token)
         {
-            var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Id == id, cancellationToken: token);
+            var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
 
             if (groep == null) return NotFound();
 
             var result = new GebruikersgroepDetailsModel
             {
-                Id = groep.Id,
-                Name = groep.Name,
+                Uuid = groep.Uuid,
+                Naam = groep.Naam,
+                Omschrijving = groep.Omschrijving,
                 GekoppeldeWaardelijsten = await _context
                     .GebruikersgroepWaardelijsten
-                    .Where(x => x.GebruikersgroepId == id)
+                    .Where(x => x.GebruikersgroepUuid == uuid)
                     .Select(x => x.WaardelijstId)
                     .ToListAsync(cancellationToken: token)
             };

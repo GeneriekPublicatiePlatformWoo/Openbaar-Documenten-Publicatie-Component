@@ -1,10 +1,12 @@
 <template>
-  <h2>{{ gebruikersgroep?.name }}</h2>
+  <h2>{{ gebruikersgroep?.naam }}</h2>
 
   <simple-spinner v-if="loading"></simple-spinner>
 
   <form v-else aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error">Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline>
+    <alert-inline v-if="error"
+      >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
+    >
 
     <section v-else-if="gebruikersgroep">
       <CheckboxList
@@ -63,6 +65,7 @@ watchEffect(() => {
 
 const submit = async (): Promise<void> => {
   const formData = {
+    naam: gebruikersgroep.value?.naam,
     gekoppeldeWaardelijsten: waardelijstenModel.value?.filter((id) =>
       waardelijstIds.value.includes(id)
     )
@@ -74,7 +77,10 @@ const submit = async (): Promise<void> => {
 
   toast.add(
     gebruikersgroepError.value
-      ? { text: "De gegevens konden niet worden opgeslagen, probeer het nogmaals...", type: "error" }
+      ? {
+          text: "De gegevens konden niet worden opgeslagen, probeer het nogmaals...",
+          type: "error"
+        }
       : { text: "De gegevens zijn succesvol opgeslagen." }
   );
 

@@ -1,0 +1,106 @@
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using ODPC.Data.Entities;
+using ODPC.Features.Gebruikersgroep;
+using ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken;
+
+namespace ODPC.Test
+{
+    [TestClass]
+    public class GebruikersgroepBijwerkenTest
+    {
+        [TestMethod]
+        public async Task Put_test()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+            var groep = RandomGroep();
+            var waardelijst = RandomWaardelijst(groep);
+            await context.AddRangeAsync(waardelijst, groep);
+            await context.SaveChangesAsync();
+
+            var controller = new GebruikersgroepBijwerkenController(context);
+            var upsertModel = RandomUpsertModel();
+            var result = await controller.Put(groep.Uuid, upsertModel, default);
+
+            if (result is not OkObjectResult objectResult || objectResult.Value is not GebruikersgroepDetailsModel detailsModel)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(groep.Uuid, detailsModel.Uuid);
+            Assert.AreEqual(upsertModel.Omschrijving, detailsModel.Omschrijving);
+            Assert.AreEqual(upsertModel.Naam, detailsModel.Naam);
+            Assert.AreEqual(upsertModel.GekoppeldeWaardelijsten.Count, detailsModel.GekoppeldeWaardelijsten.Count());
+
+            foreach (var item in upsertModel.GekoppeldeWaardelijsten)
+            {
+                Assert.IsTrue(detailsModel.GekoppeldeWaardelijsten.Contains(item));
+            }
+        }
+
+        [TestMethod]
+        public async Task Post_test()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+
+            var controller = new GebruikersgroepBijwerkenController(context);
+            var upsertModel = RandomUpsertModel();
+            var result = await controller.Post(upsertModel, default);
+
+            if (result is not OkObjectResult objectResult || objectResult.Value is not GebruikersgroepDetailsModel detailsModel)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(upsertModel.Omschrijving, detailsModel.Omschrijving);
+            Assert.AreEqual(upsertModel.Naam, detailsModel.Naam);
+            Assert.AreEqual(upsertModel.GekoppeldeWaardelijsten.Count, detailsModel.GekoppeldeWaardelijsten.Count());
+
+            foreach (var item in upsertModel.GekoppeldeWaardelijsten)
+            {
+                Assert.IsTrue(detailsModel.GekoppeldeWaardelijsten.Contains(item));
+            }
+        }
+
+        [TestMethod]
+        public async Task Put_retourneert_404_bij_onbekende_uuid()
+        {
+            using var context = InMemoryDatabase.GetDbContext();
+
+            var controller = new GebruikersgroepBijwerkenController(context);
+            var upsertModel = RandomUpsertModel();
+            var result = await controller.Put(Guid.NewGuid(), upsertModel, default);
+
+            if (result is not IStatusCodeActionResult statusCodeResult)
+            {
+                Assert.Fail();
+                return;
+            }
+
+            Assert.AreEqual(404, statusCodeResult.StatusCode);
+        }
+
+        private static GebruikersgroepUpsertModel RandomUpsertModel() => new()
+        {
+            Omschrijving = Guid.NewGuid().ToString(),
+            Naam = Guid.NewGuid().ToString(),
+            GekoppeldeWaardelijsten = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()]
+        };
+
+        private static GebruikersgroepWaardelijst RandomWaardelijst(Gebruikersgroep groep) => new()
+        {
+            GebruikersgroepUuid = groep.Uuid,
+            WaardelijstId = Guid.NewGuid().ToString()
+        };
+
+        private static Gebruikersgroep RandomGroep() => new()
+        {
+            Naam = Guid.NewGuid().ToString(),
+            Uuid = Guid.NewGuid(),
+            Omschrijving = Guid.NewGuid().ToString()
+        };
+    }
+}

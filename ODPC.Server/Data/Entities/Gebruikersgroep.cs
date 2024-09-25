@@ -4,8 +4,8 @@ namespace ODPC.Data.Entities
 {
     public class Gebruikersgroep
     {
-        public Guid Id { get; set; }
-        public required string Name { get; set; }
-
+        public Guid Uuid { get; set; }
+        public required string Naam { get; set; }
+        public string? Omschrijving { get; set; }
     }
 }
