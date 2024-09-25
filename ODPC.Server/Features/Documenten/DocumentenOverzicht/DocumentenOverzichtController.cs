@@ -9,7 +9,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
         public IActionResult Get([FromQuery] Guid publicatie)
         {
             var documenten = DocumentenMock.Documenten.Values
-                .Where(x=> x.Publicatie == publicatie)
+                .Where(x=> x.Publicatie == publicatie && x.Status == "gepubliceerd")
                 .OrderBy(x=> x.Creatiedatum)
                 .ToList();
 

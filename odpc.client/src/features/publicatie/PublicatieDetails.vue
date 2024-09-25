@@ -18,7 +18,14 @@
         v-model:documenten="documenten"
         v-model:files="files"
         @removeDocument="removeDocument"
-      />
+      >
+      <button
+          @click.prevent="addDocument"
+          class="button secondary icon-after plus"
+        >
+          Document toevoegen
+        </button>
+    </document-form>
     </section>
 
     <div class="form-submit">
@@ -82,21 +89,20 @@ watch(publicatieData, (value) => (publicatie.value = value || publicatie.value),
 // Documenten
 const files = ref<File[]>([]);
 
-const initialDocuments = (): PublicatieDocument[] => [
-  {
-    publicatie: "",
-    officieleTitel: "",
-    verkorteTitel: "",
-    omschrijving: "",
-    creatiedatum: new Date().toISOString().split("T")[0],
-    bestandsnaam: "",
-    bestandsformaat: "",
-    bestandsomvang: 0,
-    bestandsdelen: []
-  }
-];
+const getInitialDocument = (): PublicatieDocument => ({
+  publicatie: "",
+  officieleTitel: "",
+  verkorteTitel: "",
+  omschrijving: "",
+  creatiedatum: new Date().toISOString().split("T")[0],
+  bestandsnaam: "",
+  bestandsformaat: "",
+  bestandsomvang: 0,
+  bestandsdelen: [],
+  status: "gepubliceerd"
+});
 
-const documenten = ref<PublicatieDocument[]>(initialDocuments());
+const documenten = ref<PublicatieDocument[]>([getInitialDocument()]);
 
 const {
   get: getDocumenten,
@@ -107,23 +113,45 @@ const {
   immediate: false
 }).json<PublicatieDocument[]>();
 
-watch(documentenData, (value) => (documenten.value = value || documenten.value), {
-  immediate: false
-});
+watch(
+  documentenData,
+  (value) => {
+    documenten.value = value || documenten.value;
+    !documenten.value.length && addDocument();
+  },
+  {
+    immediate: false
+  }
+);
+
+// TODO...
+
+const docSubmitUrl = ref(`/api/v1/documenten`);
 
 const {
   post: postDocument,
-  // delete: deleteDocument,
+  put: putDocument,
   data: documentData,
   isFetching: loadingDocument,
   error: documentError
-} = useFetchApi(() => `/api/v1/documenten`, {
+} = useFetchApi(() => docSubmitUrl.value, {
   immediate: false
 }).json<PublicatieDocument>();
 
-// deleteDocument
-const removeDocument = (uuid: string) =>
-  (documenten.value = documenten.value?.filter((doc) => doc.uuid !== uuid));
+const addDocument = (): void => {
+  documenten.value.push(getInitialDocument());
+};
+
+const removeDocument = async (uuid: string) => {
+  const doc = documenten.value.find((doc) => doc.uuid === uuid);
+
+  docSubmitUrl.value = `/api/v1/documenten/${uuid}`;
+
+  // Loading / Error ...
+  await putDocument({ ...doc, status: "ingetrokken" }).execute();
+
+  await getDocumenten().execute();
+};
 
 // Submit
 const submitPublicatie = async (): Promise<void> => {
@@ -145,6 +173,8 @@ const submitDocument = async (): Promise<void> => {
   if (!publicatie.value?.uuid || !documenten.value || documenten.value[0].uuid) return;
 
   documenten.value[0].publicatie = publicatie.value?.uuid;
+
+  docSubmitUrl.value = "/api/v1/documenten";
 
   await postDocument(documenten.value[0]).execute();
 
@@ -206,5 +236,10 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   grid-gap: var(--spacing-default);
+}
+
+button {
+  display: flex;
+  column-gap: var(--spacing-small);
 }
 </style>

@@ -66,6 +66,8 @@
         </div>
       </li>
     </ul>
+
+    <slot></slot>
   </fieldset>
 </template>
 
