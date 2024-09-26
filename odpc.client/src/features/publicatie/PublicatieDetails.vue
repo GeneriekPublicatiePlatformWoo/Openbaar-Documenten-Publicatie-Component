@@ -19,13 +19,10 @@
         v-model:files="files"
         @removeDocument="removeDocument"
       >
-      <button
-          @click.prevent="addDocument"
-          class="button secondary icon-after plus"
-        >
+        <button @click.prevent="addDocument" class="button secondary icon-after plus">
           Document toevoegen
         </button>
-    </document-form>
+      </document-form>
     </section>
 
     <div class="form-submit">
@@ -46,9 +43,9 @@ import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
-import type { Publicatie, PublicatieDocument } from "./types";
 import { useFetchApi } from "@/api/use-fetch-api";
-import { uploadFile } from "./service";
+import { useDocumenten } from "./use-documenten";
+import type { Publicatie } from "./types";
 
 const router = useRouter();
 
@@ -87,71 +84,17 @@ watch(publicatieData, (value) => (publicatie.value = value || publicatie.value),
 });
 
 // Documenten
-const files = ref<File[]>([]);
-
-const getInitialDocument = (): PublicatieDocument => ({
-  publicatie: "",
-  officieleTitel: "",
-  verkorteTitel: "",
-  omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0],
-  bestandsnaam: "",
-  bestandsformaat: "",
-  bestandsomvang: 0,
-  bestandsdelen: [],
-  status: "gepubliceerd"
-});
-
-const documenten = ref<PublicatieDocument[]>([getInitialDocument()]);
-
 const {
-  get: getDocumenten,
-  data: documentenData,
-  isFetching: loadingDocumenten,
-  error: documentenError
-} = useFetchApi(() => `/api/v1/documenten/?publicatie=${uuid || publicatie.value?.uuid}`, {
-  immediate: false
-}).json<PublicatieDocument[]>();
-
-watch(
-  documentenData,
-  (value) => {
-    documenten.value = value || documenten.value;
-    !documenten.value.length && addDocument();
-  },
-  {
-    immediate: false
-  }
-);
-
-// TODO...
-
-const docSubmitUrl = ref(`/api/v1/documenten`);
-
-const {
-  post: postDocument,
-  put: putDocument,
-  data: documentData,
-  isFetching: loadingDocument,
-  error: documentError
-} = useFetchApi(() => docSubmitUrl.value, {
-  immediate: false
-}).json<PublicatieDocument>();
-
-const addDocument = (): void => {
-  documenten.value.push(getInitialDocument());
-};
-
-const removeDocument = async (uuid: string) => {
-  const doc = documenten.value.find((doc) => doc.uuid === uuid);
-
-  docSubmitUrl.value = `/api/v1/documenten/${uuid}`;
-
-  // Loading / Error ...
-  await putDocument({ ...doc, status: "ingetrokken" }).execute();
-
-  await getDocumenten().execute();
-};
+  files,
+  documenten,
+  documentenError,
+  loadingDocumenten,
+  loadingDocument,
+  submitDocument,
+  uploadDocument,
+  addDocument,
+  removeDocument
+} = useDocumenten(uuid || publicatie.value?.uuid);
 
 // Submit
 const submitPublicatie = async (): Promise<void> => {
@@ -166,46 +109,6 @@ const submitPublicatie = async (): Promise<void> => {
     publicatieError.value = null;
 
     throw new Error();
-  }
-};
-
-const submitDocument = async (): Promise<void> => {
-  if (!publicatie.value?.uuid || !documenten.value || documenten.value[0].uuid) return;
-
-  documenten.value[0].publicatie = publicatie.value?.uuid;
-
-  docSubmitUrl.value = "/api/v1/documenten";
-
-  await postDocument(documenten.value[0]).execute();
-
-  if (documentError.value) {
-    toast.add({
-      text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
-      type: "error"
-    });
-
-    throw new Error();
-  }
-};
-
-const uploadDocument = async (): Promise<void> => {
-  if (files.value && documentData.value?.uuid && documentData.value?.bestandsdelen?.length) {
-    uploading.value = true;
-
-    try {
-      await uploadFile(files.value[0], documentData.value.bestandsdelen);
-    } catch {
-      toast.add({
-        text: "Het document kon niet worden geupload, probeer het nogmaals...",
-        type: "error"
-      });
-
-      removeDocument(documentData.value.uuid);
-
-      throw new Error();
-    } finally {
-      uploading.value = false;
-    }
   }
 };
 
@@ -225,10 +128,7 @@ const submit = async (): Promise<void> => {
   router.push({ name: "publicaties" });
 };
 
-onMounted(
-  async () =>
-    uuid && (await Promise.allSettled([getPublicatie().execute(), getDocumenten().execute()]))
-);
+onMounted(async () => uuid && (await getPublicatie().execute()));
 </script>
 
 <style lang="scss" scoped>
