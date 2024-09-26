@@ -1,9 +1,9 @@
 import Provider from "oidc-provider";
 
-console.log(process.env)
-
 const host = process.env.HOST || "localhost";
 const port = process.env.PORT || 3000;
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
 
 const redirect_uris = Object.entries(process.env)
   .filter(([key]) => key.startsWith("CLIENT_REDIRECT_URI"))
@@ -11,16 +11,20 @@ const redirect_uris = Object.entries(process.env)
 const post_logout_redirect_uris = Object.entries(process.env)
   .filter(([key]) => key.startsWith("CLIENT_LOGOUT_REDIRECT_URI"))
   .map(([, value]) => value);
-const client_id = process.env.CLIENT_ID;
-const client_secret = process.env.CLIENT_SECRET;
-
-console.log(redirect_uris, post_logout_redirect_uris, client_id, client_secret)
 
 const oidc = new Provider(`http://${host}:${port}`, {
   features: {
     devInteractions: { enabled: true },
     registration: { enabled: false },
     revocation: { enabled: true },
+  },
+  async findAccount(ctx, id) {
+    return {
+      accountId: id,
+      async claims(use, scope) {
+        return { sub: id, roles: ["test"], name: id, preferred_username: id };
+      },
+    };
   },
   format: {
     default: "jwt",
