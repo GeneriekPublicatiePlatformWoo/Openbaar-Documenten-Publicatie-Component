@@ -26,7 +26,12 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
                     .GebruikersgroepWaardelijsten
                     .Where(x => x.GebruikersgroepUuid == uuid)
                     .Select(x => x.WaardelijstId)
-                    .ToListAsync(cancellationToken: token)
+                    .ToListAsync(cancellationToken: token),
+                GekoppeldeGebruikers = await _context
+                    .GebruikersgroepGebruikers
+                    .Where(x => x.GebruikersgroepUuid == uuid)
+                    .Select(x => x.GebruikerId)
+                    .ToListAsync(cancellationToken: token),
             };
 
             return Ok(result);

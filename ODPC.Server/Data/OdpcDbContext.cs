@@ -11,6 +11,7 @@ namespace ODPC.Data
 
         public DbSet<Gebruikersgroep> Gebruikersgroepen { get; set; }
         public DbSet<GebruikersgroepWaardelijst> GebruikersgroepWaardelijsten { get; set; }
+        public DbSet<GebruikersgroepGebruiker> GebruikersgroepGebruikers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,6 +20,8 @@ namespace ODPC.Data
 
             modelBuilder.Entity<Gebruikersgroep>().HasKey(t => new { t.Uuid });
             modelBuilder.Entity<GebruikersgroepWaardelijst>().HasKey(t => new { t.GebruikersgroepUuid, t.WaardelijstId });
+
+            modelBuilder.Entity<GebruikersgroepGebruiker>().HasKey(t => new { t.GebruikerId, t.GebruikersgroepUuid });
 
             // Seed data, 
             // todo verwijderen zodra groepen via de applicatie aangemaakt kunnen worden

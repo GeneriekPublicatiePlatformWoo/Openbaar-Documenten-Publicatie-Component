@@ -8,5 +8,7 @@
 
         //Id's van de waardelijsten die gebruikt mogen worden binnen deze gebruikersgroep
         public required IEnumerable<string> GekoppeldeWaardelijsten { get; set; }
+
+        public required IEnumerable<string> GekoppeldeGebruikers { get; set; }
     }
 }
