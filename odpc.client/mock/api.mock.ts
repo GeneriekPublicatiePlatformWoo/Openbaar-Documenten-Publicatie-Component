@@ -8,8 +8,8 @@ import mimeTypesJson from "./mime-types.json";
 
 const getIndex = (url: string | undefined) => +(url?.substring(url.lastIndexOf("/") + 1) || 0); // ...
 
-const publicaties: Publicatie[] = publicatiesJson;
-const documenten: PublicatieDocument[] = documentenJson;
+const publicaties = publicatiesJson as Publicatie[];
+const documenten = documentenJson as PublicatieDocument[];
 const mimeTypes: MimeTypes[] = mimeTypesJson;
 
 const mocks: MockHandler[] = [
