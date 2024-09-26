@@ -5,9 +5,21 @@ import { uploadFile } from "./service";
 import type { PublicatieDocument } from "./types";
 
 export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
-  const files = ref<File[]>([]);
+  const files = ref<FileList>();
 
-  const uploadingDocument = ref(false);
+  // TODO...
+  watch(files, () => {
+    Array.from(files.value || []).forEach((file) => {
+      const doc = getInitialDocument();
+
+      // const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
+
+      doc.bestandsnaam = file.name;
+      doc.bestandsomvang = file.size;
+
+      documenten.value.push(doc);
+    });
+  });
 
   const getInitialDocument = (): PublicatieDocument => ({
     publicatie: "",
@@ -33,19 +45,12 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     immediate: false
   }).json<PublicatieDocument[]>();
 
-  watch(
-    documentenData,
-    (value) => {
-      documenten.value = value || documenten.value;
-      !documenten.value.length && addDocument();
-    },
-    {
-      immediate: false
-    }
-  );
+  watch(documentenData, (value) => (documenten.value = value || documenten.value), {
+    immediate: false
+  });
 
   // TODO...
-
+  const uploadingFiles = ref(false);
   const docSubmitUrl = ref(`/api/v1/documenten`);
 
   const {
@@ -58,58 +63,65 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     immediate: false
   }).json<PublicatieDocument>();
 
-  const addDocument = (): void => {
-    documenten.value.push(getInitialDocument());
-  };
-
   const removeDocument = async (uuid: string) => {
     const doc = documenten.value.find((doc) => doc.uuid === uuid);
 
-    docSubmitUrl.value = `/api/v1/documenten/${uuid}`;
-
-    // Loading / Error ...
-    await putDocument({ ...doc, status: "ingetrokken" }).execute();
-
-    await getDocumenten().execute();
+    if (doc) doc.status = "ingetrokken"; // ...
   };
 
-  const submitDocument = async (): Promise<void> => {
-    if (!uuid.value || !documenten.value || documenten.value[0].uuid) return;
+  const submitDocumenten = async (): Promise<void> => {
+    if (!uuid.value || !documenten.value) return; // ...
 
-    documenten.value[0].publicatie = uuid.value;
+    try {
+      for (const doc of documenten.value) {
+        if (doc.status === "ingetrokken") {
+          docSubmitUrl.value = `/api/v1/documenten/${uuid.value}`;
 
-    docSubmitUrl.value = "/api/v1/documenten";
+          await putDocument(doc).execute();
+        } else if (!doc.uuid) {
+          const index = documenten.value
+            .filter((d) => !d.uuid)
+            .findIndex((d) => d.uuid === doc.uuid); //...
 
-    await postDocument(documenten.value[0]).execute();
+          docSubmitUrl.value = "/api/v1/documenten";
 
-    if (documentError.value) {
-      toast.add({
-        text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
-        type: "error"
-      });
+          await postDocument({ ...doc, publicatie: uuid.value }).execute();
 
+          !documentError.value && await uploadDocument(index);
+        }
+
+        if (documentError.value) {
+          toast.add({
+            text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
+            type: "error"
+          });
+    
+          throw new Error();
+        }
+      }
+    } catch {
       throw new Error();
     }
   };
 
-  const uploadDocument = async (): Promise<void> => {
-    if (files.value && documentData.value?.uuid && documentData.value?.bestandsdelen?.length) {
-      uploadingDocument.value = true;
+  const uploadDocument = async (index: number): Promise<void> => {
+    if (files.value?.[index] && documentData.value?.bestandsdelen?.length) {
+      uploadingFiles.value = true;
 
       try {
-        await uploadFile(files.value[0], documentData.value.bestandsdelen);
+        await uploadFile(files.value[index], documentData.value.bestandsdelen);
       } catch {
         toast.add({
           text: "Het document kon niet worden geupload, probeer het nogmaals...",
           type: "error"
         });
 
-        removeDocument(documentData.value.uuid);
-
         throw new Error();
       } finally {
-        uploadingDocument.value = false;
+        uploadingFiles.value = false;
       }
+    } else {
+      throw new Error();
     }
   };
 
@@ -122,10 +134,8 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     documentenError,
     loadingDocument,
     documentError,
-    uploadingDocument,
-    submitDocument,
-    uploadDocument,
-    addDocument,
+    uploadingFiles,
+    submitDocumenten,
     removeDocument
   };
 };

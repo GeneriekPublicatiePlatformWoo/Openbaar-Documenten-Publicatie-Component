@@ -51,7 +51,7 @@ const loading = computed(
     loadingPublicatie.value ||
     loadingDocumenten.value ||
     loadingDocument.value ||
-    uploadingDocument.value
+    uploadingFiles.value
 );
 
 const error = computed(() => publicatieError.value || documentenError.value);
@@ -66,9 +66,8 @@ const {
   loadingDocumenten,
   documentenError,
   loadingDocument,
-  uploadingDocument,
-  submitDocument,
-  uploadDocument,
+  uploadingFiles,
+  submitDocumenten,
   removeDocument
 } = useDocumenten(computed(() => uuid || publicatie.value?.uuid));
 
@@ -76,10 +75,8 @@ const {
 const submit = async (): Promise<void> => {
   try {
     await submitPublicatie();
-
-    await submitDocument();
-
-    await uploadDocument();
+    
+    await submitDocumenten();
   } catch {
     return;
   }

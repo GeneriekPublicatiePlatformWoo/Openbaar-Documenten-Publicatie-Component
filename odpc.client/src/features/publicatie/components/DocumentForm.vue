@@ -1,73 +1,74 @@
 <template>
   <fieldset v-if="model">
-    <legend>Document</legend>
+    <legend>Documenten</legend>
 
-    <ul class="reset" v-for="(doc, index) in model" :key="index">
-      <li v-if="doc.uuid">
-        <dl>
-          <dt>Titel</dt>
-          <dd>{{ doc.officieleTitel }}</dd>
+    <ul class="reset">
+      <template v-for="(doc, index) in model" :key="index">
+        <li v-if="!doc.uuid">
+          <h2>{{ doc.bestandsnaam }}</h2>
 
-          <dt>Verkorte titel</dt>
-          <dd>{{ doc.verkorteTitel }}</dd>
+          <div class="form-group">
+            <label for="titel">Titel</label>
 
-          <dt>Omschrijving</dt>
-          <dd>{{ doc.omschrijving || "-" }}</dd>
+            <input
+              id="titel"
+              type="text"
+              v-model="doc.officieleTitel"
+              required
+              aria-required="true"
+            />
+          </div>
 
-          <dt>Bestandsnaam</dt>
-          <dd>{{ doc.bestandsnaam }}</dd>
-        </dl>
+          <div class="form-group">
+            <label for="verkorte_titel">Verkorte titel</label>
 
-        <button
-          @click.prevent="$emit('removeDocument', doc.uuid)"
-          class="button secondary icon-after trash"
-        >
-          Verwijder document
-        </button>
-      </li>
+            <input id="verkorte_titel" type="text" v-model="doc.verkorteTitel" />
+          </div>
 
-      <li v-else>
-        <div class="form-group">
-          <label for="titel">Titel</label>
+          <div class="form-group">
+            <label for="omschrijving">Omschrijving</label>
 
-          <input
-            id="titel"
-            type="text"
-            v-model="doc.officieleTitel"
-            required
-            aria-required="true"
-          />
-        </div>
+            <textarea id="omschrijving" v-model="doc.omschrijving" rows="4"></textarea>
+          </div>
+        </li>
 
-        <div class="form-group">
-          <label for="verkorte_titel">Verkorte titel</label>
+        <li v-else-if="doc.status === 'gepubliceerd'">
+          <dl>
+            <dt>Titel</dt>
+            <dd>{{ doc.officieleTitel }}</dd>
 
-          <input id="verkorte_titel" type="text" v-model="doc.verkorteTitel" />
-        </div>
+            <dt>Verkorte titel</dt>
+            <dd>{{ doc.verkorteTitel || "-" }}</dd>
 
-        <div class="form-group">
-          <label for="omschrijving">Omschrijving</label>
+            <dt>Omschrijving</dt>
+            <dd>{{ doc.omschrijving || "-" }}</dd>
 
-          <textarea id="omschrijving" v-model="doc.omschrijving" rows="4"></textarea>
-        </div>
+            <dt>Bestandsnaam</dt>
+            <dd>{{ doc.bestandsnaam }}</dd>
+          </dl>
 
-        <div class="form-group">
-          <label for="bestand">Bestand toevoegen</label>
-
-          <input
-            id="bestand"
-            type="file"
-            title="Voeg bestand toe"
-            required
-            aria-required="true"
-            :accept="accept"
-            @change="onFileSelected"
-          />
-        </div>
-      </li>
+          <button
+            @click.prevent="$emit('removeDocument', doc.uuid)"
+            class="button secondary icon-after trash"
+          >
+            Verwijder document
+          </button>
+        </li>
+      </template>
     </ul>
 
-    <slot></slot>
+    <div class="form-group">
+      <label for="bestand">Bestanden toevoegen</label>
+
+      <input
+        id="bestand"
+        type="file"
+        multiple
+        title="Voeg bestand toe"
+        :accept="accept"
+        @change="onFilesSelected"
+      />
+    </div>
   </fieldset>
 </template>
 
@@ -80,7 +81,7 @@ const props = defineProps<{ documenten: PublicatieDocument[] }>();
 
 const emit = defineEmits<{
   (e: "update:documenten", payload: PublicatieDocument[]): void;
-  (e: "update:files", payload: File[]): void;
+  (e: "update:files", payload: FileList): void;
   (e: "removeDocument", payload: string): void;
 }>();
 
@@ -91,36 +92,46 @@ const model = computed({
 
 const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(","));
 
-const onFileSelected = (event: Event) => {
+const onFilesSelected = (event: Event) => {
   const target = event.target as HTMLInputElement;
 
   if (target.files === null) return;
 
-  const file = target.files[0];
+  // if (!model.value || !bestandsformaat) {
+  //   target.value = "";
+  //   return;
+  // }
 
-  const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
-
-  if (!model.value || !bestandsformaat) {
-    target.value = "";
-    return;
-  }
-
-  model.value[0].bestandsnaam = file.name;
-  model.value[0].bestandsomvang = file.size;
-  model.value[0].bestandsformaat = bestandsformaat;
-
-  emit("update:files", [file]);
+  emit("update:files", target.files);
 };
 </script>
 
 <style lang="scss" scoped>
+section h2:first-child { // ...
+  font-size: inherit;
+  margin-top: 0;
+}
+
 button {
   display: flex;
   column-gap: var(--spacing-small);
 }
 
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-default);
+  margin-block-end: var(--spacing-large);
+
+  li {
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: var(--standard-border-radius);
+  }
+}
+
 dl {
-  margin-block: 0;
+  margin-block: 0 var(--spacing-default);
 
   dt {
     font-weight: var(--font-bold);
@@ -128,7 +139,7 @@ dl {
 
   dd {
     margin-inline-start: 0;
-    margin-block-end: var(--spacing-default);
+    margin-block-end: var(--spacing-small);
   }
 }
 </style>
