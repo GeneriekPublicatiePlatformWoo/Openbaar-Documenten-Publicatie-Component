@@ -36,52 +36,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
-import { useFetchApi } from "@/api/use-fetch-api";
+import { usePublicatie } from "./use-publicatie";
 import { useDocumenten } from "./use-documenten";
-import type { Publicatie } from "./types";
 
 const router = useRouter();
 
 const { uuid } = defineProps<{ uuid?: string }>();
 
-const uploading = ref(false);
-
 const loading = computed(
   () =>
-    loadingPublicatie.value || loadingDocumenten.value || loadingDocument.value || uploading.value
+    loadingPublicatie.value ||
+    loadingDocumenten.value ||
+    loadingDocument.value ||
+    uploadingDocument.value
 );
 
 const error = computed(() => publicatieError.value || documentenError.value);
 
 // Publicatie
-const publicatie = ref<Publicatie>({
-  officieleTitel: "",
-  verkorteTitel: "",
-  omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0]
-});
-
-const {
-  get: getPublicatie,
-  post: postPublicatie,
-  put: putPublicatie,
-  data: publicatieData,
-  isFetching: loadingPublicatie,
-  error: publicatieError
-} = useFetchApi(() => `/api/v1/publicaties${uuid ? "/" + uuid : ""}`, {
-  immediate: false
-}).json<Publicatie>();
-
-watch(publicatieData, (value) => (publicatie.value = value || publicatie.value), {
-  immediate: false
-});
+const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(uuid);
 
 // Documenten
 const {
@@ -90,6 +70,7 @@ const {
   documentenError,
   loadingDocumenten,
   loadingDocument,
+  uploadingDocument,
   submitDocument,
   uploadDocument,
   addDocument,
@@ -97,20 +78,6 @@ const {
 } = useDocumenten(uuid || publicatie.value?.uuid);
 
 // Submit
-const submitPublicatie = async (): Promise<void> => {
-  uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();
-
-  if (publicatieError.value) {
-    toast.add({
-      text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...",
-      type: "error"
-    });
-
-    publicatieError.value = null;
-
-    throw new Error();
-  }
-};
 
 const submit = async (): Promise<void> => {
   try {
@@ -124,11 +91,8 @@ const submit = async (): Promise<void> => {
   }
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });
-
   router.push({ name: "publicaties" });
 };
-
-onMounted(async () => uuid && (await getPublicatie().execute()));
 </script>
 
 <style lang="scss" scoped>
