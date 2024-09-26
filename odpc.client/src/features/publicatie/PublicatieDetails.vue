@@ -18,11 +18,7 @@
         v-model:documenten="documenten"
         v-model:files="files"
         @removeDocument="removeDocument"
-      >
-        <button @click.prevent="addDocument" class="button secondary icon-after plus">
-          Document toevoegen
-        </button>
-      </document-form>
+      />
     </section>
 
     <div class="form-submit">
@@ -67,18 +63,16 @@ const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = use
 const {
   files,
   documenten,
-  documentenError,
   loadingDocumenten,
+  documentenError,
   loadingDocument,
   uploadingDocument,
   submitDocument,
   uploadDocument,
-  addDocument,
   removeDocument
-} = useDocumenten(uuid || publicatie.value?.uuid);
+} = useDocumenten(computed(() => uuid || publicatie.value?.uuid));
 
 // Submit
-
 const submit = async (): Promise<void> => {
   try {
     await submitPublicatie();

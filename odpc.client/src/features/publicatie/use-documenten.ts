@@ -1,10 +1,10 @@
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, type ComputedRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import { uploadFile } from "./service";
 import type { PublicatieDocument } from "./types";
 
-export const useDocumenten = (uuid: string | undefined) => {
+export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
   const files = ref<File[]>([]);
 
   const uploadingDocument = ref(false);
@@ -29,7 +29,7 @@ export const useDocumenten = (uuid: string | undefined) => {
     data: documentenData,
     isFetching: loadingDocumenten,
     error: documentenError
-  } = useFetchApi(() => `/api/v1/documenten/?publicatie=${uuid}`, {
+  } = useFetchApi(() => `/api/v1/documenten/?publicatie=${uuid.value}`, {
     immediate: false
   }).json<PublicatieDocument[]>();
 
@@ -74,9 +74,9 @@ export const useDocumenten = (uuid: string | undefined) => {
   };
 
   const submitDocument = async (): Promise<void> => {
-    if (!uuid || !documenten.value || documenten.value[0].uuid) return;
+    if (!uuid.value || !documenten.value || documenten.value[0].uuid) return;
 
-    documenten.value[0].publicatie = uuid;
+    documenten.value[0].publicatie = uuid.value;
 
     docSubmitUrl.value = "/api/v1/documenten";
 
@@ -113,15 +113,15 @@ export const useDocumenten = (uuid: string | undefined) => {
     }
   };
 
-  onMounted(async () => uuid && await getDocumenten().execute());
+  onMounted(async () => uuid.value && (await getDocumenten().execute()));
 
   return {
     files,
     documenten,
-    documentenError,
     loadingDocumenten,
-    documentError,
+    documentenError,
     loadingDocument,
+    documentError,
     uploadingDocument,
     submitDocument,
     uploadDocument,

@@ -28,15 +28,15 @@ export const usePublicatie = (uuid: string | undefined) => {
 
   const submitPublicatie = async (): Promise<void> => {
     uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();
-  
+
     if (publicatieError.value) {
       toast.add({
         text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...",
         type: "error"
       });
-  
+
       publicatieError.value = null;
-  
+
       throw new Error();
     }
   };
@@ -45,8 +45,8 @@ export const usePublicatie = (uuid: string | undefined) => {
 
   return {
     publicatie,
-    publicatieError,
     loadingPublicatie,
+    publicatieError,
     submitPublicatie
   };
 };
