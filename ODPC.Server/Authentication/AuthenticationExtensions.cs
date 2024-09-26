@@ -57,6 +57,7 @@ namespace ODPC.Authentication
             {
                 authBuilder.AddOpenIdConnect(ChallengeSchemeName, options =>
                 {
+                    options.RequireHttpsMetadata = !authOptions.DisableHttps;
                     options.NonceCookie.HttpOnly = true;
                     options.NonceCookie.IsEssential = true;
                     options.NonceCookie.SameSite = SameSiteMode.None;

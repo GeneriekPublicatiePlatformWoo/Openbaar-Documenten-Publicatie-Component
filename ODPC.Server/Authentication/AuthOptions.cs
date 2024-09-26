@@ -8,5 +8,6 @@
         public string? RoleClaimType { get; set; }
         public string? NameClaimType { get; set; }
         public string? IdClaimType { get; set; }
+        public bool DisableHttps { get; set; }
     }
 }

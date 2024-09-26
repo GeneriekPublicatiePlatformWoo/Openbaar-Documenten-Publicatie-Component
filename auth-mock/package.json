@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "oidc-provider": "*"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

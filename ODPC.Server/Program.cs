@@ -29,6 +29,7 @@ try
 
     builder.Services.AddAuth(options =>
     {
+        options.DisableHttps = bool.TryParse(builder.Configuration["OIDC_DISABLE_HTTPS"], out var disableHttps) && disableHttps;
         options.Authority = GetRequiredConfig("OIDC_AUTHORITY");
         options.ClientId = GetRequiredConfig("OIDC_CLIENT_ID");
         options.ClientSecret = GetRequiredConfig("OIDC_CLIENT_SECRET");
