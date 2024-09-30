@@ -51,7 +51,7 @@ const loading = computed(
     loadingPublicatie.value ||
     loadingDocumenten.value ||
     loadingDocument.value ||
-    uploadingFiles.value
+    uploadingFile.value
 );
 
 const error = computed(() => publicatieError.value || documentenError.value);
@@ -66,7 +66,7 @@ const {
   loadingDocumenten,
   documentenError,
   loadingDocument,
-  uploadingFiles,
+  uploadingFile,
   submitDocumenten,
   removeDocument
 } = useDocumenten(computed(() => uuid || publicatie.value?.uuid));

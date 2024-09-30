@@ -3,6 +3,8 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import type { Publicatie } from "./types";
 
+const PUBAPI_URL = `/api/v1/publicaties`;
+
 export const usePublicatie = (uuid: string | undefined) => {
   const publicatie = ref<Publicatie>({
     officieleTitel: "",
@@ -18,7 +20,7 @@ export const usePublicatie = (uuid: string | undefined) => {
     data: publicatieData,
     isFetching: loadingPublicatie,
     error: publicatieError
-  } = useFetchApi(() => `/api/v1/publicaties${uuid ? "/" + uuid : ""}`, {
+  } = useFetchApi(() => `${PUBAPI_URL}${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Publicatie>();
 

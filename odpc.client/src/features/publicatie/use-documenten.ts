@@ -1,26 +1,12 @@
 import { ref, onMounted, watch, type ComputedRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
-import { uploadFile } from "./service";
+import { mimeTypesMap, uploadFile } from "./service";
 import type { PublicatieDocument } from "./types";
 
+const DOCAPI_URL = `/api/v1/documenten`;
+
 export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
-  const files = ref<FileList>();
-
-  // TODO...
-  watch(files, () => {
-    Array.from(files.value || []).forEach((file) => {
-      const doc = getInitialDocument();
-
-      // const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
-
-      doc.bestandsnaam = file.name;
-      doc.bestandsomvang = file.size;
-
-      documenten.value.push(doc);
-    });
-  });
-
   const getInitialDocument = (): PublicatieDocument => ({
     publicatie: "",
     officieleTitel: "",
@@ -35,13 +21,14 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
   });
 
   const documenten = ref<PublicatieDocument[]>([getInitialDocument()]);
+  const files = ref<FileList>();
 
   const {
     get: getDocumenten,
     data: documentenData,
     isFetching: loadingDocumenten,
     error: documentenError
-  } = useFetchApi(() => `/api/v1/documenten/?publicatie=${uuid.value}`, {
+  } = useFetchApi(() => `${DOCAPI_URL}/?publicatie=${uuid.value}`, {
     immediate: false
   }).json<PublicatieDocument[]>();
 
@@ -49,9 +36,32 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     immediate: false
   });
 
-  // TODO...
-  const uploadingFiles = ref(false);
-  const docSubmitUrl = ref(`/api/v1/documenten`);
+  watch(files, () => addDocumenten());
+
+  const addDocumenten = () => {
+    const docs: PublicatieDocument[] = [];
+
+    try {
+      Array.from(files.value || []).forEach((file) => {
+        const doc = getInitialDocument();
+        const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
+
+        if (!bestandsformaat) throw new Error();
+
+        doc.bestandsnaam = file.name;
+        doc.bestandsformaat = bestandsformaat;
+        doc.bestandsomvang = file.size;
+        docs.push(doc);
+      });
+    } catch {
+      return;
+    }
+
+    documenten.value = [...docs, ...documenten.value];
+  };
+
+  const docUUID = ref<string>();
+  const uploadingFile = ref(false);
 
   const {
     post: postDocument,
@@ -59,35 +69,25 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
-  } = useFetchApi(() => docSubmitUrl.value, {
+  } = useFetchApi(() => `${DOCAPI_URL}${docUUID.value ? "/" + docUUID.value : ""}`, {
     immediate: false
   }).json<PublicatieDocument>();
 
-  const removeDocument = async (uuid: string) => {
-    const doc = documenten.value.find((doc) => doc.uuid === uuid);
-
-    if (doc) doc.status = "ingetrokken"; // ...
-  };
-
   const submitDocumenten = async (): Promise<void> => {
-    if (!uuid.value || !documenten.value) return; // ...
+    if (!uuid.value || !documenten.value) return;
 
     try {
-      for (const doc of documenten.value) {
-        if (doc.status === "ingetrokken") {
-          docSubmitUrl.value = `/api/v1/documenten/${uuid.value}`;
-
-          await putDocument(doc).execute();
-        } else if (!doc.uuid) {
-          const index = documenten.value
-            .filter((d) => !d.uuid)
-            .findIndex((d) => d.uuid === doc.uuid); //...
-
-          docSubmitUrl.value = "/api/v1/documenten";
+      for (const [index, doc] of documenten.value.entries()) {
+        if (!doc.uuid) {
+          docUUID.value = undefined;
 
           await postDocument({ ...doc, publicatie: uuid.value }).execute();
 
-          !documentError.value && await uploadDocument(index);
+          !documentError.value && (await uploadDocument(index));
+        } else {
+          docUUID.value = doc.uuid;
+
+          await putDocument(doc).execute();
         }
 
         if (documentError.value) {
@@ -95,7 +95,7 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
             text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
             type: "error"
           });
-    
+
           throw new Error();
         }
       }
@@ -106,7 +106,7 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
 
   const uploadDocument = async (index: number): Promise<void> => {
     if (files.value?.[index] && documentData.value?.bestandsdelen?.length) {
-      uploadingFiles.value = true;
+      uploadingFile.value = true;
 
       try {
         await uploadFile(files.value[index], documentData.value.bestandsdelen);
@@ -118,11 +118,17 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
 
         throw new Error();
       } finally {
-        uploadingFiles.value = false;
+        uploadingFile.value = false;
       }
     } else {
       throw new Error();
     }
+  };
+
+  const removeDocument = async (uuid: string) => {
+    const doc = documenten.value.find((doc) => doc.uuid === uuid);
+
+    if (doc) doc.status = "ingetrokken"; // ...
   };
 
   onMounted(async () => uuid.value && (await getDocumenten().execute()));
@@ -134,7 +140,7 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     documentenError,
     loadingDocument,
     documentError,
-    uploadingFiles,
+    uploadingFile,
     submitDocumenten,
     removeDocument
   };

@@ -2,6 +2,19 @@
   <fieldset v-if="model">
     <legend>Documenten</legend>
 
+    <div class="form-group">
+      <label for="bestand">Bestanden toevoegen</label>
+
+      <input
+        id="bestand"
+        type="file"
+        multiple
+        title="Voeg bestand toe"
+        :accept="accept"
+        @change="onFilesSelected"
+      />
+    </div>
+
     <ul class="reset">
       <template v-for="(doc, index) in model" :key="index">
         <li v-if="!doc.uuid">
@@ -56,24 +69,12 @@
         </li>
       </template>
     </ul>
-
-    <div class="form-group">
-      <label for="bestand">Bestanden toevoegen</label>
-
-      <input
-        id="bestand"
-        type="file"
-        multiple
-        title="Voeg bestand toe"
-        :accept="accept"
-        @change="onFilesSelected"
-      />
-    </div>
   </fieldset>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
+import toast from "@/stores/toast";
 import type { PublicatieDocument } from "../types";
 import { mimeTypesMap } from "../service";
 
@@ -97,17 +98,26 @@ const onFilesSelected = (event: Event) => {
 
   if (target.files === null) return;
 
-  // if (!model.value || !bestandsformaat) {
-  //   target.value = "";
-  //   return;
-  // }
+  const unknownType = Array.from(target.files).some((file) => !mimeTypesMap.value?.get(file.type));
+
+  if (unknownType) {
+    target.value = "";
+
+    toast.add({
+      text: "Onbekend bestandsformaat.",
+      type: "error"
+    });
+
+    return;
+  }
 
   emit("update:files", target.files);
 };
 </script>
 
 <style lang="scss" scoped>
-section h2:first-child { // ...
+section h2:first-child {
+  // ...
   font-size: inherit;
   margin-top: 0;
 }
