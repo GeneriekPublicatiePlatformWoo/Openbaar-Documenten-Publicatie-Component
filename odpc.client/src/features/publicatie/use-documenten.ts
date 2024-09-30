@@ -22,8 +22,8 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
 
   // Documenten
 
-  const documenten = ref<PublicatieDocument[]>([getInitialDocument()]);
-  const files = ref<FileList>();
+  const documenten = ref<PublicatieDocument[]>([]);
+  const files = ref<File[]>();
 
   const {
     get: getDocumenten,
