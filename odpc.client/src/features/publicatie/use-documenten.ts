@@ -20,6 +20,8 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     status: "gepubliceerd"
   });
 
+  // Documenten
+
   const documenten = ref<PublicatieDocument[]>([getInitialDocument()]);
   const files = ref<FileList>();
 
@@ -60,19 +62,6 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     documenten.value = [...docs, ...documenten.value];
   };
 
-  const docUUID = ref<string>();
-  const uploadingFile = ref(false);
-
-  const {
-    post: postDocument,
-    put: putDocument,
-    data: documentData,
-    isFetching: loadingDocument,
-    error: documentError
-  } = useFetchApi(() => `${DOCAPI_URL}${docUUID.value ? "/" + docUUID.value : ""}`, {
-    immediate: false
-  }).json<PublicatieDocument>();
-
   const submitDocumenten = async (): Promise<void> => {
     if (!uuid.value || !documenten.value) return;
 
@@ -104,6 +93,21 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     }
   };
 
+  // Document
+
+  const docUUID = ref<string>();
+  const uploadingFile = ref(false);
+
+  const {
+    post: postDocument,
+    put: putDocument,
+    data: documentData,
+    isFetching: loadingDocument,
+    error: documentError
+  } = useFetchApi(() => `${DOCAPI_URL}${docUUID.value ? "/" + docUUID.value : ""}`, {
+    immediate: false
+  }).json<PublicatieDocument>();
+
   const uploadDocument = async (index: number): Promise<void> => {
     if (files.value?.[index] && documentData.value?.bestandsdelen?.length) {
       uploadingFile.value = true;
@@ -125,10 +129,12 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     }
   };
 
-  const removeDocument = async (uuid: string) => {
+  const removeDocument = (index: number) => documenten.value.splice(index, 1);
+
+  const toggleDocument = (uuid: string) => {
     const doc = documenten.value.find((doc) => doc.uuid === uuid);
 
-    if (doc) doc.status = "ingetrokken"; // ...
+    doc && (doc.status = doc.status === "ingetrokken" ? "gepubliceerd" : "ingetrokken");
   };
 
   onMounted(async () => uuid.value && (await getDocumenten().execute()));
@@ -142,6 +148,7 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     documentError,
     uploadingFile,
     submitDocumenten,
-    removeDocument
+    removeDocument,
+    toggleDocument
   };
 };

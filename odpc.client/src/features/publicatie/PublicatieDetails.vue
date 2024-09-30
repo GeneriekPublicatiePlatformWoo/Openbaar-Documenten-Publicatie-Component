@@ -18,16 +18,21 @@
         v-model:documenten="documenten"
         v-model:files="files"
         @removeDocument="removeDocument"
+        @toggleDocument="toggleDocument"
       />
     </section>
 
-    <div class="form-submit">
-      <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
-        >Annuleren</router-link
-      >
+    <menu class="reset form-submit">
+      <li>
+        <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
+          >Annuleren</router-link
+        >
+      </li>
 
-      <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
-    </div>
+      <li>
+        <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
+      </li>
+    </menu>
   </form>
 </template>
 
@@ -68,14 +73,14 @@ const {
   loadingDocument,
   uploadingFile,
   submitDocumenten,
-  removeDocument
+  removeDocument,
+  toggleDocument
 } = useDocumenten(computed(() => uuid || publicatie.value?.uuid));
 
-// Submit
 const submit = async (): Promise<void> => {
   try {
     await submitPublicatie();
-    
+
     await submitDocumenten();
   } catch {
     return;
@@ -91,10 +96,5 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   grid-gap: var(--spacing-default);
-}
-
-button {
-  display: flex;
-  column-gap: var(--spacing-small);
 }
 </style>
