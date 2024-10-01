@@ -6,7 +6,7 @@ import type { PublicatieDocument } from "./types";
 
 const DOCAPI_URL = `/api/v1/documenten`;
 
-export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
+export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const getInitialDocument = (): PublicatieDocument => ({
     publicatie: "",
     officieleTitel: "",
@@ -30,7 +30,7 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     data: documentenData,
     isFetching: loadingDocumenten,
     error: documentenError
-  } = useFetchApi(() => `${DOCAPI_URL}/?publicatie=${uuid.value}`, {
+  } = useFetchApi(() => `${DOCAPI_URL}/?publicatie=${pubUUID.value}`, {
     immediate: false
   }).json<PublicatieDocument[]>();
 
@@ -63,14 +63,14 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
   };
 
   const submitDocumenten = async (): Promise<void> => {
-    if (!uuid.value || !documenten.value) return;
+    if (!pubUUID.value || !documenten.value) return;
 
     try {
       for (const [index, doc] of documenten.value.entries()) {
         if (!doc.uuid) {
           docUUID.value = undefined;
 
-          await postDocument({ ...doc, publicatie: uuid.value }).execute();
+          await postDocument({ ...doc, publicatie: pubUUID.value }).execute();
 
           !documentError.value && (await uploadDocument(index));
         } else {
@@ -137,7 +137,7 @@ export const useDocumenten = (uuid: ComputedRef<string | undefined>) => {
     doc && (doc.status = doc.status === "ingetrokken" ? "gepubliceerd" : "ingetrokken");
   };
 
-  onMounted(async () => uuid.value && (await getDocumenten().execute()));
+  onMounted(async () => pubUUID.value && (await getDocumenten().execute()));
 
   return {
     files,

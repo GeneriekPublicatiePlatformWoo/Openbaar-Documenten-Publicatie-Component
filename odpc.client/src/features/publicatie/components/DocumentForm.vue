@@ -6,27 +6,11 @@
   <fieldset v-if="model">
     <legend>Documenten</legend>
 
-    <div
-      v-if="!model.some((doc) => !doc.uuid)"
-      class="dropzone"
-      @dragover.prevent="isDragging = true"
-      @dragleave.prevent="isDragging = false"
-      @drop.prevent="onFilesSelected"
-    >
-      <label for="bestand">
-        <input
-          id="bestand"
-          type="file"
-          multiple
-          title="Selecteer bestanden"
-          :accept="accept"
-          @change="onFilesSelected"
-        />
+    <template v-if="!model.some((doc) => !doc.uuid)">
+      <file-upload @onFilesSelected="onFilesSelected" />
 
-        <span v-if="isDragging">Plaats bestanden hier.</span>
-        <span v-else>Selecteer bestanden en sleept ze hierheen of klik hier.</span>
-      </label>
-    </div>
+      <h2 v-if="model.length">Toegevoegde documenten</h2>
+    </template>
 
     <details
       v-for="(doc, index) in model"
@@ -34,12 +18,24 @@
       :class="{ nieuw: !doc.uuid, ingetrokken: doc.status === 'ingetrokken' }"
       :open="!doc.uuid"
     >
-      <summary v-if="doc.uuid">{{ doc.bestandsnaam }}</summary>
+      <template v-if="doc.uuid">
+        <summary>{{ doc.bestandsnaam }}</summary>
 
-      <summary v-else @click.prevent tabindex="-1">Nieuw: {{ doc.bestandsnaam }}</summary>
+        <div class="form-group form-group-radio">
+          <label>
+            <input type="radio" v-model="doc.status" value="gepubliceerd" /> Gepubliceerd
+          </label>
+
+          <label><input type="radio" v-model="doc.status" value="ingetrokken" /> Ingetrokken</label>
+        </div>
+      </template>
+
+      <summary v-else @click.prevent tabindex="-1">
+        Nieuw: <span>{{ doc.bestandsnaam }}</span>
+      </summary>
 
       <div class="form-group">
-        <label for="titel">Titel</label>
+        <label for="titel">Titel *</label>
 
         <input id="titel" type="text" v-model="doc.officieleTitel" required aria-required="true" />
       </div>
@@ -57,34 +53,25 @@
       </div>
 
       <button
-        v-if="doc.uuid"
-        type="button"
-        class="button icon-after note"
-        :class="{ secondary: doc.status === 'gepubliceerd' }"
-        @click="$emit('toggleDocument', doc.uuid)"
-      >
-        Document {{ doc.status === "gepubliceerd" ? "intrekken" : "publiceren" }}
-      </button>
-
-      <button
-        v-else
+        v-if="!doc.uuid"
         type="button"
         class="button secondary icon-after trash"
         @click="onRemoveDocument(index)"
       >
-        Document verwijderen
+        Verwijderen
       </button>
     </details>
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import toast from "@/stores/toast";
 import PromptModal from "@/components/PromptModal.vue";
 import type { PublicatieDocument } from "../types";
 import { mimeTypesMap } from "../service";
+import FileUpload from "./FileUpload.vue";
 
 const props = defineProps<{ documenten: PublicatieDocument[] }>();
 
@@ -101,10 +88,6 @@ const model = computed({
 });
 
 const dialog = useConfirmDialog();
-
-const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(","));
-
-const isDragging = ref(false);
 
 const onFilesSelected = (event: Event | DragEvent) => {
   const files: File[] =
@@ -138,11 +121,14 @@ const onRemoveDocument = async (index: number) => {
 </script>
 
 <style lang="scss" scoped>
-.dropzone {
-  padding: var(--spacing-large);
+h2 {
+  font-size: var(--font-large);
   margin-block-end: var(--spacing-default);
-  background: #f7fafc;
-  border: 2px solid #e2e8f0;
+}
+
+.form-group-radio {
+  flex-direction: row;
+  gap: var(--spacing-default);
 }
 
 button {
@@ -154,19 +140,20 @@ details {
   &.nieuw {
     summary {
       list-style: none;
+      pointer-events: none;
 
       &::-webkit-details-marker {
         display: none;
       }
     }
-  }
-
-  &.ingetrokken {
-    background-color: #eee;
 
     span {
       font-weight: normal;
     }
+  }
+
+  &.ingetrokken {
+    background-color: #eee;
   }
 }
 
