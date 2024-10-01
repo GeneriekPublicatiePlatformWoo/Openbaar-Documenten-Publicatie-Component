@@ -1,9 +1,5 @@
 <template>
-  <prompt-modal :dialog="dialog" confirm-message="Ja, verwijderen" cancel-message="Nee, behouden">
-    <p>Weet u zeker dat u dit document wilt verwijderen?</p>
-  </prompt-modal>
-
-  <fieldset v-if="model">
+  <fieldset v-if="model" aria-live="polite">
     <legend>Documenten</legend>
 
     <template v-if="!model.some((doc) => !doc.uuid)">
@@ -37,7 +33,17 @@
       <div class="form-group">
         <label for="titel">Titel *</label>
 
-        <input id="titel" type="text" v-model="doc.officieleTitel" required aria-required="true" />
+        <input
+          id="titel"
+          type="text"
+          v-model="doc.officieleTitel"
+          required
+          aria-required="true"
+          :aria-describedby="`titelError-${index}`"
+          :aria-invalid="!doc.officieleTitel"
+        />
+
+        <span :id="`titelError-${index}`" class="error">Titel is een verplicht veld</span>
       </div>
 
       <div class="form-group">
@@ -61,6 +67,10 @@
         Verwijderen
       </button>
     </details>
+
+    <prompt-modal :dialog="dialog" confirm-message="Ja, verwijderen" cancel-message="Nee, behouden">
+      <p>Weet u zeker dat u dit document wilt verwijderen?</p>
+    </prompt-modal>
   </fieldset>
 </template>
 
@@ -82,7 +92,7 @@ const emit = defineEmits<{
   (e: "toggleDocument", payload: string): void;
 }>();
 
-const model = computed({
+const model = computed<PublicatieDocument[]>({
   get: () => props.documenten,
   set: (value) => emit("update:documenten", value)
 });
@@ -124,11 +134,6 @@ const onRemoveDocument = async (index: number) => {
 h2 {
   font-size: var(--font-large);
   margin-block-end: var(--spacing-default);
-}
-
-.form-group-radio {
-  flex-direction: row;
-  gap: var(--spacing-default);
 }
 
 button {

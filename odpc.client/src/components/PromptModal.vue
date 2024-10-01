@@ -11,7 +11,7 @@
         </li>
 
         <li>
-          <button type="submit" value="confirm" v-focus>
+          <button type="submit" value="confirm">
             {{ confirmMessage }}
           </button>
         </li>
@@ -27,12 +27,10 @@ import { whenever, type UseConfirmDialogReturn } from "@vueuse/core";
 const props = withDefaults(
   defineProps<{
     dialog: UseConfirmDialogReturn<unknown, unknown, unknown>;
-    message: string;
-    cancelMessage: string;
-    confirmMessage: string;
+    cancelMessage?: string;
+    confirmMessage?: string;
   }>(),
   {
-    message: "",
     cancelMessage: "Nee",
     confirmMessage: "Ja"
   }

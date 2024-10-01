@@ -4,7 +4,7 @@
 
     <section>
       <div class="form-group">
-        <label for="titel">Titel</label>
+        <label for="titel">Titel *</label>
 
         <input
           id="titel"
@@ -12,7 +12,11 @@
           v-model="model.officieleTitel"
           required
           aria-required="true"
+          aria-describedby="titelError"
+          :aria-invalid="!model.officieleTitel"
         />
+
+        <span id="titelError" class="error">Titel is een verplicht veld</span>
       </div>
 
       <div class="form-group">

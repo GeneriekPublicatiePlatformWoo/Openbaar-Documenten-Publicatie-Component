@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
+  <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
     <section>
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
@@ -22,26 +22,25 @@
       />
     </section>
 
-    <menu class="reset form-submit">
-      <li>
-        <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
-          >Annuleren</router-link
-        >
-      </li>
+    <div class="form-submit">
+      <span class="required-message">Velden met (*) zijn verplicht</span>
 
-      <li>
-        <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
-      </li>
-    </menu>
+      <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
+        >Annuleren</router-link
+      >
+
+      <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
+    </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
+import { validateForm } from "@/helpers/validate";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./use-publicatie";
@@ -50,6 +49,8 @@ import { useDocumenten } from "./use-documenten";
 const router = useRouter();
 
 const { uuid } = defineProps<{ uuid?: string }>();
+
+const formRef = ref<HTMLFormElement>();
 
 const loading = computed(
   () =>
@@ -78,6 +79,8 @@ const {
 } = useDocumenten(computed(() => uuid || publicatie.value?.uuid));
 
 const submit = async (): Promise<void> => {
+  if (validateForm(formRef.value).invalid) return;
+
   try {
     await submitPublicatie();
 
@@ -87,6 +90,7 @@ const submit = async (): Promise<void> => {
   }
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });
+  
   router.push({ name: "publicaties" });
 };
 </script>
