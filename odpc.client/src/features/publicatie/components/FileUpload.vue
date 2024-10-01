@@ -3,7 +3,7 @@
     class="dropzone"
     @dragover.prevent="dragging = true"
     @dragleave.prevent="dragging = false"
-    @drop.prevent="$emit('onFilesSelected', $event)"
+    @drop.prevent="onFilesSelected"
   >
     <input
       type="file"
@@ -11,7 +11,7 @@
       multiple
       title="Bestanden toevoegen"
       :accept="accept"
-      @change="$emit('onFilesSelected', $event)"
+      @change="onFilesSelected"
     />
 
     <label for="files">
@@ -26,13 +26,19 @@
 import { computed, ref } from "vue";
 import { mimeTypesMap } from "../service";
 
-defineEmits<{
-  (e: "onFilesSelected", payload: Event | DragEvent): void;
+const emit = defineEmits<{
+  (e: "filesSelected", payload: Event | DragEvent): void;
 }>();
 
 const dragging = ref(false);
 
 const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(","));
+
+const onFilesSelected = (event: Event | DragEvent) => {
+  emit("filesSelected", event);
+  
+  dragging.value = false;
+};
 </script>
 
 <style lang="scss" scoped>

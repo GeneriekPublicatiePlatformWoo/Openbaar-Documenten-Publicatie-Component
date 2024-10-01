@@ -3,7 +3,7 @@
     <legend>Documenten</legend>
 
     <template v-if="!model.some((doc) => !doc.uuid)">
-      <file-upload @onFilesSelected="onFilesSelected" />
+      <file-upload @filesSelected="filesSelected" />
 
       <h2 v-if="model.length">Toegevoegde documenten</h2>
     </template>
@@ -99,7 +99,7 @@ const model = computed<PublicatieDocument[]>({
 
 const dialog = useConfirmDialog();
 
-const onFilesSelected = (event: Event | DragEvent) => {
+const filesSelected = (event: Event | DragEvent) => {
   const files: File[] =
     event instanceof DragEvent
       ? [...(event.dataTransfer?.files || [])]
