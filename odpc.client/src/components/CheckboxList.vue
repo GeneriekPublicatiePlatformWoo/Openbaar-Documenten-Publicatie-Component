@@ -40,7 +40,9 @@ const model = computed({
 const itemIds = computed(() => props.options.map((option) => option.id));
 
 const allSelected = computed(
-  () => model.value?.filter((id) => itemIds.value.includes(id)).length === itemIds.value?.length
+  () =>
+    !!itemIds.value?.length &&
+    model.value?.filter((id) => itemIds.value.includes(id)).length === itemIds.value?.length
 );
 
 const toggleAll = () => {

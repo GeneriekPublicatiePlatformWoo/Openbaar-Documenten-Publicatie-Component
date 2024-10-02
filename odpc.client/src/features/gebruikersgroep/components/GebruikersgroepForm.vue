@@ -1,7 +1,7 @@
 <template>
   <fieldset>
-    <legend>Gebruikersgroep</legend>
-    
+    <legend>Gebruikersgroep gegevens</legend>
+
     <div class="form-group">
       <label for="titel">Naam *</label>
 

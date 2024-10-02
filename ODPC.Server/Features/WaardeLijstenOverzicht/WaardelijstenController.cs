@@ -2,7 +2,7 @@
 
 namespace ODPC.Features.WaardeLijstenOverzicht
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class WaardelijstenController : ControllerBase
     {

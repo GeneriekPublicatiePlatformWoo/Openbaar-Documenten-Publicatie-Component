@@ -59,7 +59,7 @@ const router = createRouter({
       }
     },
     {
-      path: "/beheer/gebruikersgroepen/:uuid",
+      path: "/beheer/gebruikersgroepen/:uuid?",
       name: "gebruikersgroep",
       component: () => import("../views/beheer/GebruikersgroepView.vue"),
       props: true,

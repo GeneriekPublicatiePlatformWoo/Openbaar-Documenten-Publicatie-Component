@@ -1,25 +1,19 @@
 <template>
-  <simple-spinner v-if="loading"></simple-spinner>
+  <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
-    <alert-inline v-if="error"
-      >Er is iets misgegaan bij het ophalen van de gegevens...</alert-inline
-    >
+    <section>
+      <alert-inline v-if="gebruikersgroepError"
+        >Er is iets misgegaan bij het ophalen van de gebruikersgroep...</alert-inline
+      >
 
-    <section v-else-if="gebruikersgroep">
-      <gebruikersgroep-form v-model="gebruikersgroep" />
+      <gebruikersgroep-form v-else v-model="gebruikersgroep" />
 
-      <fieldset>
-        <legend>Waardelijsten</legend>
+      <alert-inline v-if="waardelijstItemsError"
+        >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
+      >
 
-        <checkbox-list
-          v-for="(value, key) in WAARDELIJSTEN"
-          :key="key"
-          :title="value"
-          :options="groupedWaardelijstItems[key]"
-          v-model="gebruikersgroep.gekoppeldeWaardelijsten"
-        />
-      </fieldset>
+      <waardelijsten-form v-else v-model="gebruikersgroep.gekoppeldeWaardelijsten" />
     </section>
 
     <div class="form-submit">
@@ -35,83 +29,42 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
-import CheckboxList from "@/components/CheckboxList.vue";
 import toast from "@/stores/toast";
 import { validateForm } from "@/helpers/validate";
-import type { Gebruikersgroep } from "./types";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
-import { WAARDELIJSTEN, getWaardelijsten } from "@/features/waardelijst";
+import WaardelijstenForm from "./components/WaardelijstenForm.vue";
+import { loadingWaardelijstItems, waardelijstItemsError } from "@/features/waardelijst";
+import { useGebruikersgroep } from "./use-gebruikersgroep";
 
 const router = useRouter();
 
 const { uuid } = defineProps<{ uuid?: string }>();
 
 const formRef = ref<HTMLFormElement>();
-const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
-const error = computed<boolean>(() => !!listItemstError.value || !!gebruikersgroepError.value);
 
-const { groupedWaardelijstItems, waardelijstIds, loadingListItems, listItemstError } =
-  getWaardelijsten();
+const loading = computed(() => loadingGebruikersgroep.value || loadingWaardelijstItems.value);
+const error = computed(() => gebruikersgroepError.value || waardelijstItemsError.value);
 
-const gebruikersgroep = ref<Gebruikersgroep>({
-  naam: "",
-  omschrijving: "",
-  gekoppeldeWaardelijsten: []
-});
+const { gebruikersgroep, loadingGebruikersgroep, gebruikersgroepError, submitGebruikersgroep } =
+  useGebruikersgroep(uuid);
 
-const {
-  get: getGebruikersgroep,
-  post: postGebruikersgroep,
-  put: putGebruikersgroep,
-  data: gebruikersgroepData,
-  isFetching: loadingGebruikersgroep,
-  error: gebruikersgroepError
-} = useFetchApi(() => `/api/gebruikersgroepen${uuid ? "/" + uuid : ""}`, {
-  immediate: false
-}).json<Gebruikersgroep>();
-
-watch(gebruikersgroepData, (value) => (gebruikersgroep.value = value || gebruikersgroep.value), {
-  immediate: false
-});
-
-const submit = async (): Promise<void> => {
+const submit = async () => {
   if (validateForm(formRef.value).invalid) return;
 
-  gebruikersgroep.value = {
-    ...gebruikersgroep.value,
-    gekoppeldeWaardelijsten: gebruikersgroep.value.gekoppeldeWaardelijsten.filter((id) =>
-      waardelijstIds.value.includes(id)
-    )
-  };
-
-  uuid
-    ? await putGebruikersgroep(gebruikersgroep).execute()
-    : await postGebruikersgroep(gebruikersgroep).execute();
-
-  toast.add(
-    gebruikersgroepError.value
-      ? {
-          text: "De gegevens konden niet worden opgeslagen, probeer het nogmaals...",
-          type: "error"
-        }
-      : { text: "De gegevens zijn succesvol opgeslagen." }
-  );
-
-  if (!gebruikersgroepError.value) {
-    // redirect
-    router.push({ name: "gebruikersgroepen" });
-  } else {
-    // retry
-    gebruikersgroepError.value = null;
+  try {
+    await submitGebruikersgroep();
+  } catch {
+    return;
   }
-};
 
-onMounted(async () => uuid && (await getGebruikersgroep().execute()));
+  toast.add({ text: "De gegevens zijn succesvol opgeslagen." });
+
+  router.push({ name: "gebruikersgroepen" });
+};
 </script>
 
 <style lang="scss" scoped>

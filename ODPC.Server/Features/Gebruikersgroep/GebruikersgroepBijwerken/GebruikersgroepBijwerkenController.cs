@@ -18,14 +18,14 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
         /// <param name="model"></param>
         /// <returns></returns>
 
-        [HttpPost("api/gebruikersgroepen")]
+        [HttpPost("api/v1/gebruikersgroepen")]
         public async Task<IActionResult> Post([FromBody] GebruikersgroepUpsertModel model, CancellationToken token)
         {
             var groep = new Data.Entities.Gebruikersgroep { Naam = model.Naam, Omschrijving = model.Omschrijving };
             return await UpdateGroep(model, groep, token);
         }
 
-        [HttpPut("api/gebruikersgroepen/{uuid:guid}")]
+        [HttpPut("api/v1/gebruikersgroepen/{uuid:guid}")]
         public async Task<IActionResult> Put(Guid uuid, [FromBody] GebruikersgroepUpsertModel model, CancellationToken token)
         {
             var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
