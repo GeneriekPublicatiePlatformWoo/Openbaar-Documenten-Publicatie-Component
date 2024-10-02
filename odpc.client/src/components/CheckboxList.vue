@@ -1,6 +1,7 @@
 <template>
-  <fieldset>
-    <legend>{{ title }}</legend>
+  <details>
+    <summary>{{ title }}</summary>
+
     <div class="checkbox check-all">
       <label
         ><input type="checkbox" @click="toggleAll" :checked="allSelected" /> selecteer alles
@@ -10,7 +11,7 @@
     <div class="checkbox" v-for="({ id, name }, key) in options" :key="key">
       <label><input type="checkbox" :value="id" v-model="model" /> {{ name }} </label>
     </div>
-  </fieldset>
+  </details>
 </template>
 
 <script setup lang="ts" generic="T extends OptionProps">

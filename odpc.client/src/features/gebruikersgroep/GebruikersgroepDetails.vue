@@ -1,79 +1,97 @@
 <template>
-  <h2>{{ gebruikersgroep?.naam }}</h2>
-
   <simple-spinner v-if="loading"></simple-spinner>
 
-  <form v-else aria-live="polite" @submit.prevent="submit">
+  <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
     <alert-inline v-if="error"
-      >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
+      >Er is iets misgegaan bij het ophalen van de gegevens...</alert-inline
     >
 
     <section v-else-if="gebruikersgroep">
-      <CheckboxList
-        v-for="(value, key) in WAARDELIJSTEN"
-        :key="key"
-        :title="value"
-        :options="groupedWaardelijstItems[key]"
-        v-model="waardelijstenModel"
-      />
+      <gebruikersgroep-form v-model="gebruikersgroep" />
+
+      <fieldset>
+        <legend>Waardelijsten</legend>
+
+        <checkbox-list
+          v-for="(value, key) in WAARDELIJSTEN"
+          :key="key"
+          :title="value"
+          :options="groupedWaardelijstItems[key]"
+          v-model="gebruikersgroep.gekoppeldeWaardelijsten"
+        />
+      </fieldset>
     </section>
 
-    <div class="form-submit" :class="{ error }">
-      <router-link :to="{ name: 'gebruikersgroepen' }" class="button button-secondary">{{
-        error ? "&lt; Terug" : "Annuleren"
-      }}</router-link>
+    <div class="form-submit">
+      <span class="required-message">Velden met (*) zijn verplicht</span>
 
-      <button v-if="gebruikersgroep && !error" type="submit" title="Opslaan">Opslaan</button>
+      <router-link :to="{ name: 'gebruikersgroepen' }" class="button button-secondary"
+        >Annuleren</router-link
+      >
+
+      <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watchEffect } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useFetchApi } from "@/api/use-fetch-api";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
-import toast from "@/stores/toast";
 import CheckboxList from "@/components/CheckboxList.vue";
-
+import toast from "@/stores/toast";
+import { validateForm } from "@/helpers/validate";
 import type { Gebruikersgroep } from "./types";
+import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
 import { WAARDELIJSTEN, getWaardelijsten } from "@/features/waardelijst";
 
 const router = useRouter();
-const props = defineProps<{ id: string }>();
 
+const { uuid } = defineProps<{ uuid?: string }>();
+
+const formRef = ref<HTMLFormElement>();
 const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
-const error = computed<boolean>(() => listItemstError.value || gebruikersgroepError.value);
+const error = computed<boolean>(() => !!listItemstError.value || !!gebruikersgroepError.value);
 
 const { groupedWaardelijstItems, waardelijstIds, loadingListItems, listItemstError } =
   getWaardelijsten();
 
-const waardelijstenModel = ref<string[]>([]);
+const gebruikersgroep = ref<Gebruikersgroep>({
+  naam: "",
+  omschrijving: "",
+  gekoppeldeWaardelijsten: []
+});
 
 const {
-  data: gebruikersgroep,
+  get: getGebruikersgroep,
+  post: postGebruikersgroep,
+  put: putGebruikersgroep,
+  data: gebruikersgroepData,
   isFetching: loadingGebruikersgroep,
-  error: gebruikersgroepError,
-  put,
-  execute
-} = useFetchApi(() => `/api/gebruikersgroepen/${props.id}`).json<Gebruikersgroep>();
+  error: gebruikersgroepError
+} = useFetchApi(() => `/api/gebruikersgroepen${uuid ? "/" + uuid : ""}`, {
+  immediate: false
+}).json<Gebruikersgroep>();
 
-watchEffect(() => {
-  waardelijstenModel.value = gebruikersgroep.value?.gekoppeldeWaardelijsten || [];
+watch(gebruikersgroepData, (value) => (gebruikersgroep.value = value || gebruikersgroep.value), {
+  immediate: false
 });
 
 const submit = async (): Promise<void> => {
-  const formData = {
-    naam: gebruikersgroep.value?.naam,
-    gekoppeldeWaardelijsten: waardelijstenModel.value?.filter((id) =>
+  if (validateForm(formRef.value).invalid) return;
+
+  gebruikersgroep.value = {
+    ...gebruikersgroep.value,
+    gekoppeldeWaardelijsten: gebruikersgroep.value.gekoppeldeWaardelijsten.filter((id) =>
       waardelijstIds.value.includes(id)
     )
   };
 
-  put(formData);
-
-  await execute();
+  uuid
+    ? await putGebruikersgroep(gebruikersgroep).execute()
+    : await postGebruikersgroep(gebruikersgroep).execute();
 
   toast.add(
     gebruikersgroepError.value
@@ -92,12 +110,14 @@ const submit = async (): Promise<void> => {
     gebruikersgroepError.value = null;
   }
 };
+
+onMounted(async () => uuid && (await getGebruikersgroep().execute()));
 </script>
 
 <style lang="scss" scoped>
 section {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   grid-gap: var(--spacing-default);
 }
 </style>

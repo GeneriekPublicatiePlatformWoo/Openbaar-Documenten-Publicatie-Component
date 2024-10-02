@@ -4,13 +4,13 @@
   <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
   <ul v-else class="reset">
-    <li v-for="{ uuid: id, naam: name } in data" :key="id">
+    <li v-for="{ uuid, naam } in data" :key="uuid">
       <router-link
-        :to="{ name: 'gebruikersgroep', params: { id } }"
-        :title="name"
+        :to="{ name: 'gebruikersgroep', params: { uuid } }"
+        :title="naam"
         class="card-link icon-after pen"
       >
-        <h2>{{ name }}</h2></router-link
+        <h2>{{ naam }}</h2></router-link
       >
     </li>
   </ul>
