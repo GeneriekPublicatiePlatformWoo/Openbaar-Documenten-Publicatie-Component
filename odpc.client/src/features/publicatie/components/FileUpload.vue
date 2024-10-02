@@ -26,9 +26,7 @@
 import { computed, ref } from "vue";
 import { mimeTypesMap } from "../service";
 
-const emit = defineEmits<{
-  (e: "filesSelected", payload: Event | DragEvent): void;
-}>();
+const emit = defineEmits<{ (e: "filesSelected", payload: Event | DragEvent): void }>();
 
 const dragging = ref(false);
 
@@ -36,7 +34,7 @@ const accept = computed(() => Array.from(mimeTypesMap.value?.keys() || []).join(
 
 const onFilesSelected = (event: Event | DragEvent) => {
   emit("filesSelected", event);
-  
+
   dragging.value = false;
 };
 </script>

@@ -90,7 +90,7 @@ const submit = async (): Promise<void> => {
   }
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });
-  
+
   router.push({ name: "publicaties" });
 };
 </script>

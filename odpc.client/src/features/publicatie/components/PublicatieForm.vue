@@ -40,9 +40,7 @@ import type { Publicatie } from "../types";
 
 const props = defineProps<{ modelValue: Publicatie }>();
 
-const emit = defineEmits<{
-  (e: "update:modelValue", payload: Publicatie): void;
-}>();
+const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();
 
 const model = computed({
   get: () => props.modelValue,
