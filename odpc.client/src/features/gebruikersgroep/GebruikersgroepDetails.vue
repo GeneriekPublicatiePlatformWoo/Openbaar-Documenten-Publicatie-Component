@@ -19,20 +19,43 @@
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
 
-      <router-link :to="{ name: 'gebruikersgroepen' }" class="button button-secondary"
-        >Annuleren</router-link
-      >
+      <menu class="reset">
+        <li>
+          <router-link :to="{ name: 'gebruikersgroepen' }" class="button button-secondary"
+            >Annuleren</router-link
+          >
+        </li>
 
-      <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
+        <li>
+          <button
+            v-if="uuid"
+            type="button"
+            title="Verwijderen"
+            class="secondary"
+            :disabled="error"
+            @click="remove"
+          >
+            Verwijderen
+          </button>
+        </li>
+
+        <li><button type="submit" title="Opslaan" :disabled="error">Opslaan</button></li>
+      </menu>
     </div>
+
+    <prompt-modal :dialog="dialog" confirm-message="Ja, verwijderen" cancel-message="Nee, behouden">
+      <p>Weet u zeker dat u deze gebruikersgroep wilt verwijderen?</p>
+    </prompt-modal>
   </form>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
+import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
 import { validateForm } from "@/helpers/validate";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
@@ -46,11 +69,18 @@ const props = defineProps<{ uuid?: string }>();
 
 const formRef = ref<HTMLFormElement>();
 
+const dialog = useConfirmDialog();
+
 const loading = computed(() => loadingGebruikersgroep.value || loadingWaardelijstItems.value);
 const error = computed(() => !!gebruikersgroepError.value || !!waardelijstItemsError.value);
 
-const { gebruikersgroep, loadingGebruikersgroep, gebruikersgroepError, submitGebruikersgroep } =
-  useGebruikersgroep(props.uuid);
+const {
+  gebruikersgroep,
+  loadingGebruikersgroep,
+  gebruikersgroepError,
+  submitGebruikersgroep,
+  removeGebruikersgroep
+} = useGebruikersgroep(props.uuid);
 
 const submit = async () => {
   if (validateForm(formRef.value).invalid) return;
@@ -62,7 +92,21 @@ const submit = async () => {
   }
 
   toast.add({ text: "De gegevens zijn succesvol opgeslagen." });
+  router.push({ name: "gebruikersgroepen" });
+};
 
+const remove = async () => {
+  const { isCanceled } = await dialog.reveal();
+
+  if (isCanceled) return;
+
+  try {
+    await removeGebruikersgroep();
+  } catch {
+    return;
+  }
+
+  toast.add({ text: "De gebruikersgroep is succesvol verwijderd." });
   router.push({ name: "gebruikersgroepen" });
 };
 </script>

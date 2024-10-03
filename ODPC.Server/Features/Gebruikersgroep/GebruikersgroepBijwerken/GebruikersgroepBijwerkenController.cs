@@ -38,6 +38,17 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepBijwerken
             groep.Naam = model.Naam;
             groep.Omschrijving = model.Omschrijving;
 
+            var groepExists = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Uuid == groep.Uuid) != null;
+
+            if (groepExists)
+            {
+                _context.Gebruikersgroepen.Update(groep);
+            }
+            else
+            {
+                _context.Gebruikersgroepen.Add(groep);
+            }
+
             //verwijder bestaande waardelijsten voor deze groep
             await _context
                 .GebruikersgroepWaardelijsten

@@ -17,6 +17,7 @@ export const useGebruikersgroep = (uuid?: string) => {
     get: getGebruikersgroep,
     post: postGebruikersgroep,
     put: putGebruikersgroep,
+    delete: deleteGebruikersgroep,
     data: gebruikersgroepData,
     isFetching: loadingGebruikersgroep,
     error: gebruikersgroepError
@@ -40,7 +41,22 @@ export const useGebruikersgroep = (uuid?: string) => {
 
     if (gebruikersgroepError.value) {
       toast.add({
-        text: "De gebruikersgroep konden niet worden opgeslagen, probeer het nogmaals...",
+        text: "De gebruikersgroep kon niet worden opgeslagen, probeer het nogmaals...",
+        type: "error"
+      });
+
+      gebruikersgroepError.value = null;
+
+      throw new Error();
+    }
+  };
+
+  const removeGebruikersgroep = async () => {
+    await deleteGebruikersgroep().text().execute();
+
+    if (gebruikersgroepError.value) {
+      toast.add({
+        text: "De gebruikersgroep kon niet worden verwijderd, probeer het nogmaals...",
         type: "error"
       });
 
@@ -56,6 +72,7 @@ export const useGebruikersgroep = (uuid?: string) => {
     gebruikersgroep,
     loadingGebruikersgroep,
     gebruikersgroepError,
-    submitGebruikersgroep
+    submitGebruikersgroep,
+    removeGebruikersgroep
   };
 };

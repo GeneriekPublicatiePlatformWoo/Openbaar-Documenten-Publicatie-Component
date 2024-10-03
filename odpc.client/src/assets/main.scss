@@ -84,15 +84,11 @@
 
 .form-submit {
   display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-default);
+  justify-content: space-between;
 
-  &.error {
-    justify-content: flex-start;
-  }
-
-  .required-message {
-    margin-inline-end: auto;
+  menu {
+    display: flex;
+    gap: var(--spacing-default);
   }
 }
 

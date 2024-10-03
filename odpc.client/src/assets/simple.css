@@ -216,6 +216,7 @@ label[type="button"] {
   line-height: normal;
 }
 
+button.secondary,
 .button.secondary,
 a.button-secondary {
   background-color: var(--bg);
