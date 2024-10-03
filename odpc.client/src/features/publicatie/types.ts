@@ -1,7 +1,7 @@
 export const PUBLICATIESTATUS = {
-  draft: "Concept",
-  published: "Gepubliceerd",
-  retracted: "Ingetrokken"
+  concept: "Concept",
+  gepubliceerd: "Gepubliceerd",
+  ingetrokken: "Ingetrokken"
 } as const;
 
 export type Publicatie = {
@@ -24,6 +24,7 @@ export type PublicatieDocument = {
   bestandsformaat: string;
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[];
+  status: keyof typeof PUBLICATIESTATUS;
 };
 
 export type Bestandsdeel = {

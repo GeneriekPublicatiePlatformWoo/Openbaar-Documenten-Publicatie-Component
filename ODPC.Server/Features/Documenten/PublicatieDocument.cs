@@ -12,6 +12,7 @@
         public required string Bestandsformaat { get; set; }
         public required double Bestandsomvang { get; set; }
         public List<Bestandsdeel>? Bestandsdelen { get; set; }
+        public string? Status { get; set; }
     }
 
     public class Bestandsdeel
