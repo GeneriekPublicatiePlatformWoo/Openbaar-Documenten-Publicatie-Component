@@ -83,7 +83,7 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
-const submit = async (): Promise<void> => {
+const submit = async () => {
   if (validateForm(formRef.value).invalid) return;
 
   try {

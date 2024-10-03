@@ -60,7 +60,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     documenten.value = [...docs, ...documenten.value];
   };
 
-  const submitDocumenten = async (): Promise<void> => {
+  const submitDocumenten = async () => {
     if (!pubUUID.value || !documenten.value) return;
 
     try {
@@ -106,7 +106,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     immediate: false
   }).json<PublicatieDocument>();
 
-  const uploadDocument = async (index: number): Promise<void> => {
+  const uploadDocument = async (index: number) => {
     if (files.value?.[index] && documentData.value?.bestandsdelen?.length) {
       uploadingFile.value = true;
 

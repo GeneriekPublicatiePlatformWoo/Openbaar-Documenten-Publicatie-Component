@@ -42,15 +42,15 @@ import { useGebruikersgroep } from "./use-gebruikersgroep";
 
 const router = useRouter();
 
-const { uuid } = defineProps<{ uuid?: string }>();
+const props = defineProps<{ uuid?: string }>();
 
 const formRef = ref<HTMLFormElement>();
 
 const loading = computed(() => loadingGebruikersgroep.value || loadingWaardelijstItems.value);
-const error = computed(() => gebruikersgroepError.value || waardelijstItemsError.value);
+const error = computed(() => !!gebruikersgroepError.value || !!waardelijstItemsError.value);
 
 const { gebruikersgroep, loadingGebruikersgroep, gebruikersgroepError, submitGebruikersgroep } =
-  useGebruikersgroep(uuid);
+  useGebruikersgroep(props.uuid);
 
 const submit = async () => {
   if (validateForm(formRef.value).invalid) return;

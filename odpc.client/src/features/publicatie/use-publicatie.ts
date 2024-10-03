@@ -26,7 +26,7 @@ export const usePublicatie = (uuid?: string) => {
 
   watch(publicatieData, (value) => (publicatie.value = value || publicatie.value));
 
-  const submitPublicatie = async (): Promise<void> => {
+  const submitPublicatie = async () => {
     uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();
 
     if (publicatieError.value) {
