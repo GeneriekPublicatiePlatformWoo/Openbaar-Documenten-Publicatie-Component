@@ -26,9 +26,8 @@
           >
         </li>
 
-        <li>
+        <li v-if="uuid">
           <button
-            v-if="uuid"
             type="button"
             title="Verwijderen"
             class="secondary"
