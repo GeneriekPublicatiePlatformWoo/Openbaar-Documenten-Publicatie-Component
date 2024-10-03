@@ -1,21 +1,30 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-show="!loading" aria-live="polite" @submit.prevent="submit">
-    <alert-inline v-if="error"
-      >Er is iets misgegaan bij het ophalen van de gegevens...</alert-inline
-    >
-    <section v-else-if="publicatie && publicatieDocument">
-      <publicatie-form v-model="publicatie" />
+  <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
+    <section>
+      <alert-inline v-if="publicatieError"
+        >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
+      >
+
+      <publicatie-form v-else v-model="publicatie" />
+
+      <alert-inline v-if="documentenError"
+        >Er is iets misgegaan bij het ophalen van de documenten...</alert-inline
+      >
 
       <document-form
-        v-model:publicatieDocument="publicatieDocument"
-        v-model:file="file"
-        @reset="resetDocument"
+        v-else
+        v-model:documenten="documenten"
+        v-model:files="files"
+        @removeDocument="removeDocument"
+        @toggleDocument="toggleDocument"
       />
     </section>
 
     <div class="form-submit">
+      <span class="required-message">Velden met (*) zijn verplicht</span>
+
       <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
         >Annuleren</router-link
       >
@@ -26,149 +35,61 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
+import { validateForm } from "@/helpers/validate";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
-import type { Publicatie, PublicatieDocument } from "./types";
-import { useFetchApi } from "@/api/use-fetch-api";
-import { uploadFile } from "./service";
+import { usePublicatie } from "./use-publicatie";
+import { useDocumenten } from "./use-documenten";
 
 const router = useRouter();
 
-const { uuid } = defineProps<{ uuid?: string }>();
+const props = defineProps<{ uuid?: string }>();
 
-const uploading = ref(false);
-const loading = computed(() => loadingPublicatie.value || loadingDocument.value || uploading.value);
-const error = computed(() => publicatieError.value || documentError.value);
+const formRef = ref<HTMLFormElement>();
+
+const loading = computed(
+  () =>
+    loadingPublicatie.value ||
+    loadingDocumenten.value ||
+    loadingDocument.value ||
+    uploadingFile.value
+);
+
+const error = computed(() => !!publicatieError.value || !!documentenError.value);
 
 // Publicatie
-const publicatie = ref<Publicatie | null>({
-  officieleTitel: "",
-  verkorteTitel: "",
-  omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0]
-});
+const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(
+  props.uuid
+);
 
+// Documenten
 const {
-  data: publicatieData,
-  isFetching: loadingPublicatie,
-  error: publicatieError,
-  post: postPublicatie,
-  put: putPublicatie,
-  execute: execPublicatie
-} = useFetchApi(() => `/api/v1/publicaties${uuid ? "/" + uuid : ""}`, {
-  immediate: false
-}).json<Publicatie>();
-
-watch(publicatieData, (value) => (publicatie.value = value), { immediate: false });
-
-// Document
-const file = ref<File | null>();
-
-const initialDocument = (): PublicatieDocument => ({
-  publicatie: "",
-  officieleTitel: "",
-  verkorteTitel: "",
-  omschrijving: "",
-  creatiedatum: new Date().toISOString().split("T")[0],
-  bestandsnaam: "",
-  bestandsformaat: "",
-  bestandsomvang: 0,
-  bestandsdelen: []
-});
-
-const publicatieDocument = ref<PublicatieDocument | null>(initialDocument());
-
-const resetDocument = () => (publicatieDocument.value = initialDocument());
-
-const { post: postDocument } = useFetchApi(() => "/api/v1/documenten", {
-  immediate: false
-});
-
-const {
-  data: documentData,
-  isFetching: loadingDocument,
-  error: documentError,
-  execute: execDocument
-} = useFetchApi(() => `/api/v1/documenten?publicatie=${uuid}`, {
-  immediate: false
-}).json<PublicatieDocument[]>();
-
-watch(documentData, (value) => (publicatieDocument.value = value?.at(-1) || null), {
-  immediate: false
-});
-
-// Submit
-const submitPublicatie = async (): Promise<void> => {
-  uuid ? putPublicatie(publicatie) : postPublicatie(publicatie);
-
-  await execPublicatie();
-
-  if (publicatieError.value) {
-    toast.add({
-      text: "De publicatie kon niet worden opgeslagen, probeer het nogmaals...",
-      type: "error"
-    });
-
-    publicatieError.value = null;
-
-    throw new Error();
-  }
-};
-
-const submitDocument = async (): Promise<void> => {
-  if (!publicatie.value?.uuid || !publicatieDocument.value || publicatieDocument.value.uuid) return;
-
-  publicatieDocument.value.publicatie = publicatie.value?.uuid;
-
-  await postDocument(publicatieDocument).execute();
-  await execDocument();
-
-  if (documentError.value) {
-    toast.add({
-      text: "De metadata bij het document kon niet worden opgeslagen, probeer het nogmaals...",
-      type: "error"
-    });
-
-    documentError.value = null;
-
-    throw new Error();
-  }
-};
-
-const uploadDocument = async (): Promise<void> => {
-  const lastDoc = documentData.value?.at(-1);
-  if (file.value && lastDoc?.bestandsdelen?.length) {
-    uploading.value = true;
-
-    try {
-      await uploadFile(file.value, lastDoc.bestandsdelen);
-    } catch {
-      toast.add({
-        text: "Het document kon niet worden geupload, probeer het nogmaals...",
-        type: "error"
-      });
-
-      resetDocument();
-
-      throw new Error();
-    } finally {
-      uploading.value = false;
-    }
-  }
-};
+  files,
+  documenten,
+  loadingDocumenten,
+  documentenError,
+  loadingDocument,
+  uploadingFile,
+  submitDocumenten,
+  removeDocument,
+  toggleDocument
+} =
+  // Get associated docs by uuid prop when existing pub, so no need to wait for pub fetch.
+  // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
+  useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
 const submit = async (): Promise<void> => {
+  if (validateForm(formRef.value).invalid) return;
+
   try {
     await submitPublicatie();
 
-    await submitDocument();
-
-    await uploadDocument();
+    await submitDocumenten();
   } catch {
     return;
   }
@@ -177,8 +98,6 @@ const submit = async (): Promise<void> => {
 
   router.push({ name: "publicaties" });
 };
-
-onMounted(async () => uuid && (await execPublicatie()) && (await execDocument()));
 </script>
 
 <style lang="scss" scoped>

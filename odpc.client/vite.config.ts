@@ -2,13 +2,12 @@ import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import mockServer from "vite-plugin-mock-server";
 
 const proxyCalls = ["/api", "/signin-oidc", "/signout-callback-oidc", "/healthz"];
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), mockServer({ urlPrefixes: ["/api-mock"] })],
+  plugins: [vue()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url))

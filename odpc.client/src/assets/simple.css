@@ -556,7 +556,7 @@ mark {
 }
 
 mark a {
-  color: #0d47a1;
+  color: var(--accent);
 }
 
 img,

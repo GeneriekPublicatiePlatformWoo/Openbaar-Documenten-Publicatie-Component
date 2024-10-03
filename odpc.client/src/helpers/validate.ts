@@ -1,6 +1,4 @@
-export const validateForm = (
-  form: HTMLFormElement | undefined
-): { valid?: boolean; invalid?: boolean } => {
+export const validateForm = (form?: HTMLFormElement): { valid?: boolean; invalid?: boolean } => {
   if (form?.checkValidity()) return { valid: true };
 
   const inputs = form?.querySelectorAll("input:invalid") as NodeListOf<HTMLInputElement>;
