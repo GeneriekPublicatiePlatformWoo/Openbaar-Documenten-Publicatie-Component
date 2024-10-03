@@ -5,7 +5,7 @@ import type { Publicatie } from "./types";
 
 const PUBAPI_URL = `/api/v1/publicaties`;
 
-export const usePublicatie = (uuid: string | undefined) => {
+export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
     officieleTitel: "",
     verkorteTitel: "",
@@ -24,9 +24,7 @@ export const usePublicatie = (uuid: string | undefined) => {
     immediate: false
   }).json<Publicatie>();
 
-  watch(publicatieData, (value) => (publicatie.value = value || publicatie.value), {
-    immediate: false
-  });
+  watch(publicatieData, (value) => (publicatie.value = value || publicatie.value));
 
   const submitPublicatie = async (): Promise<void> => {
     uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();

@@ -48,7 +48,7 @@ import { useDocumenten } from "./use-documenten";
 
 const router = useRouter();
 
-const { uuid } = defineProps<{ uuid?: string }>();
+const props = defineProps<{ uuid?: string }>();
 
 const formRef = ref<HTMLFormElement>();
 
@@ -60,10 +60,12 @@ const loading = computed(
     uploadingFile.value
 );
 
-const error = computed(() => publicatieError.value || documentenError.value);
+const error = computed(() => !!publicatieError.value || !!documentenError.value);
 
 // Publicatie
-const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(uuid);
+const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(
+  props.uuid
+);
 
 // Documenten
 const {
@@ -76,7 +78,10 @@ const {
   submitDocumenten,
   removeDocument,
   toggleDocument
-} = useDocumenten(computed(() => uuid || publicatie.value?.uuid));
+} =
+  // Get associated docs by uuid prop when existing pub, so no need to wait for pub fetch.
+  // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
+  useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
 const submit = async (): Promise<void> => {
   if (validateForm(formRef.value).invalid) return;

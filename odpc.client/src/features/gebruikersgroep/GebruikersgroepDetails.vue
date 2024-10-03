@@ -44,7 +44,7 @@ const router = useRouter();
 const props = defineProps<{ id: string }>();
 
 const loading = computed<boolean>(() => loadingListItems.value || loadingGebruikersgroep.value);
-const error = computed<boolean>(() => listItemstError.value || gebruikersgroepError.value);
+const error = computed(() => !!listItemstError.value || !!gebruikersgroepError.value);
 
 const { groupedWaardelijstItems, waardelijstIds, loadingListItems, listItemstError } =
   getWaardelijsten();

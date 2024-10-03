@@ -34,9 +34,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     immediate: false
   }).json<PublicatieDocument[]>();
 
-  watch(documentenData, (value) => (documenten.value = value || documenten.value), {
-    immediate: false
-  });
+  watch(documentenData, (value) => (documenten.value = value || documenten.value));
 
   watch(files, () => addDocumenten());
 

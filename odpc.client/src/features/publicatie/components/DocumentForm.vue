@@ -158,7 +158,7 @@ details {
   }
 
   &.ingetrokken {
-    background-color: #eee;
+    background-color: var(--disabled);
   }
 }
 
