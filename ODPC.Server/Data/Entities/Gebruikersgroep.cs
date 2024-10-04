@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualBasic;
 
 namespace ODPC.Data.Entities
 {
@@ -7,5 +8,7 @@ namespace ODPC.Data.Entities
         public Guid Uuid { get; set; }
         public required string Naam { get; set; }
         public string? Omschrijving { get; set; }
+
+        public ICollection<GebruikersgroepWaardelijst> Waardelijsten { get; set; } = [];
     }
 }
