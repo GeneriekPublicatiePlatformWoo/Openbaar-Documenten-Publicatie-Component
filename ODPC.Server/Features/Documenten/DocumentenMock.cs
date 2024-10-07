@@ -16,7 +16,8 @@ namespace ODPC.Features.Documenten
                 Creatiedatum = new DateOnly(2024, 09, 23),
                 Bestandsformaat = "DOCX",
                 Bestandsnaam = "belangrijk.docx",
-                Bestandsomvang = 100000
+                Bestandsomvang = 100000,
+                Status = "gepubliceerd"
             }
         }
         .ToDictionary(x => x.Uuid);

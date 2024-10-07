@@ -55,23 +55,40 @@
   flex-direction: column;
   margin-block-end: var(--spacing-default);
 
+  &.form-group-radio {
+    flex-direction: row;
+    gap: var(--spacing-default);
+  }
+
   label {
     font-weight: var(--font-bold);
     margin-block-end: var(--spacing-small);
   }
 
-  input[type="text"].small {
-    max-width: var(--section-width);
+  input {
+    & + .error {
+      display: none;
+      color: var(--code);
+    }
+
+    &:invalid.invalid {
+      border-color: var(--code);
+      outline-color: var(--code);
+
+      & + .error {
+        display: block;
+      }
+    }
   }
 }
 
 .form-submit {
   display: flex;
-  justify-content: flex-end;
-  grid-gap: var(--spacing-default);
+  justify-content: space-between;
 
-  &.error {
-    justify-content: flex-start;
+  menu {
+    display: flex;
+    gap: var(--spacing-default);
   }
 }
 
