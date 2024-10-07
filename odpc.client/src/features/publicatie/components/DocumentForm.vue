@@ -15,7 +15,13 @@
       :open="!doc.uuid"
     >
       <template v-if="doc.uuid">
-        <summary>{{ doc.bestandsnaam }}</summary>
+        <summary>
+          <template v-if="doc.status === 'ingetrokken'"
+            ><s :aria-describedby="`status-${index}`">{{ doc.bestandsnaam }}</s>
+            <span :id="`status-${index}`" role="status">(ingetrokken)</span></template
+          >
+          <template v-else>{{ doc.bestandsnaam }}</template>
+        </summary>
 
         <div class="form-group form-group-radio">
           <label>
@@ -142,6 +148,11 @@ button {
 }
 
 details {
+  span {
+    font-weight: normal;
+    margin-inline-start: var(--spacing-extrasmall);
+  }
+
   &.nieuw {
     summary {
       list-style: none;
@@ -150,10 +161,6 @@ details {
       &::-webkit-details-marker {
         display: none;
       }
-    }
-
-    span {
-      font-weight: normal;
     }
   }
 

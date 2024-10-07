@@ -48,6 +48,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
 
         if (!bestandsformaat) throw new Error();
 
+        doc.officieleTitel = file.name.replace(/\.[^/.]+$/, ""); // file name minus extension as default title
         doc.bestandsnaam = file.name;
         doc.bestandsformaat = bestandsformaat;
         doc.bestandsomvang = file.size;
