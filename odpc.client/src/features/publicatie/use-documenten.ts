@@ -130,16 +130,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
 
   const removeDocument = (index: number) => documenten.value.splice(index, 1);
 
-  const toggleDocument = (uuid: string) => {
-    const doc = documenten.value.find((doc) => doc.uuid === uuid);
-
-    doc &&
-      (doc.status =
-        doc.status === PublicatieStatus.ingetrokken
-          ? PublicatieStatus.gepubliceerd
-          : PublicatieStatus.ingetrokken);
-  };
-
   onMounted(async () => pubUUID.value && (await getDocumenten().execute()));
 
   return {
@@ -151,7 +141,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     documentError,
     uploadingFile,
     submitDocumenten,
-    removeDocument,
-    toggleDocument
+    removeDocument
   };
 };

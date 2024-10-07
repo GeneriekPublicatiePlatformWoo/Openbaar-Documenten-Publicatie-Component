@@ -14,7 +14,10 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
         [HttpGet("api/v1/gebruikersgroepen/{uuid:guid}")]
         public async Task<IActionResult> Get(Guid uuid, CancellationToken token)
         {
-            var groep = await _context.Gebruikersgroepen.Include(x=>x.Waardelijsten).SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
+            var groep = await _context.Gebruikersgroepen
+                .Include(x => x.Waardelijsten)
+                .Include(x => x.GebruikersgroepGebruikers)
+                .SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
 
             return groep == null ? NotFound() : Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
         }

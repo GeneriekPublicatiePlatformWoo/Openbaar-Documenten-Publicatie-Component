@@ -99,7 +99,6 @@ const emit = defineEmits<{
   (e: "update:documenten", payload: PublicatieDocument[]): void;
   (e: "update:files", payload: File[]): void;
   (e: "removeDocument", payload: number): void;
-  (e: "toggleDocument", payload: string): void;
 }>();
 
 const model = computed<PublicatieDocument[]>({

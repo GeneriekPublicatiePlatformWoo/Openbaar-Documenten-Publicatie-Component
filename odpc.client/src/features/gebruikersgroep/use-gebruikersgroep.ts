@@ -67,6 +67,12 @@ export const useGebruikersgroep = (uuid?: string) => {
     }
   };
 
+  const addGebruiker = (gebruiker: string) =>
+    gebruikersgroep.value.gekoppeldeGebruikers.push(gebruiker);
+
+  const removeGebruiker = (index: number) =>
+    gebruikersgroep.value.gekoppeldeGebruikers.splice(index, 1);
+
   onMounted(async () => uuid && (await getGebruikersgroep().execute()));
 
   return {
@@ -74,6 +80,8 @@ export const useGebruikersgroep = (uuid?: string) => {
     loadingGebruikersgroep,
     gebruikersgroepError,
     submitGebruikersgroep,
-    removeGebruikersgroep
+    removeGebruikersgroep,
+    addGebruiker,
+    removeGebruiker
   };
 };
