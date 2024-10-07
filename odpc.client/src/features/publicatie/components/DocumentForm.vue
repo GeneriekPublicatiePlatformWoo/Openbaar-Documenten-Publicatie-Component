@@ -11,12 +11,12 @@
     <details
       v-for="(doc, index) in model"
       :key="index"
-      :class="{ nieuw: !doc.uuid, ingetrokken: doc.status === 'ingetrokken' }"
+      :class="{ nieuw: !doc.uuid, ingetrokken: doc.status === PublicatieStatus.ingetrokken }"
       :open="!doc.uuid"
     >
       <template v-if="doc.uuid">
         <summary>
-          <template v-if="doc.status === 'ingetrokken'"
+          <template v-if="doc.status === PublicatieStatus.ingetrokken"
             ><s :aria-describedby="`status-${index}`">{{ doc.bestandsnaam }}</s>
             <span :id="`status-${index}`" role="status">(ingetrokken)</span></template
           >
@@ -25,10 +25,14 @@
 
         <div class="form-group form-group-radio">
           <label>
-            <input type="radio" v-model="doc.status" value="gepubliceerd" /> Gepubliceerd
+            <input type="radio" v-model="doc.status" :value="PublicatieStatus.gepubliceerd" />
+            Gepubliceerd
           </label>
 
-          <label><input type="radio" v-model="doc.status" value="ingetrokken" /> Ingetrokken</label>
+          <label
+            ><input type="radio" v-model="doc.status" :value="PublicatieStatus.ingetrokken" />
+            Ingetrokken</label
+          >
         </div>
       </template>
 
@@ -85,7 +89,7 @@ import { computed } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import toast from "@/stores/toast";
 import PromptModal from "@/components/PromptModal.vue";
-import type { PublicatieDocument } from "../types";
+import { PublicatieStatus, type PublicatieDocument } from "../types";
 import { mimeTypesMap } from "../service";
 import FileUpload from "./FileUpload.vue";
 

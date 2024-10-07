@@ -2,7 +2,7 @@ import { ref, onMounted, watch, type ComputedRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import { mimeTypesMap, uploadFile } from "./service";
-import type { PublicatieDocument } from "./types";
+import { PublicatieStatus, type PublicatieDocument } from "./types";
 
 const DOCAPI_URL = `/api/v1/documenten`;
 
@@ -17,7 +17,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     bestandsformaat: "",
     bestandsomvang: 0,
     bestandsdelen: [],
-    status: "gepubliceerd"
+    status: PublicatieStatus.gepubliceerd
   });
 
   // Documenten
@@ -133,7 +133,11 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const toggleDocument = (uuid: string) => {
     const doc = documenten.value.find((doc) => doc.uuid === uuid);
 
-    doc && (doc.status = doc.status === "ingetrokken" ? "gepubliceerd" : "ingetrokken");
+    doc &&
+      (doc.status =
+        doc.status === PublicatieStatus.ingetrokken
+          ? PublicatieStatus.gepubliceerd
+          : PublicatieStatus.ingetrokken);
   };
 
   onMounted(async () => pubUUID.value && (await getDocumenten().execute()));
