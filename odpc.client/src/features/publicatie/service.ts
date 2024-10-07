@@ -10,7 +10,7 @@ const mimeTypesMap = ref<Map<string, MimeTypes> | null>(null);
   mimeTypesMap.value = new Map(data.value?.map((type) => [type.mimeType, type]));
 })();
 
-const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]): Promise<void> => {
+const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
   let blobStart = 0;
 
   try {

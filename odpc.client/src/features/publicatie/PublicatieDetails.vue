@@ -25,11 +25,17 @@
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
 
-      <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
-        >Annuleren</router-link
-      >
+      <menu class="reset">
+        <li>
+          <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
+            >Annuleren</router-link
+          >
+        </li>
 
-      <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
+        <li>
+          <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
+        </li>
+      </menu>
     </div>
   </form>
 </template>
@@ -83,7 +89,7 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
-const submit = async (): Promise<void> => {
+const submit = async () => {
   if (validateForm(formRef.value).invalid) return;
 
   try {

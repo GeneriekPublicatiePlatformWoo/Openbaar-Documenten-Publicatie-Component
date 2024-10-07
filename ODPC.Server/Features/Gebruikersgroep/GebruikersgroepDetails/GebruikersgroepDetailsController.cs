@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ODPC.Data;
+using ODPC.Data.Entities;
 
 namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
 {
@@ -10,25 +11,12 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepDetails
     {
         private readonly OdpcDbContext _context = context;
 
-        [HttpGet("api/gebruikersgroepen/{Id}")]
-        public async Task<IActionResult> Get(Guid id, CancellationToken token)
+        [HttpGet("api/v1/gebruikersgroepen/{uuid:guid}")]
+        public async Task<IActionResult> Get(Guid uuid, CancellationToken token)
         {
-            var groep = await _context.Gebruikersgroepen.SingleOrDefaultAsync(x => x.Id == id, cancellationToken: token);
+            var groep = await _context.Gebruikersgroepen.Include(x=>x.Waardelijsten).SingleOrDefaultAsync(x => x.Uuid == uuid, cancellationToken: token);
 
-            if (groep == null) return NotFound();
-
-            var result = new GebruikersgroepDetailsModel
-            {
-                Id = groep.Id,
-                Name = groep.Name,
-                GekoppeldeWaardelijsten = await _context
-                    .GebruikersgroepWaardelijsten
-                    .Where(x => x.GebruikersgroepId == id)
-                    .Select(x => x.WaardelijstId)
-                    .ToListAsync(cancellationToken: token)
-            };
-
-            return Ok(result);
+            return groep == null ? NotFound() : Ok(GebruikersgroepDetailsModel.MapEntityToViewModel(groep));
         }
     }
 }

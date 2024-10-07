@@ -1,5 +1,6 @@
 export type Gebruikersgroep = {
-  id: string;
-  name: string;
+  uuid?: string;
+  naam: string;
+  omschrijving?: string;
   gekoppeldeWaardelijsten: string[];
 };

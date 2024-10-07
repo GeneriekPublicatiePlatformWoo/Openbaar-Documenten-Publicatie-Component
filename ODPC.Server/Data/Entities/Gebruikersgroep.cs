@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualBasic;
 
 namespace ODPC.Data.Entities
 {
     public class Gebruikersgroep
     {
-        public Guid Id { get; set; }
-        public required string Name { get; set; }
+        public Guid Uuid { get; set; }
+        public required string Naam { get; set; }
+        public string? Omschrijving { get; set; }
 
+        public ICollection<GebruikersgroepWaardelijst> Waardelijsten { get; set; } = [];
     }
 }

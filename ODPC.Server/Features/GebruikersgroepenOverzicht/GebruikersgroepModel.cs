@@ -2,7 +2,7 @@
 {
     public class GebruikersgroepModel
     {
-        public required string Name { get; set; }
-        public Guid Id { get; set; }
+        public required string Naam { get; set; }
+        public Guid Uuid { get; set; }
     }
 }
