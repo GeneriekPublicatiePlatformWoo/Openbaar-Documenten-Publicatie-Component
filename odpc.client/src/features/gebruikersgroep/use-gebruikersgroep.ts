@@ -10,7 +10,8 @@ export const useGebruikersgroep = (uuid?: string) => {
   const gebruikersgroep = ref<Gebruikersgroep>({
     naam: "",
     omschrijving: "",
-    gekoppeldeWaardelijsten: []
+    gekoppeldeWaardelijsten: [],
+    gekoppeldeGebruikers: []
   });
 
   const {

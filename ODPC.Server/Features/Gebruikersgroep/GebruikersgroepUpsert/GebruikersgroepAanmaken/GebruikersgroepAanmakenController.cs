@@ -26,6 +26,7 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
             _context.Gebruikersgroepen.Add(groep);
 
             UpsertHelpers.AddWaardelijstenToGroep(model.GekoppeldeWaardelijsten, groep, _context);
+            UpsertHelpers.AddGebruikersToGroep(model.GekoppeldeGebruikers, groep, _context);
 
             await _context.SaveChangesAsync(token);
 

@@ -3,4 +3,5 @@ export type Gebruikersgroep = {
   naam: string;
   omschrijving?: string;
   gekoppeldeWaardelijsten: string[];
+  gekoppeldeGebruikers: string[];
 };

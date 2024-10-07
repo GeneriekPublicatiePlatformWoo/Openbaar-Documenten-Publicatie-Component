@@ -13,5 +13,13 @@ namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
                 .AddRange(gekoppeldeWaardelijsten
                     .Select(x => new GebruikersgroepWaardelijst { Gebruikersgroep = groep, WaardelijstId = x }));
         }
+
+        //voeg de nieuwe set gebruikers toe aan deze groep
+        public static void AddGebruikersToGroep(List<string> gekoppeldeGebruikers, Data.Entities.Gebruikersgroep groep, OdpcDbContext context)
+        {
+            context.GebruikersgroepGebruikers
+                .AddRange(gekoppeldeGebruikers
+                    .Select(x => new GebruikersgroepGebruiker { Gebruikersgroep = groep, GebruikerId = x }));
+        }
     }
 }
