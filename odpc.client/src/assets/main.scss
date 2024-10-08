@@ -97,3 +97,9 @@
   padding: 0;
   margin: 0;
 }
+
+// Button
+button[class*="icon"] {
+  display: flex;
+  column-gap: var(--spacing-small);
+}

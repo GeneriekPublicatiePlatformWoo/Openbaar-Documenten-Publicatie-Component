@@ -31,15 +31,21 @@
         id="gebruiker"
         type="text"
         v-model="gebruiker"
+        :aria-invalid="!gebruiker.trim().length"
         @keydown.enter.prevent="onAddGebruiker"
       />
 
-      <button type="button" @click="onAddGebruiker" :disabled="!gebruiker.trim().length">
+      <button
+        type="button"
+        :disabled="!gebruiker.trim().length"
+        :aria-disabled="!gebruiker.trim().length"
+        @click="onAddGebruiker"
+      >
         Toevoegen
       </button>
     </div>
 
-    <details ref="detailsRef">
+    <details ref="detailsRef" aria-live="polite">
       <summary>Toegevoegde gebruikers</summary>
 
       <p v-if="!model.gekoppeldeGebruikers.length">Er zijn nog geen gebruikers toegevoegd.</p>
@@ -49,6 +55,7 @@
           <button
             type="button"
             :title="`${gekoppeldeGebruiker} verwijderen`"
+            :aria-label="`${gekoppeldeGebruiker} verwijderen`"
             class="button secondary icon-after xmark"
             @click="$emit('removeGebruiker', index)"
           >
@@ -78,9 +85,9 @@ const model = computed({
   set: (value) => emit("update:modelValue", value)
 });
 
-const gebruiker = ref<string>("");
-
 const detailsRef = ref<HTMLDetailsElement>();
+
+const gebruiker = ref("");
 
 const onAddGebruiker = () => {
   if (!gebruiker.value.trim().length) return;
@@ -104,28 +111,16 @@ const onAddGebruiker = () => {
 ul {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-small);
-
-  button {
-    display: flex;
-    column-gap: var(--spacing-small);
-    margin: 0;
-  }
+  column-gap: var(--spacing-small);
 }
 
 .form-group-button {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: var(--spacing-small);
+  column-gap: var(--spacing-small);
 
   label {
     grid-column: span 2;
-  }
-
-  label,
-  input,
-  button {
-    margin: 0;
   }
 }
 </style>

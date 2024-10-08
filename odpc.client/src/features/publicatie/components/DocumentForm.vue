@@ -145,11 +145,6 @@ h2 {
   margin-block-end: var(--spacing-default);
 }
 
-button {
-  display: flex;
-  column-gap: var(--spacing-small);
-}
-
 details {
   span {
     font-weight: normal;
