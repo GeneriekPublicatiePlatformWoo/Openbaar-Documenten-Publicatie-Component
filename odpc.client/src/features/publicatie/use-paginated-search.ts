@@ -4,8 +4,14 @@ import { useFetchApi } from "@/api/use-fetch-api";
 
 const API_URL = `/api/v1`;
 
-export const useSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
-  type QueryParams = Record<U, string> & { query: string };
+export const usePaginatedSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
+  type RequiredParams = { page: string; search: string };
+  type QueryParams = Record<U, string> & RequiredParams;
+  type QueryParam = keyof QueryParams;
+
+  const requiredParams = { page: "", search: "" };
+
+  params = { ...requiredParams, ...params };
 
   const urlSearchParams = useUrlSearchParams("history", {
     initialValue: params,
@@ -15,22 +21,30 @@ export const useSearch = <T, U extends string>(endpoint: string, params: UrlPara
   const items = ref<T>();
 
   const queryParams = ref(params) as Ref<QueryParams>;
-  const queryString = ref("");
+  const searchString = ref("");
 
-  const onInit = () => {
-    queryParams.value = (Object.keys(params) as (keyof QueryParams)[]).reduce((result, key) => {
+  const initQueryParams = () => {
+    queryParams.value = (Object.keys(params) as QueryParam[]).reduce((result, key) => {
       (result as Record<string, string>)[key] = (urlSearchParams[key] as string) || "";
 
       return result;
     }, {} as QueryParams);
   };
 
-  const onSearch = () => (queryParams.value = { ...queryParams.value, query: queryString.value });
+  const nextPage = () => {
+    queryParams.value.page = `${+queryParams.value.page + 1}`;
+  };
+
+  const prevPage = () => {
+    queryParams.value.page = `${+queryParams.value.page - 1}`;
+  };
+
+  const onSearch = () => (queryParams.value = { ...queryParams.value, search: searchString.value });
 
   const searchParams = computed(
     () =>
       new URLSearchParams(
-        (Object.keys(params) as (keyof QueryParams)[]).reduce((result, key) => {
+        (Object.keys(params) as QueryParam[]).reduce((result, key) => {
           if (queryParams.value[key]) result[key] = queryParams.value[key];
 
           return result;
@@ -39,18 +53,16 @@ export const useSearch = <T, U extends string>(endpoint: string, params: UrlPara
   );
 
   watch(
-    () => queryParams.value.query,
-    (query) => {
-      queryString.value = query;
-    }
+    () => queryParams.value.search,
+    (search) => (searchString.value = search)
   );
 
   watch(searchParams, async (value) => {
     // Clear all urlSearchParams
-    for (const k in urlSearchParams) urlSearchParams[k as keyof QueryParams] = "";
+    for (const k in urlSearchParams) urlSearchParams[k as QueryParam] = "";
 
     // Set new urlSearchParams
-    for (const [k, v] of value) urlSearchParams[k as keyof QueryParams] = v;
+    for (const [k, v] of value) urlSearchParams[k as QueryParam] = v;
 
     await get().execute();
   });
@@ -64,12 +76,14 @@ export const useSearch = <T, U extends string>(endpoint: string, params: UrlPara
 
   watch(data, (value) => (items.value = value || items.value));
 
-  onMounted(async () => onInit());
+  onMounted(initQueryParams);
 
   return {
     items,
-    queryString,
+    searchString,
     queryParams,
+    nextPage,
+    prevPage,
     onSearch,
     isFetching,
     error

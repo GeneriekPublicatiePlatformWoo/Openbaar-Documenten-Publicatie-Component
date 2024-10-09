@@ -41,10 +41,10 @@ export type MimeTypes = {
 
 export const PublicatieSearchParams = {
   page: "",
-  query: "",
   sorteer: "",
-  van: "",
-  tot: ""
+  search: "",
+  registratiedatum__gte: "",
+  registratiedatum__lte: ""
 };
 
 export type PublicatieSearchParam = keyof typeof PublicatieSearchParams;

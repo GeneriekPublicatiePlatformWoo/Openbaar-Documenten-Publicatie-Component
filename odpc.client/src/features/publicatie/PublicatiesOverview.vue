@@ -7,7 +7,7 @@
     <div class="form-group form-group-button">
       <label for="zoeken">Zoeken</label>
 
-      <input type="text" id="zoeken" v-model="queryString" @keydown.enter.prevent="onSearch" />
+      <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
 
       <button type="button" class="icon-after loupe" aria-label="Zoeken" @click="onSearch"></button>
     </div>
@@ -15,28 +15,39 @@
     <div class="form-group">
       <label for="van">Van</label>
 
-      <input type="date" id="van" v-model="queryParams.van" />
+      <input type="date" id="van" v-model="queryParams.registratiedatum__gte" />
     </div>
 
     <div class="form-group">
       <label for="tot">Tot</label>
 
-      <input type="date" id="tot" v-model="queryParams.tot" />
+      <input type="date" id="tot" v-model="queryParams.registratiedatum__lte" />
     </div>
 
     <div class="form-group">
       <label for="sorteer">Sorteer op</label>
 
       <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-        <option value=""></option>
+        <option
+          v-for="(value, index) in ['officiele_titel', 'verkorte_titel', 'registratiedatum']"
+          :key="index"
+          :value="value"
+        >
+          {{ value }}
+        </option>
       </select>
     </div>
   </div>
 
   <div class="search">
-    <p><strong>{{ publicaties?.length }}</strong> resultaten</p>
+    <p>
+      <strong>{{ publicaties?.length }}</strong> resultaten
+    </p>
 
-    <p>Pagina {{ queryParams.page }} van 456</p>
+    <p>
+      <button type="button" @click="prevPage">&laquo;</button> Pagina {{ queryParams.page }} van 456
+      <button type="button" @click="nextPage">&raquo;</button>
+    </p>
   </div>
 
   <simple-spinner v-if="isFetching"></simple-spinner>
@@ -67,16 +78,18 @@
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import { PublicatieSearchParams, type Publicatie, type PublicatieSearchParam } from "./types";
-import { useSearch } from "./use-search";
+import { usePaginatedSearch } from "./use-paginated-search";
 
 const {
   items: publicaties,
-  queryString,
+  searchString,
   queryParams,
   onSearch,
+  nextPage,
+  prevPage,
   isFetching,
   error
-} = useSearch<Publicatie[], PublicatieSearchParam>("publicaties", {
+} = usePaginatedSearch<Publicatie[], PublicatieSearchParam>("publicaties", {
   ...PublicatieSearchParams,
   page: "1",
   sorteer: "registratiedatum"
