@@ -38,3 +38,13 @@ export type MimeTypes = {
   name: string;
   mimeType: string;
 };
+
+export const PublicatieSearchParams = {
+  page: "",
+  query: "",
+  sorteer: "",
+  van: "",
+  tot: ""
+};
+
+export type PublicatieSearchParam = keyof typeof PublicatieSearchParams;

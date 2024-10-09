@@ -82,6 +82,16 @@
   }
 }
 
+.form-group-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: var(--spacing-small);
+
+  label {
+    grid-column: span 2;
+  }
+}
+
 .form-submit {
   display: flex;
   justify-content: space-between;
