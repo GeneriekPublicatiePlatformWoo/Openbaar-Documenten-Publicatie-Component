@@ -10,5 +10,6 @@ namespace ODPC.Data.Entities
         public string? Omschrijving { get; set; }
 
         public ICollection<GebruikersgroepWaardelijst> Waardelijsten { get; set; } = [];
+        public ICollection<GebruikersgroepGebruiker> GebruikersgroepGebruikers { get; set; } = [];
     }
 }

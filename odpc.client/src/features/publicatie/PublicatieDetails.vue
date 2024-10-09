@@ -18,7 +18,6 @@
         v-model:documenten="documenten"
         v-model:files="files"
         @removeDocument="removeDocument"
-        @toggleDocument="toggleDocument"
       />
     </section>
 
@@ -82,8 +81,7 @@ const {
   loadingDocument,
   uploadingFile,
   submitDocumenten,
-  removeDocument,
-  toggleDocument
+  removeDocument
 } =
   // Get associated docs by uuid prop when existing pub, so no need to wait for pub fetch.
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.

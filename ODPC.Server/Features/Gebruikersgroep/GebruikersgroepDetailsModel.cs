@@ -11,6 +11,7 @@ namespace ODPC.Features.Gebruikersgroep
         //Id's van de waardelijsten die gebruikt mogen worden binnen deze gebruikersgroep
         public required IEnumerable<string> GekoppeldeWaardelijsten { get; set; }
 
+        public required IEnumerable<string> GekoppeldeGebruikers { get; set; }
 
         //viewmodel voor een nieuwe of gewijzigde gebruikersgroep
         public static GebruikersgroepDetailsModel MapEntityToViewModel(Data.Entities.Gebruikersgroep groep)
@@ -20,7 +21,8 @@ namespace ODPC.Features.Gebruikersgroep
                 Uuid = groep.Uuid,
                 Naam = groep.Naam,
                 Omschrijving = groep.Omschrijving,
-                GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId).AsEnumerable()
+                GekoppeldeWaardelijsten = groep.Waardelijsten.Select(x => x.WaardelijstId).AsEnumerable(),
+                GekoppeldeGebruikers = groep.GebruikersgroepGebruikers.Select(x => x.GebruikerId).AsEnumerable()
             };
         }
     }

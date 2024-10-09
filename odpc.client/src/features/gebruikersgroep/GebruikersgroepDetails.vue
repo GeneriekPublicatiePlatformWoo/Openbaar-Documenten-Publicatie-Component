@@ -7,7 +7,12 @@
         >Er is iets misgegaan bij het ophalen van de gebruikersgroep...</alert-inline
       >
 
-      <gebruikersgroep-form v-else v-model="gebruikersgroep" />
+      <gebruikersgroep-form
+        v-else
+        v-model="gebruikersgroep"
+        @addGebruiker="addGebruiker"
+        @removeGebruiker="removeGebruiker"
+      />
 
       <alert-inline v-if="waardelijstItemsError"
         >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
@@ -78,7 +83,9 @@ const {
   loadingGebruikersgroep,
   gebruikersgroepError,
   submitGebruikersgroep,
-  removeGebruikersgroep
+  removeGebruikersgroep,
+  addGebruiker,
+  removeGebruiker
 } = useGebruikersgroep(props.uuid);
 
 const submit = async () => {
