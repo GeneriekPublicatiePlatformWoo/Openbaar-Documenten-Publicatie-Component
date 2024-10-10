@@ -39,10 +39,16 @@ namespace ODPC.Test
             Assert.AreEqual(upsertModel.Omschrijving, detailsModel.Omschrijving);
             Assert.AreEqual(upsertModel.Naam, detailsModel.Naam);
             Assert.AreEqual(upsertModel.GekoppeldeWaardelijsten.Count, detailsModel.GekoppeldeWaardelijsten.Count());
+            Assert.AreEqual(upsertModel.GekoppeldeGebruikers.Count, detailsModel.GekoppeldeGebruikers.Count());
 
             foreach (var item in upsertModel.GekoppeldeWaardelijsten)
             {
                 Assert.IsTrue(detailsModel.GekoppeldeWaardelijsten.Contains(item));
+            }
+
+            foreach (var item in upsertModel.GekoppeldeGebruikers)
+            {
+                Assert.IsTrue(detailsModel.GekoppeldeGebruikers.Contains(item));
             }
         }
 
@@ -64,10 +70,16 @@ namespace ODPC.Test
             Assert.AreEqual(upsertModel.Omschrijving, detailsModel.Omschrijving);
             Assert.AreEqual(upsertModel.Naam, detailsModel.Naam);
             Assert.AreEqual(upsertModel.GekoppeldeWaardelijsten.Count, detailsModel.GekoppeldeWaardelijsten.Count());
+            Assert.AreEqual(upsertModel.GekoppeldeGebruikers.Count, detailsModel.GekoppeldeGebruikers.Count());
 
             foreach (var item in upsertModel.GekoppeldeWaardelijsten)
             {
                 Assert.IsTrue(detailsModel.GekoppeldeWaardelijsten.Contains(item));
+            }
+
+            foreach (var item in upsertModel.GekoppeldeGebruikers)
+            {
+                Assert.IsTrue(detailsModel.GekoppeldeGebruikers.Contains(item));
             }
         }
 
@@ -93,7 +105,8 @@ namespace ODPC.Test
         {
             Omschrijving = Guid.NewGuid().ToString(),
             Naam = Guid.NewGuid().ToString(),
-            GekoppeldeWaardelijsten = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()]
+            GekoppeldeWaardelijsten = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()],
+            GekoppeldeGebruikers = [Guid.NewGuid().ToString(), Guid.NewGuid().ToString()]
         };
 
         private static GebruikersgroepWaardelijst RandomWaardelijst(Gebruikersgroep groep) => new()
