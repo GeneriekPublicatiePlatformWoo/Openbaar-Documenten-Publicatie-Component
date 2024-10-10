@@ -48,8 +48,8 @@ import toast from "@/stores/toast";
 import { validateForm } from "@/helpers/validate";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
-import { usePublicatie } from "./use-publicatie";
-import { useDocumenten } from "./use-documenten";
+import { usePublicatie } from "./composables/use-publicatie";
+import { useDocumenten } from "./composables/use-documenten";
 
 const router = useRouter();
 

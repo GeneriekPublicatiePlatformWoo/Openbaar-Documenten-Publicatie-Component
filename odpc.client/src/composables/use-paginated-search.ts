@@ -66,6 +66,15 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
     // Set new urlSearchParams
     for (const [k, v] of value) urlSearchParams[k] = v;
 
+    await new Promise<void>((resolve) => {
+      const interval = setInterval(() => {
+        if (!isFetching.value) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+
     await get().execute();
   });
 

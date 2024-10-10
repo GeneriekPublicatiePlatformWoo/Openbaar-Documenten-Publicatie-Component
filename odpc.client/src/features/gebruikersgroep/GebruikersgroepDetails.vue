@@ -65,7 +65,7 @@ import { validateForm } from "@/helpers/validate";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
 import WaardelijstenForm from "./components/WaardelijstenForm.vue";
 import { loadingWaardelijstItems, waardelijstItemsError } from "@/features/waardelijst";
-import { useGebruikersgroep } from "./use-gebruikersgroep";
+import { useGebruikersgroep } from "./composables/use-gebruikersgroep";
 
 const router = useRouter();
 

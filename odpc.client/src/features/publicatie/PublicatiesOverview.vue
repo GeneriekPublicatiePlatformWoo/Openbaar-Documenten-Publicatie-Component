@@ -12,17 +12,10 @@
       <button type="button" class="icon-after loupe" aria-label="Zoeken" @click="onSearch"></button>
     </div>
 
-    <div class="form-group">
-      <label for="van">Van</label>
-
-      <input type="date" id="van" v-model="queryParams.registratiedatum__gte" />
-    </div>
-
-    <div class="form-group">
-      <label for="tot">Tot</label>
-
-      <input type="date" id="tot" v-model="queryParams.registratiedatum__lte" />
-    </div>
+    <date-range-picker
+      v-model:fromDate="queryParams.registratiedatum__gte"
+      v-model:untilDate="queryParams.registratiedatum__lte"
+    />
 
     <div class="form-group">
       <label for="sorteer">Sorteer op</label>
@@ -77,8 +70,9 @@
 <script setup lang="ts">
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
+import DateRangePicker from "@/components/DateRangePicker.vue";
+import { usePaginatedSearch } from "@/composables/use-paginated-search";
 import { publicatieSearchParams, type Publicatie, type PublicatieSearchParam } from "./types";
-import { usePaginatedSearch } from "./use-paginated-search";
 
 const {
   items: publicaties,

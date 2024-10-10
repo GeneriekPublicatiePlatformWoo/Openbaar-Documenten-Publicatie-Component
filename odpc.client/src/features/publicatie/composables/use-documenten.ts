@@ -1,8 +1,8 @@
 import { ref, onMounted, watch, type ComputedRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
-import { mimeTypesMap, uploadFile } from "./service";
-import { PublicatieStatus, type PublicatieDocument } from "./types";
+import { mimeTypesMap, uploadFile } from "../service";
+import { PublicatieStatus, type PublicatieDocument } from "../types";
 
 const DOCAPI_URL = `/api/v1/documenten`;
 

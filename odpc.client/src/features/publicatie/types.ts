@@ -1,4 +1,4 @@
-import type { RequiredPaginatedSearchParams } from "./use-paginated-search";
+import type { RequiredPaginatedSearchParams } from "@/composables/use-paginated-search";
 
 export const PublicatieStatus = Object.freeze({
   concept: "concept",
