@@ -75,8 +75,17 @@ import DateRangePicker from "@/components/DateRangePicker.vue";
 import { usePagedSearch } from "@/composables/use-paged-search";
 import { publicatieSearchParams, type Publicatie, type PublicatieSearchParam } from "./types";
 
-const { pagedResult, pageCount, searchString, queryParams, onSearch, onNext, onPrev, isFetching, error } =
-  usePagedSearch<Publicatie, PublicatieSearchParam>("publicaties", publicatieSearchParams);
+const {
+  pagedResult,
+  pageCount,
+  searchString,
+  queryParams,
+  onSearch,
+  onNext,
+  onPrev,
+  isFetching,
+  error
+} = usePagedSearch<Publicatie, PublicatieSearchParam>("publicaties", publicatieSearchParams);
 </script>
 
 <style lang="scss" scoped>

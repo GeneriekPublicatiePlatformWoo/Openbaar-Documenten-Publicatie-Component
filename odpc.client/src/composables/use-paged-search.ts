@@ -61,8 +61,6 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
       )
   );
 
-  const pageCount = computed(() => (pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0));
-
   watch(
     () => queryParams.value.search,
     (search) => (searchString.value = search)
@@ -92,6 +90,10 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
 
     await get().execute();
   });
+
+  const pageCount = computed(() =>
+    pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
+  );
 
   const { get, data, isFetching, error } = useFetchApi(
     () => `${API_URL}/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
