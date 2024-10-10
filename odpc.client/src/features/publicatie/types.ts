@@ -1,5 +1,3 @@
-import type { RequiredPaginatedSearchParams } from "@/composables/use-paginated-search";
-
 export const PublicatieStatus = Object.freeze({
   concept: "concept",
   gepubliceerd: "gepubliceerd",
@@ -11,7 +9,7 @@ export type Publicatie = {
   officieleTitel: string;
   verkorteTitel: string;
   omschrijving: string;
-  creatiedatum: string;
+  registratiedatum: string;
   status?: keyof typeof PublicatieStatus;
 };
 
@@ -41,9 +39,7 @@ export type MimeTypes = {
   mimeType: string;
 };
 
-type PublicatieSearchParams = Record<string, string> & RequiredPaginatedSearchParams;
-
-export const publicatieSearchParams: PublicatieSearchParams = {
+export const publicatieSearchParams = {
   page: "",
   sorteer: "",
   search: "",

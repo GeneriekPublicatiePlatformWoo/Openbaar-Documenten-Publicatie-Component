@@ -34,12 +34,13 @@
 
   <div class="search">
     <p>
-      <strong>{{ publicaties?.length }}</strong> resultaten
+      <strong>{{ pagedResult?.count || 0 }}</strong> resultaten
     </p>
 
     <p>
-      <button type="button" @click="prevPage">&laquo;</button> Pagina {{ queryParams.page }} van 456
-      <button type="button" @click="nextPage">&raquo;</button>
+      <button type="button" :disabled="!pagedResult?.previous" @click="onPrev">&laquo;</button>
+      pagina {{ queryParams.page }} van {{ pageCount }}
+      <button type="button" :disabled="!pagedResult?.next" @click="onNext">&raquo;</button>
     </p>
   </div>
 
@@ -50,7 +51,7 @@
   >
 
   <ul v-else class="reset">
-    <li v-for="{ uuid, officieleTitel, creatiedatum } in publicaties" :key="uuid">
+    <li v-for="{ uuid, officieleTitel, registratiedatum } in pagedResult?.results" :key="uuid">
       <router-link
         :to="{ name: 'publicatie', params: { uuid } }"
         :title="officieleTitel"
@@ -60,7 +61,7 @@
 
         <dl>
           <dt>Publicatiedatum</dt>
-          <dd>{{ creatiedatum }}</dd>
+          <dd>{{ registratiedatum }}</dd>
         </dl>
       </router-link>
     </li>
@@ -71,23 +72,11 @@
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
-import { usePaginatedSearch } from "@/composables/use-paginated-search";
+import { usePagedSearch } from "@/composables/use-paged-search";
 import { publicatieSearchParams, type Publicatie, type PublicatieSearchParam } from "./types";
 
-const {
-  items: publicaties,
-  searchString,
-  queryParams,
-  onSearch,
-  nextPage,
-  prevPage,
-  isFetching,
-  error
-} = usePaginatedSearch<Publicatie[], PublicatieSearchParam>("publicaties", {
-  ...publicatieSearchParams,
-  page: "1",
-  sorteer: "registratiedatum"
-});
+const { pagedResult, pageCount, searchString, queryParams, onSearch, onNext, onPrev, isFetching, error } =
+  usePagedSearch<Publicatie, PublicatieSearchParam>("publicaties", publicatieSearchParams);
 </script>
 
 <style lang="scss" scoped>

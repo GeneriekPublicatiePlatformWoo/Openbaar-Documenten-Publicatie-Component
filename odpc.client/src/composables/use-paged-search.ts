@@ -3,14 +3,21 @@ import { useUrlSearchParams, type UrlParams } from "@vueuse/core";
 import { useFetchApi } from "@/api/use-fetch-api";
 
 const API_URL = `/api/v1`;
+const PAGE_SIZE = 5;
 
-export type RequiredPaginatedSearchParams = { page: string; search: string };
+type PagedResult<T> = {
+  count: number;
+  next?: string;
+  previous?: string;
+  results: T[];
+};
 
-export const usePaginatedSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
-  type QueryParams = Record<U, string> & RequiredPaginatedSearchParams;
+export const usePagedSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
+  type RequiredPagedSearchParams = { page: string; search: string };
+  type QueryParams = Record<U, string> & RequiredPagedSearchParams;
   type QueryParam = keyof QueryParams;
 
-  const requiredParams: RequiredPaginatedSearchParams = { page: "", search: "" };
+  const requiredParams: RequiredPagedSearchParams = { page: "", search: "" };
 
   params = { ...requiredParams, ...params };
 
@@ -21,7 +28,7 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
     removeFalsyValues: true
   });
 
-  const items = ref<T>();
+  const pagedResult = ref(null) as Ref<PagedResult<T> | null>;
 
   const queryParams = ref(params) as Ref<QueryParams>;
   const searchString = ref("");
@@ -33,11 +40,11 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
     );
   };
 
-  const nextPage = () => {
+  const onNext = () => {
     queryParams.value.page = `${+queryParams.value.page + 1}`;
   };
 
-  const prevPage = () => {
+  const onPrev = () => {
     queryParams.value.page = `${+queryParams.value.page - 1}`;
   };
 
@@ -54,12 +61,20 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
       )
   );
 
+  const pageCount = computed(() => (pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0));
+
   watch(
     () => queryParams.value.search,
     (search) => (searchString.value = search)
   );
 
   watch(searchParams, async (value) => {
+    // Reset to page 1 when not set or filters or sorts change
+    if (queryParams.value.page === urlSearchParams.page && queryParams.value.page !== "1") {
+      queryParams.value.page = "1";
+      return;
+    }
+
     // Clear all urlSearchParams
     for (const k in urlSearchParams) urlSearchParams[k] = "";
 
@@ -79,22 +94,23 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
   });
 
   const { get, data, isFetching, error } = useFetchApi(
-    () => `${API_URL}/${endpoint}${searchParams.value.size ? "?" + searchParams.value : ""}`,
+    () => `${API_URL}/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
     {
       immediate: false
     }
-  ).json<T>();
+  ).json<PagedResult<T>>();
 
-  watch(data, (value) => (items.value = value || items.value));
+  watch(data, (value) => (pagedResult.value = value || pagedResult.value));
 
   onMounted(initQueryParams);
 
   return {
-    items,
+    pagedResult,
+    pageCount,
     searchString,
     queryParams,
-    nextPage,
-    prevPage,
+    onNext,
+    onPrev,
     onSearch,
     isFetching,
     error

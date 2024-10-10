@@ -10,7 +10,7 @@ export const usePublicatie = (uuid?: string) => {
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
-    creatiedatum: new Date().toISOString().split("T")[0]
+    registratiedatum: new Date().toISOString().split("T")[0]
   });
 
   const {

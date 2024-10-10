@@ -37,7 +37,6 @@ const untilDate = computed<string>({
   set: (value) => emit("update:untilDate", value)
 });
 
-// fromDate
 watch(fromDate, (value) => {
   if (!fromDateRef.value || !untilDateRef.value) return;
 
@@ -59,7 +58,6 @@ watch(fromDate, (value) => {
   }
 });
 
-// untilDate
 watch(untilDate, (value) => {
   if (!fromDateRef.value || !untilDateRef.value) return;
 
