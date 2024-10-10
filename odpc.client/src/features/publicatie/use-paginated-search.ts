@@ -4,14 +4,17 @@ import { useFetchApi } from "@/api/use-fetch-api";
 
 const API_URL = `/api/v1`;
 
+export type RequiredPaginatedSearchParams = { page: string; search: string };
+
 export const usePaginatedSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
-  type RequiredParams = { page: string; search: string };
-  type QueryParams = Record<U, string> & RequiredParams;
+  type QueryParams = Record<U, string> & RequiredPaginatedSearchParams;
   type QueryParam = keyof QueryParams;
 
-  const requiredParams = { page: "", search: "" };
+  const requiredParams: RequiredPaginatedSearchParams = { page: "", search: "" };
 
   params = { ...requiredParams, ...params };
+
+  const paramKeys = Object.keys(params) as QueryParam[];
 
   const urlSearchParams = useUrlSearchParams("history", {
     initialValue: params,
@@ -24,11 +27,10 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
   const searchString = ref("");
 
   const initQueryParams = () => {
-    queryParams.value = (Object.keys(params) as QueryParam[]).reduce((result, key) => {
-      (result as Record<string, string>)[key] = (urlSearchParams[key] as string) || "";
-
-      return result;
-    }, {} as QueryParams);
+    queryParams.value = paramKeys.reduce(
+      (result, key) => ({ ...result, [key]: urlSearchParams[key] || "" }),
+      {} as QueryParams
+    );
   };
 
   const nextPage = () => {
@@ -44,11 +46,11 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
   const searchParams = computed(
     () =>
       new URLSearchParams(
-        (Object.keys(params) as QueryParam[]).reduce((result, key) => {
-          if (queryParams.value[key]) result[key] = queryParams.value[key];
-
-          return result;
-        }, {} as QueryParams)
+        paramKeys.reduce(
+          (result, key) =>
+            queryParams.value[key] ? { ...result, [key]: queryParams.value[key] } : result,
+          {}
+        )
       )
   );
 
@@ -59,10 +61,10 @@ export const usePaginatedSearch = <T, U extends string>(endpoint: string, params
 
   watch(searchParams, async (value) => {
     // Clear all urlSearchParams
-    for (const k in urlSearchParams) urlSearchParams[k as QueryParam] = "";
+    for (const k in urlSearchParams) urlSearchParams[k] = "";
 
     // Set new urlSearchParams
-    for (const [k, v] of value) urlSearchParams[k as QueryParam] = v;
+    for (const [k, v] of value) urlSearchParams[k] = v;
 
     await get().execute();
   });

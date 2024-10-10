@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
-import { PublicatieSearchParams, type Publicatie, type PublicatieSearchParam } from "./types";
+import { publicatieSearchParams, type Publicatie, type PublicatieSearchParam } from "./types";
 import { usePaginatedSearch } from "./use-paginated-search";
 
 const {
@@ -90,7 +90,7 @@ const {
   isFetching,
   error
 } = usePaginatedSearch<Publicatie[], PublicatieSearchParam>("publicaties", {
-  ...PublicatieSearchParams,
+  ...publicatieSearchParams,
   page: "1",
   sorteer: "registratiedatum"
 });
