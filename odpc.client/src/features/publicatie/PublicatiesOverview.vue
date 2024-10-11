@@ -12,20 +12,15 @@
       <button type="button" class="icon-after loupe" aria-label="Zoeken" @click="onSearch"></button>
     </div>
 
-    <date-range-picker
-      v-model:fromDate="queryParams.registratiedatum__gte"
-      v-model:untilDate="queryParams.registratiedatum__lte"
-    />
+    <date-range-picker v-model:fromDate="queryParams.registratiedatum__gte"
+      v-model:untilDate="queryParams.registratiedatum__lte" />
 
     <div class="form-group">
       <label for="sorteer">Sorteer op</label>
 
       <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-        <option
-          v-for="(value, index) in ['officiele_titel', 'verkorte_titel', 'registratiedatum']"
-          :key="index"
-          :value="value"
-        >
+        <option v-for="(value, index) in ['officiele_titel', 'verkorte_titel', 'registratiedatum']" :key="index"
+          :value="value">
           {{ value }}
         </option>
       </select>
@@ -46,22 +41,17 @@
 
   <simple-spinner v-if="isFetching"></simple-spinner>
 
-  <alert-inline v-else-if="error"
-    >Er is iets misgegaan, probeer het nogmaals. {{ error }}</alert-inline
-  >
+  <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals. {{ error }}</alert-inline>
 
   <ul v-else class="reset">
     <li v-for="{ uuid, officieleTitel, registratiedatum } in pagedResult?.results" :key="uuid">
-      <router-link
-        :to="{ name: 'publicatie', params: { uuid } }"
-        :title="officieleTitel"
-        class="card-link icon-after pen"
-      >
+      <router-link :to="{ name: 'publicatie', params: { uuid } }" :title="officieleTitel"
+        class="card-link icon-after pen">
         <h2>{{ officieleTitel }}</h2>
 
         <dl>
           <dt>Publicatiedatum</dt>
-          <dd>{{ registratiedatum }}</dd>
+          <dd>{{ Intl.DateTimeFormat('default', { dateStyle: 'long' }).format(Date.parse(registratiedatum)) }}</dd>
         </dl>
       </router-link>
     </li>
