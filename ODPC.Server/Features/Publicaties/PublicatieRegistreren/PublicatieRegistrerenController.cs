@@ -9,7 +9,7 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
         public IActionResult Post(Publicatie publicatie)
         {
             publicatie.Uuid = Guid.NewGuid();
-            publicatie.Registratiedatum = DateOnly.FromDateTime(DateTime.Now);
+            publicatie.Registratiedatum = DateTime.Now;
             PublicatiesMock.Publicaties[publicatie.Uuid] = publicatie;
             return Ok(publicatie);
         }

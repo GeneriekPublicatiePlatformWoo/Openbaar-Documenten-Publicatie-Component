@@ -3,43 +3,61 @@
     <router-link :to="{ name: 'publicatie' }" class="button">Nieuwe publicatie</router-link>
   </p>
 
-  <div class="search">
-    <div class="form-group form-group-button">
-      <label for="zoeken">Zoeken</label>
+  <form>
+    <fieldset>
+      <div class="form-group form-group-button">
+        <label for="zoeken">Zoeken</label>
 
-      <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
+        <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
 
-      <button type="button" class="icon-after loupe" aria-label="Zoeken" @click="onSearch"></button>
-    </div>
+        <button
+          type="button"
+          class="icon-after loupe"
+          aria-label="Zoeken"
+          @click="onSearch"
+        ></button>
+      </div>
+    </fieldset>
 
     <date-range-picker
       v-model:fromDate="queryParams.registratiedatum__gte"
       v-model:untilDate="queryParams.registratiedatum__lte"
     />
 
-    <div class="form-group">
-      <label for="sorteer">Sorteer op</label>
+    <fieldset>
+      <div class="form-group">
+        <label for="sorteer">Sorteer op</label>
 
-      <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-        <option
-          v-for="(value, index) in ['officiele_titel', 'verkorte_titel', 'registratiedatum']"
-          :key="index"
-          :value="value"
-        >
-          {{ value }}
-        </option>
-      </select>
-    </div>
-  </div>
+        <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
+          <option
+            v-for="(value, key) in {
+              officiele_titel: 'Title (a-z)',
+              '-officiele_titel': 'Title (z-a)',
+              verkorte_titel: 'Verkorte title (a-z)',
+              '-verkorte_titel': 'Verkorte title (z-a)',
+              registratiedatum: 'Registratiedatum (oud-nieuw)',
+              '-registratiedatum': 'Registratiedatum (nieuw-oud)'
+            }"
+            :key="key"
+            :value="key"
+          >
+            {{ value }}
+          </option>
+        </select>
+      </div>
+    </fieldset>
+  </form>
 
-  <div class="search">
+  <div class="page-bar">
     <p>
       <strong>{{ pagedResult?.count || 0 }}</strong> resultaten
     </p>
 
     <p>
       <button type="button" :disabled="!pagedResult?.previous" @click="onPrev">&laquo;</button>
-      pagina {{ queryParams.page }} van {{ pageCount }}
+
+      <span>pagina {{ queryParams.page }} van {{ pageCount }}</span>
+
       <button type="button" :disabled="!pagedResult?.next" @click="onNext">&raquo;</button>
     </p>
   </div>
@@ -50,8 +68,11 @@
     >Er is iets misgegaan, probeer het nogmaals. {{ error }}</alert-inline
   >
 
-  <ul v-else class="reset">
-    <li v-for="{ uuid, officieleTitel, registratiedatum } in pagedResult?.results" :key="uuid">
+  <ul v-else class="reset" aria-live="polite">
+    <li
+      v-for="{ uuid, officieleTitel, verkorteTitel, registratiedatum } in pagedResult?.results"
+      :key="uuid"
+    >
       <router-link
         :to="{ name: 'publicatie', params: { uuid } }"
         :title="officieleTitel"
@@ -59,9 +80,17 @@
       >
         <h2>{{ officieleTitel }}</h2>
 
+        <h3>{{ verkorteTitel }}</h3>
+
         <dl>
-          <dt>Publicatiedatum</dt>
-          <dd>{{ registratiedatum }}</dd>
+          <dt>Publicatiedatum:</dt>
+          <dd>
+            {{
+              Intl.DateTimeFormat("default", { dateStyle: "long" }).format(
+                Date.parse(registratiedatum)
+              )
+            }}
+          </dd>
         </dl>
       </router-link>
     </li>
@@ -89,10 +118,34 @@ const {
 </script>
 
 <style lang="scss" scoped>
-.search {
+form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
+  column-gap: var(--spacing-large);
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+}
+
+.page-bar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+
+  p {
+    margin-block: var(--spacing-default);
+  }
+
+  button {
+    padding-block: var(--spacing-extrasmall);
+  }
+
+  span {
+    margin-inline: var(--spacing-default);
+  }
 }
 
 ul {
@@ -103,7 +156,7 @@ ul {
 
 dl {
   display: flex;
-  margin-block: var(--spacing-default) 0;
+  margin-block: var(--spacing-small) 0;
 
   dd {
     color: var(--text-light);

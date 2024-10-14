@@ -40,8 +40,8 @@ export type MimeTypes = {
 };
 
 export const publicatieSearchParams = {
-  page: "",
-  sorteer: "",
+  page: "1",
+  sorteer: "-registratiedatum",
   search: "",
   registratiedatum__gte: "",
   registratiedatum__lte: ""

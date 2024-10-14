@@ -1,15 +1,17 @@
 <template>
-  <div class="form-group">
-    <label for="fromDate">Van</label>
+  <fieldset>
+    <div class="form-group">
+      <label for="fromDate">Van</label>
 
-    <input type="date" id="fromDate" ref="fromDateRef" v-model="fromDate" :max="today" />
-  </div>
+      <input type="date" id="fromDate" ref="fromDateRef" v-model="fromDate" :max="today" />
+    </div>
 
-  <div class="form-group">
-    <label for="untilDate">Tot</label>
+    <div class="form-group">
+      <label for="untilDate">Tot</label>
 
-    <input type="date" id="untilDate" ref="untilDateRef" v-model="untilDate" :max="today" />
-  </div>
+      <input type="date" id="untilDate" ref="untilDateRef" v-model="untilDate" :max="today" />
+    </div>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -80,4 +82,13 @@ watch(untilDate, (value) => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+fieldset {
+  display: flex;
+  column-gap: var(--spacing-default);
+
+  .form-group {
+    flex-grow: 1;
+  }
+}
+</style>
