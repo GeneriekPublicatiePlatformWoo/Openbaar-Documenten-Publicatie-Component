@@ -5,7 +5,7 @@ import { useFetchApi } from "@/api/use-fetch-api";
 const API_URL = `/api/v1`;
 const PAGE_SIZE = 5;
 
-type PagedResult<T> = {
+export type PagedResult<T> = {
   count: number;
   next?: string;
   previous?: string;
@@ -83,13 +83,14 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
     // Set new urlSearchParams
     for (const [k, v] of value) urlSearchParams[k] = v;
 
+    // Search but wait if fetching
     await new Promise<void>((resolve) => {
       const interval = setInterval(() => {
         if (!isFetching.value) {
           clearInterval(interval);
           resolve();
         }
-      }, 200);
+      }, 100);
     });
 
     await get().execute();
