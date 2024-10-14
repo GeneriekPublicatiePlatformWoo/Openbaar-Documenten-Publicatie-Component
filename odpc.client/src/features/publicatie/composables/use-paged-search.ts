@@ -5,7 +5,7 @@ import { useFetchApi } from "@/api/use-fetch-api";
 const API_URL = `/api/v1`;
 const PAGE_SIZE = 5;
 
-type PagedResult<T> = {
+export type PagedResult<T> = {
   count: number;
   next?: string;
   previous?: string;
@@ -13,11 +13,10 @@ type PagedResult<T> = {
 };
 
 export const usePagedSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
-  type RequiredPagedSearchParams = { page: string; search: string };
-  type QueryParams = Record<U, string> & RequiredPagedSearchParams;
+  type QueryParams = Record<U, string> & { page: string; search: string };
   type QueryParam = keyof QueryParams;
 
-  const requiredParams: RequiredPagedSearchParams = { page: "", search: "" };
+  const requiredParams = { page: "", search: "" };
 
   params = { ...requiredParams, ...params };
 
@@ -61,15 +60,20 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
       )
   );
 
+  const pageCount = computed(() =>
+    pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
+  );
+
   watch(
     () => queryParams.value.search,
     (search) => (searchString.value = search)
   );
 
   watch(searchParams, async (value) => {
-    // Reset to page 1 when not set or filters or sorts change
-    if (queryParams.value.page === urlSearchParams.page && queryParams.value.page !== "1") {
+    // Reset to page 1 when page param not set or filter/sort changes
+    if (queryParams.value.page !== "1" && queryParams.value.page === urlSearchParams.page) {
       queryParams.value.page = "1";
+
       return;
     }
 
@@ -79,6 +83,7 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
     // Set new urlSearchParams
     for (const [k, v] of value) urlSearchParams[k] = v;
 
+    // Search but wait if fetching
     await new Promise<void>((resolve) => {
       const interval = setInterval(() => {
         if (!isFetching.value) {
@@ -90,10 +95,6 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
 
     await get().execute();
   });
-
-  const pageCount = computed(() =>
-    pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
-  );
 
   const { get, data, isFetching, error } = useFetchApi(
     () => `${API_URL}/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
