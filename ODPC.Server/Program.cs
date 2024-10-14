@@ -41,7 +41,7 @@ try
     var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
     builder.Services.Configure<OdrcConfig>(builder.Configuration.GetSection("Odrc"));
-    builder.Services.AddScoped<IOrdcClientFactory, OrdcClientFactory>();
+    builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
 
 
 

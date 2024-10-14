@@ -4,12 +4,12 @@ using ODPC.Authentication;
 
 namespace ODPC.Apis.Odrc
 {
-    public interface IOrdcClientFactory
+    public interface IOdrcClientFactory
     {
         HttpClient Create(OdpUser user, string handeling);
     }
 
-    public class OrdcClientFactory(IHttpClientFactory httpClientFactory, IOptions<OdrcConfig> options) : IOrdcClientFactory
+    public class OdrcClientFactory(IHttpClientFactory httpClientFactory, IOptions<OdrcConfig> options) : IOdrcClientFactory
     {
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly IOptions<OdrcConfig> _options = options;
