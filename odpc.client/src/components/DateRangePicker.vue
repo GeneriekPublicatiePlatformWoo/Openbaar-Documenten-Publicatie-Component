@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, watchEffect } from "vue";
+import { ref, watch } from "vue";
 
 const props = defineProps<{ fromDate: string; untilDate: string }>();
 
@@ -43,10 +43,13 @@ const today = ref(new Date().toISOString().split("T")[0]);
 const fromDateModel = ref<string>("");
 const untilDateModel = ref<string>("");
 
-watchEffect(() => {
-  fromDateModel.value = props.fromDate;
-  untilDateModel.value = props.untilDate;
-});
+watch(
+  () => [props.fromDate, props.untilDate],
+  ([fromDate, untilDate]) => {
+    fromDateModel.value = fromDate;
+    untilDateModel.value = untilDate;
+  }
+);
 
 const onFromDateChange = () => emit("update:fromDate", fromDateModel.value);
 const onUntilDateChange = () => emit("update:untilDate", untilDateModel.value);

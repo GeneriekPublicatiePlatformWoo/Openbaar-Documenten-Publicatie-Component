@@ -3,6 +3,35 @@
     <router-link :to="{ name: 'publicatie' }" class="button">Nieuwe publicatie</router-link>
   </p>
 
+  <form>
+    <fieldset>
+      <div class="form-group form-group-button">
+        <label for="zoeken">Zoek op titel</label>
+
+        <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
+
+        <button type="button" class="icon-after loupe" aria-label="Zoek" @click="onSearch"></button>
+      </div>
+    </fieldset>
+
+    <date-range-picker
+      v-model:from-date="queryParams.registratiedatum__gte"
+      v-model:until-date="queryParams.registratiedatum__lte"
+    />
+
+    <fieldset>
+      <div class="form-group">
+        <label for="sorteer">Sorteer op</label>
+
+        <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
+          <option v-for="(value, key) in publicatieSortingOptions" :key="key" :value="key">
+            {{ value }}
+          </option>
+        </select>
+      </div>
+    </fieldset>
+  </form>
+
   <simple-spinner v-if="isFetching"></simple-spinner>
 
   <alert-inline v-else-if="error"
@@ -10,40 +39,6 @@
   >
 
   <template v-else>
-    <form>
-      <fieldset>
-        <div class="form-group form-group-button">
-          <label for="zoeken">Zoek op titel</label>
-
-          <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
-
-          <button
-            type="button"
-            class="icon-after loupe"
-            aria-label="Zoek"
-            @click="onSearch"
-          ></button>
-        </div>
-      </fieldset>
-
-      <date-range-picker
-        v-model:from-date="queryParams.registratiedatum__gte"
-        v-model:until-date="queryParams.registratiedatum__lte"
-      />
-
-      <fieldset>
-        <div class="form-group">
-          <label for="sorteer">Sorteer op</label>
-
-          <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-            <option v-for="(value, key) in publicatieSortingOptions" :key="key" :value="key">
-              {{ value }}
-            </option>
-          </select>
-        </div>
-      </fieldset>
-    </form>
-
     <page-nav
       :paged-result="pagedResult"
       :page="queryParams.page"
