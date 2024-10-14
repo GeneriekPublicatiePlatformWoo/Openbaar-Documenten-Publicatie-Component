@@ -33,7 +33,7 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
             {
                 if (DateTime.TryParseExact(registratiedatum__lte, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime parsedUntilDate))
                 {
-                    untilDate = parsedUntilDate;
+                    untilDate = parsedUntilDate.AddDays(1).AddTicks(-1);
                 }
             }
 

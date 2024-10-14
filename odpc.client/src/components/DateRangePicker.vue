@@ -3,43 +3,58 @@
     <div class="form-group">
       <label for="fromDate">Van</label>
 
-      <input type="date" id="fromDate" ref="fromDateRef" v-model="fromDate" :max="today" />
+      <input
+        type="date"
+        id="fromDate"
+        ref="fromDateRef"
+        v-model="fromDateModel"
+        @change="onFromDateChange"
+        :max="today"
+      />
     </div>
 
     <div class="form-group">
       <label for="untilDate">Tot</label>
 
-      <input type="date" id="untilDate" ref="untilDateRef" v-model="untilDate" :max="today" />
+      <input
+        type="date"
+        id="untilDate"
+        ref="untilDateRef"
+        v-model="untilDateModel"
+        @change="onUntilDateChange"
+        :max="today"
+      />
     </div>
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { ref, watch, watchEffect } from "vue";
 
 const props = defineProps<{ fromDate: string; untilDate: string }>();
-
-const today = ref(new Date().toISOString().split("T")[0]);
-
-const fromDateRef = ref<HTMLInputElement>();
-const untilDateRef = ref<HTMLInputElement>();
 
 const emit = defineEmits<{
   (e: "update:fromDate", payload: string): void;
   (e: "update:untilDate", payload: string): void;
 }>();
 
-const fromDate = computed<string>({
-  get: () => props.fromDate,
-  set: (value) => emit("update:fromDate", value)
+const today = ref(new Date().toISOString().split("T")[0]);
+
+const fromDateModel = ref<string>("");
+const untilDateModel = ref<string>("");
+
+watchEffect(() => {
+  fromDateModel.value = props.fromDate;
+  untilDateModel.value = props.untilDate;
 });
 
-const untilDate = computed<string>({
-  get: () => props.untilDate,
-  set: (value) => emit("update:untilDate", value)
-});
+const onFromDateChange = () => emit("update:fromDate", fromDateModel.value);
+const onUntilDateChange = () => emit("update:untilDate", untilDateModel.value);
 
-watch(fromDate, (value) => {
+const fromDateRef = ref<HTMLInputElement>();
+const untilDateRef = ref<HTMLInputElement>();
+
+watch(fromDateModel, (value) => {
   if (!fromDateRef.value || !untilDateRef.value) return;
 
   if (value) {
@@ -51,7 +66,7 @@ watch(fromDate, (value) => {
 
     untilDateRef.value.min = value;
 
-    if (untilDate.value && untilDate.value < value) {
+    if (untilDateModel.value && untilDateModel.value < value) {
       untilDateRef.value.value = value;
       untilDateRef.value.dispatchEvent(new Event("input"));
     }
@@ -60,7 +75,7 @@ watch(fromDate, (value) => {
   }
 });
 
-watch(untilDate, (value) => {
+watch(untilDateModel, (value) => {
   if (!fromDateRef.value || !untilDateRef.value) return;
 
   if (value) {
@@ -72,7 +87,7 @@ watch(untilDate, (value) => {
 
     fromDateRef.value.max = value;
 
-    if (fromDate.value && value < fromDate.value) {
+    if (fromDateModel.value && value < fromDateModel.value) {
       fromDateRef.value.value = value;
       fromDateRef.value.dispatchEvent(new Event("input"));
     }
