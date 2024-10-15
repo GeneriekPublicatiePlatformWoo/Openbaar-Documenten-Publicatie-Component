@@ -9,25 +9,7 @@ namespace ODPC.Features.WaardeLijstenOverzicht
         public required string Id { get; set; }
     
         public required string Name { get; set; }
-
    
-        public string Type { get; set; } = "INFORMATIECATEGORIE";
+        public string Type { get; set; } = "INFORMATIECATEGORIE"; //tijdelijk. als de andere categorien ook uit het odrc gehaald worden, zullen de waardelijsten volledig gesplitst worden
     }
-
-
-    //public class InformatiecategorieViewModel : WaardelijstViewModel
-    //{     
-    //    public override string Type => "INFORMATIECATEGORIE";
-    //}
-
-    //public class ThemaViewModel : WaardelijstViewModel
-    //{
-    //    public override string Type => "THEMA";
-    //}
-
-    //public class OrganisatieViewModel : WaardelijstViewModel
-    //{
-    //    public override string Type => "ORGANISATIE";
-    //} 
-
 }
