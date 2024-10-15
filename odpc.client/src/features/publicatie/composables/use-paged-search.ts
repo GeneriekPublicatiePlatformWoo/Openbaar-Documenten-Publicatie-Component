@@ -50,7 +50,14 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
     queryParams.value.page = `${+queryParams.value.page - 1}`;
   };
 
+  // searchString: update queryParams.value.search when searchString.value is 'submitted from input'
   const onSearch = () => (queryParams.value = { ...queryParams.value, search: searchString.value });
+
+  // searchString: update searchString.value when its updated from url param through queryParams.value.search
+  watch(
+    () => queryParams.value.search,
+    (search) => (searchString.value = search)
+  );
 
   const searchParams = computed(
     () =>
@@ -67,13 +74,28 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
     pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
   );
 
-  watch(
-    () => queryParams.value.search,
-    (search) => (searchString.value = search)
-  );
+  watch(searchParams, async (newValue, oldValue) => {
+    const newParams = Object.fromEntries(newValue.entries());
+    const oldParams = Object.fromEntries(oldValue.entries());
 
-  watch(searchParams, async (value) => {
-    router.push({ query: { ...Object.fromEntries(value.entries()) } });
+    // Reset page when a filter or sorting changes
+    if (newParams.page === oldParams.page) {
+      for (const key of paramKeys) {
+        if (key === "page") continue;
+
+        if (
+          newParams.page !== "1" &&
+          (newParams[key] !== oldParams[key] || newParams[key] !== urlSearchParams[key])
+        ) {
+          queryParams.value.page = "1";
+
+          return false;
+        }
+      }
+    }
+
+    // Update history
+    router.push({ query: { ...newParams } });
 
     // Search but wait if fetching
     await new Promise<void>((resolve) => {
@@ -95,13 +117,7 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
     }
   ).json<PagedResult<T>>();
 
-  watch(data, (value) => {
-    pagedResult.value = value || pagedResult.value;
-
-    if (pageCount.value < +queryParams.value.page) {
-      queryParams.value.page = "1";
-    }
-  });
+  watch(data, (value) => (pagedResult.value = value || pagedResult.value));
 
   onMounted(initQueryParams);
 

@@ -8,6 +8,7 @@
         id="fromDate"
         ref="fromDateRef"
         v-model="fromDateModel"
+        @keydown="disableKeyboardInput"
         @change="$emit('update:fromDate', fromDateModel)"
         :max="today"
       />
@@ -21,6 +22,7 @@
         id="untilDate"
         ref="untilDateRef"
         v-model="untilDateModel"
+        @keydown="disableKeyboardInput"
         @change="$emit('update:untilDate', untilDateModel)"
         :max="today"
       />
@@ -39,6 +41,9 @@ defineEmits<{
 }>();
 
 const today = ref(new Date().toISOString().split("T")[0]);
+
+const disableKeyboardInput = (event: KeyboardEvent) =>
+  !["Tab", "ArrowLeft", "ArrowRight", "Enter"].includes(event.key) && event.preventDefault();
 
 const fromDateModel = ref<string>("");
 const untilDateModel = ref<string>("");
