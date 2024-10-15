@@ -10,7 +10,7 @@ namespace ODPC.Features.WaardeLijstenOverzicht
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class WaardelijstenController(OdpUser user, IOrdcClientFactory clientFactory) : ControllerBase
+    public class WaardelijstenController(OdpUser user, IOdrcClientFactory clientFactory) : ControllerBase
     {
         [HttpGet]
         public async Task<IEnumerable<WaardelijstViewModel>> GetAsync()
