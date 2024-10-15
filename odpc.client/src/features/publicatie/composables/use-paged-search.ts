@@ -14,10 +14,10 @@ export type PagedResult<T> = {
 };
 
 export const usePagedSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
-  type QueryParams = Record<U, string> & { page: string; search: string };
+  type QueryParams = Record<U, string> & { page: string };
   type QueryParam = keyof QueryParams;
 
-  const requiredParams = { page: "", search: "" };
+  const requiredParams = { page: "" };
 
   params = { ...requiredParams, ...params };
 
@@ -28,10 +28,9 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
     removeFalsyValues: true
   });
 
-  const pagedResult = ref(null) as Ref<PagedResult<T> | null>;
-
   const queryParams = ref(params) as Ref<QueryParams>;
-  const searchString = ref("");
+
+  const pagedResult = ref(null) as Ref<PagedResult<T> | null>;
 
   const router = useRouter();
 
@@ -49,15 +48,6 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
   const onPrev = () => {
     queryParams.value.page = `${+queryParams.value.page - 1}`;
   };
-
-  // searchString: update queryParams.value.search when searchString.value is 'submitted from input'
-  const onSearch = () => (queryParams.value = { ...queryParams.value, search: searchString.value });
-
-  // searchString: update searchString.value when its updated from url param through queryParams.value.search
-  watch(
-    () => queryParams.value.search,
-    (search) => (searchString.value = search)
-  );
 
   const searchParams = computed(
     () =>
@@ -122,13 +112,11 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
   onMounted(initQueryParams);
 
   return {
+    queryParams,
     pagedResult,
     pageCount,
-    searchString,
-    queryParams,
     onNext,
     onPrev,
-    onSearch,
     isFetching,
     error
   };

@@ -28,15 +28,17 @@ defineEmits<{ (e: "onPrev"): void; (e: "onNext"): void }>();
 <style lang="scss" scoped>
 .page-nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  column-gap: var(--spacing-large);
 
   p {
-    margin-block: var(--spacing-default);
+    margin-block: var(--spacing-large);
   }
 
   button {
     padding-block: var(--spacing-extrasmall);
+    margin-block: 0;
   }
 
   span {

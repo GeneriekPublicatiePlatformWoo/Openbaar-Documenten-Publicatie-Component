@@ -5,30 +5,20 @@
 
   <form>
     <fieldset :disabled="isFetching">
-      <div class="form-group form-group-button">
-        <label for="zoeken">Zoek op titel</label>
+      <legend>Zoek op</legend>
+
+      <div class="form-group">
+        <label for="zoeken">Titel</label>
 
         <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
-
-        <button type="button" class="icon-after loupe" aria-label="Zoek" @click="onSearch"></button>
       </div>
-    </fieldset>
 
-    <date-range-picker
-      :disabled="isFetching"
-      v-model:from-date="queryParams.registratiedatum__gte"
-      v-model:until-date="queryParams.registratiedatum__lte"
-    />
+      <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDate" />
 
-    <fieldset :disabled="isFetching">
-      <div class="form-group">
-        <label for="sorteer">Sorteer op</label>
-
-        <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-          <option v-for="(value, key) in publicatieSortingOptions" :key="key" :value="key">
-            {{ value }}
-          </option>
-        </select>
+      <div class="form-group-button">
+        <button type="button" class="icon-after loupe" aria-label="Zoek" @click="onSearch">
+          Zoek
+        </button>
       </div>
     </fieldset>
   </form>
@@ -40,14 +30,26 @@
   >
 
   <template v-else>
-    <page-nav
-      v-if="pageCount"
-      :paged-result="pagedResult"
-      :page="queryParams.page"
-      :page-count="pageCount"
-      @on-next="onNext"
-      @on-prev="onPrev"
-    />
+    <section>
+      <div class="form-group form-group-sort">
+        <label for="sorteer">Sorteer op</label>
+
+        <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
+          <option v-for="(value, key) in publicatieSortingOptions" :key="key" :value="key">
+            {{ value }}
+          </option>
+        </select>
+      </div>
+
+      <page-nav
+        v-if="pageCount"
+        :paged-result="pagedResult"
+        :page="queryParams.page"
+        :page-count="pageCount"
+        @on-next="onNext"
+        @on-prev="onPrev"
+      />
+    </section>
 
     <ul v-if="pagedResult?.results.length" class="reset" aria-live="polite">
       <li
@@ -82,6 +84,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
@@ -94,30 +97,56 @@ import {
   type PublicatieSearchParam
 } from "./types";
 
-const {
-  pagedResult,
-  pageCount,
-  searchString,
-  queryParams,
-  onSearch,
-  onNext,
-  onPrev,
-  isFetching,
-  error
-} = usePagedSearch<Publicatie, PublicatieSearchParam>("publicaties", publicatieSearchParams);
+const searchString = ref("");
+const fromDate = ref<string>("");
+const untilDate = ref<string>("");
+
+const { queryParams, pagedResult, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
+  Publicatie,
+  PublicatieSearchParam
+>("publicaties", publicatieSearchParams);
+
+// Set query params for search
+const onSearch = () =>
+  (queryParams.value = {
+    ...queryParams.value,
+    search: searchString.value,
+    registratiedatum__gte: fromDate.value,
+    registratiedatum__lte: untilDate.value
+  });
+
+// Update refs from url query params
+watch(
+  () => ({
+    search: queryParams.value.search,
+    registratiedatum__gte: queryParams.value.registratiedatum__gte,
+    registratiedatum__lte: queryParams.value.registratiedatum__lte
+  }),
+  ({ search, registratiedatum__gte, registratiedatum__lte }) => {
+    searchString.value = search;
+    fromDate.value = registratiedatum__gte;
+    untilDate.value = registratiedatum__lte;
+  }
+);
 </script>
 
 <style lang="scss" scoped>
-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--section-width-small), 1fr));
-  column-gap: var(--spacing-large);
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  column-gap: var(--spacing-default);
 
-  fieldset {
-    margin: 0;
-    padding: 0;
-    border: none;
+  .form-group {
+    flex-grow: 1;
+    margin-block-end: 0;
   }
+}
+
+section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
+  column-gap: var(--spacing-extralarge);
 }
 
 ul {

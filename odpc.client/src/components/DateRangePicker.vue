@@ -1,65 +1,42 @@
 <template>
-  <fieldset>
-    <div class="form-group">
-      <label for="fromDate">Van</label>
+  <div class="form-group">
+    <label for="fromDate">Datum van</label>
 
-      <input
-        type="date"
-        id="fromDate"
-        ref="fromDateRef"
-        v-model="fromDateModel"
-        @keydown="disableKeyboardInput"
-        @change="$emit('update:fromDate', fromDateModel)"
-        :max="today"
-      />
-    </div>
+    <input type="date" id="fromDate" ref="fromDateRef" v-model="fromDate" :max="today" />
+  </div>
 
-    <div class="form-group">
-      <label for="untilDate">Tot</label>
+  <div class="form-group">
+    <label for="untilDate">Datum tot</label>
 
-      <input
-        type="date"
-        id="untilDate"
-        ref="untilDateRef"
-        v-model="untilDateModel"
-        @keydown="disableKeyboardInput"
-        @change="$emit('update:untilDate', untilDateModel)"
-        :max="today"
-      />
-    </div>
-  </fieldset>
+    <input type="date" id="untilDate" ref="untilDateRef" v-model="untilDate" :max="today" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps<{ fromDate: string; untilDate: string }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "update:fromDate", payload: string): void;
   (e: "update:untilDate", payload: string): void;
 }>();
 
+const fromDate = computed<string>({
+  get: () => props.fromDate,
+  set: (value) => emit("update:fromDate", value)
+});
+const untilDate = computed<string>({
+  get: () => props.untilDate,
+  set: (value) => emit("update:untilDate", value)
+});
+
 const today = ref(new Date().toISOString().split("T")[0]);
-
-const disableKeyboardInput = (event: KeyboardEvent) =>
-  !["Tab", "ArrowLeft", "ArrowRight", "Enter"].includes(event.key) && event.preventDefault();
-
-const fromDateModel = ref<string>("");
-const untilDateModel = ref<string>("");
-
-watch(
-  () => [props.fromDate, props.untilDate],
-  ([fromDate, untilDate]) => {
-    fromDateModel.value = fromDate;
-    untilDateModel.value = untilDate;
-  }
-);
 
 const fromDateRef = ref<HTMLInputElement>();
 const untilDateRef = ref<HTMLInputElement>();
 
-watch(fromDateModel, (value) => {
+watch(fromDate, (value) => {
   if (!fromDateRef.value || !untilDateRef.value) return;
 
   if (value) {
@@ -71,7 +48,7 @@ watch(fromDateModel, (value) => {
 
     untilDateRef.value.min = value;
 
-    if (untilDateModel.value && untilDateModel.value < value) {
+    if (untilDate.value && untilDate.value < value) {
       untilDateRef.value.value = value;
       untilDateRef.value.dispatchEvent(new Event("input"));
     }
@@ -80,7 +57,7 @@ watch(fromDateModel, (value) => {
   }
 });
 
-watch(untilDateModel, (value) => {
+watch(untilDate, (value) => {
   if (!fromDateRef.value || !untilDateRef.value) return;
 
   if (value) {
@@ -92,7 +69,7 @@ watch(untilDateModel, (value) => {
 
     fromDateRef.value.max = value;
 
-    if (fromDateModel.value && value < fromDateModel.value) {
+    if (fromDate.value && value < fromDate.value) {
       fromDateRef.value.value = value;
       fromDateRef.value.dispatchEvent(new Event("input"));
     }
@@ -103,12 +80,7 @@ watch(untilDateModel, (value) => {
 </script>
 
 <style lang="scss" scoped>
-fieldset {
-  display: flex;
-  column-gap: var(--spacing-default);
-
-  .form-group {
-    flex-grow: 1;
-  }
+.form-group {
+  margin-block-end: 0;
 }
 </style>
