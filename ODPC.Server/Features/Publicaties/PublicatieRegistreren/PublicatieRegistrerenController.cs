@@ -7,9 +7,9 @@ using ODPC.Config;
 namespace ODPC.Features.Publicaties.PublicatieRegistreren
 {
     [ApiController]
-    public class PublicatieRegistrerenController(OdpUser user, IOrdcClientFactory clientFactory) : ControllerBase
+    public class PublicatieRegistrerenController(OdpUser user, IOdrcClientFactory clientFactory) : ControllerBase
     {
-        private readonly IOrdcClientFactory _clientFactory = clientFactory;
+        private readonly IOdrcClientFactory _clientFactory = clientFactory;
 
         [HttpPost("api/v1/publicaties")]
         public async Task<IActionResult> Post(Publicatie publicatie)

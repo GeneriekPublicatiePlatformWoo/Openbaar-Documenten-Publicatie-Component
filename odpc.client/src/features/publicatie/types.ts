@@ -40,11 +40,20 @@ export type MimeTypes = {
 };
 
 export const publicatieSearchParams = {
-  page: "",
-  sorteer: "",
+  page: "1",
+  sorteer: "-registratiedatum",
   search: "",
   registratiedatum__gte: "",
   registratiedatum__lte: ""
 };
 
 export type PublicatieSearchParam = keyof typeof publicatieSearchParams;
+
+export const publicatieSortingOptions = {
+  officiele_titel: "Title (a-z)",
+  "-officiele_titel": "Title (z-a)",
+  verkorte_titel: "Verkorte title (a-z)",
+  "-verkorte_titel": "Verkorte title (z-a)",
+  registratiedatum: "Registratiedatum (oud-nieuw)",
+  "-registratiedatum": "Registratiedatum (nieuw-oud)"
+};
