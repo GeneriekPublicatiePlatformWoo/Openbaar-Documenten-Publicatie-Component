@@ -8,7 +8,7 @@
         id="fromDate"
         ref="fromDateRef"
         v-model="fromDateModel"
-        @change="onFromDateChange"
+        @change="$emit('update:fromDate', fromDateModel)"
         :max="today"
       />
     </div>
@@ -21,7 +21,7 @@
         id="untilDate"
         ref="untilDateRef"
         v-model="untilDateModel"
-        @change="onUntilDateChange"
+        @change="$emit('update:untilDate', untilDateModel)"
         :max="today"
       />
     </div>
@@ -33,7 +33,7 @@ import { ref, watch } from "vue";
 
 const props = defineProps<{ fromDate: string; untilDate: string }>();
 
-const emit = defineEmits<{
+defineEmits<{
   (e: "update:fromDate", payload: string): void;
   (e: "update:untilDate", payload: string): void;
 }>();
@@ -50,9 +50,6 @@ watch(
     untilDateModel.value = untilDate;
   }
 );
-
-const onFromDateChange = () => emit("update:fromDate", fromDateModel.value);
-const onUntilDateChange = () => emit("update:untilDate", untilDateModel.value);
 
 const fromDateRef = ref<HTMLInputElement>();
 const untilDateRef = ref<HTMLInputElement>();

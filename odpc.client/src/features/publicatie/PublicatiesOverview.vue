@@ -4,7 +4,7 @@
   </p>
 
   <form>
-    <fieldset>
+    <fieldset :disabled="isFetching">
       <div class="form-group form-group-button">
         <label for="zoeken">Zoek op titel</label>
 
@@ -15,11 +15,12 @@
     </fieldset>
 
     <date-range-picker
+      :disabled="isFetching"
       v-model:from-date="queryParams.registratiedatum__gte"
       v-model:until-date="queryParams.registratiedatum__lte"
     />
 
-    <fieldset>
+    <fieldset :disabled="isFetching">
       <div class="form-group">
         <label for="sorteer">Sorteer op</label>
 
@@ -40,6 +41,7 @@
 
   <template v-else>
     <page-nav
+      v-if="pageCount"
       :paged-result="pagedResult"
       :page="queryParams.page"
       :page-count="pageCount"
