@@ -6,7 +6,7 @@
       <div class="form-group">
         <label for="uuid">ID</label>
 
-        {{ model.uuid }}
+        <input id="uuid" type="text" v-model="model.uuid" readonly />
       </div>
 
       <div class="form-group">
@@ -53,3 +53,9 @@ const model = computed({
   set: (value) => emit("update:modelValue", value)
 });
 </script>
+
+<style lang="scss" scoped>
+input:read-only {
+  background-color: var(--accent-bg);
+}
+</style>

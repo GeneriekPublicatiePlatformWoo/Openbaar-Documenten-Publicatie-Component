@@ -71,9 +71,9 @@ const router = createRouter({
   ]
 });
 
-const previousRoute = ref<RouteLocationNormalizedLoadedGeneric | null>(null);
+const previousRoute = ref<RouteLocationNormalizedLoadedGeneric>();
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
@@ -84,8 +84,6 @@ router.beforeEach(async (to, from, next) => {
   if (requiresAuth && !user?.isLoggedIn) {
     return { name: "login" };
   }
-
-  next();
 });
 
 export default router;

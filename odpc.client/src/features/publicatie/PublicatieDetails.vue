@@ -26,7 +26,7 @@
 
       <menu class="reset">
         <li>
-          <button type="button" title="Opslaan" class="button secondary" @click="navigateBack">
+          <button type="button" title="Opslaan" class="button secondary" @click="navigate">
             Annuleren
           </button>
         </li>
@@ -88,9 +88,9 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
-const navigateBack = () => {
+const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {
-    router.push({ name: "publicaties", query: previousRoute.value?.query });
+    router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
   } else {
     router.push({ name: "publicaties" });
   }
@@ -109,7 +109,7 @@ const submit = async () => {
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });
 
-  navigateBack();
+  navigate();
 };
 </script>
 
