@@ -3,6 +3,18 @@
     <legend>Publicatie</legend>
 
     <section>
+      <div class="form-group form-group-radio">
+        <label>
+          <input type="radio" v-model="model.status" :value="PublicatieStatus.gepubliceerd" />
+          Gepubliceerd
+        </label>
+
+        <label
+          ><input type="radio" v-model="model.status" :value="PublicatieStatus.ingetrokken" />
+          Ingetrokken</label
+        >
+      </div>
+
       <div class="form-group">
         <label for="uuid">ID</label>
 
@@ -42,7 +54,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { Publicatie } from "../types";
+import { PublicatieStatus, type Publicatie } from "../types";
 
 const props = defineProps<{ modelValue: Publicatie }>();
 

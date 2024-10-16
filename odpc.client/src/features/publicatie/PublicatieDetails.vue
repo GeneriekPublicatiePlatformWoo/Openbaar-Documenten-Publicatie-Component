@@ -36,6 +36,11 @@
         </li>
       </menu>
     </div>
+
+    <prompt-modal :dialog="dialog" confirm-message="Ja, intrekken" cancel-message="Nee, gepubliceerd laten">
+      <p>Weet u zeker dat u dit deze publicatie wilt intrekken?</p>
+      <p>Let op: deze actie kan niet ongedaan worden gemaakt.</p>
+    </prompt-modal>
   </form>
 </template>
 
@@ -43,8 +48,10 @@
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { previousRoute } from "@/router";
+import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
+import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
 import { validateForm } from "@/helpers/validate";
 import PublicatieForm from "./components/PublicatieForm.vue";
@@ -57,6 +64,8 @@ const router = useRouter();
 const props = defineProps<{ uuid?: string }>();
 
 const formRef = ref<HTMLFormElement>();
+
+const dialog = useConfirmDialog();
 
 const loading = computed(
   () =>
@@ -98,6 +107,8 @@ const navigate = () => {
 
 const submit = async () => {
   if (validateForm(formRef.value).invalid) return;
+
+  // const { isCanceled } = await dialog.reveal();
 
   try {
     await submitPublicatie();
