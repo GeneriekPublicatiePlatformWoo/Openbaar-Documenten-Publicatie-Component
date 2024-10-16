@@ -1,7 +1,9 @@
 <template>
   <menu class="reset">
     <li>
-      <router-link :to="{ name: 'publicatie' }" class="button icon-after note">Nieuwe publicatie</router-link>
+      <router-link :to="{ name: 'publicatie' }" class="button icon-after note"
+        >Nieuwe publicatie</router-link
+      >
     </li>
   </menu>
 
@@ -18,7 +20,13 @@
       <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDate" />
 
       <div class="form-group-button">
-        <button type="button" class="icon-after loupe" aria-label="Zoek" @click="onSearch">
+        <button
+          type="button"
+          class="icon-after loupe"
+          aria-label="Zoek"
+          @click="onSearch"
+          :disabled="isFetching"
+        >
           Zoek
         </button>
       </div>
@@ -29,8 +37,8 @@
 
   <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
-  <template v-else>
-    <section v-if="pageCount">
+  <template v-else-if="pageCount">
+    <section>
       <div class="form-group form-group-inline">
         <label for="sorteer">Sorteer op</label>
 
@@ -57,7 +65,7 @@
       </ul>
     </section>
 
-    <ul v-if="pagedResult?.results.length" class="reset card-link-list" aria-live="polite">
+    <ul class="reset card-link-list" aria-live="polite">
       <li
         v-for="{
           uuid,
@@ -95,9 +103,9 @@
         </router-link>
       </li>
     </ul>
-
-    <alert-inline v-else>Geen publicaties gevonden.</alert-inline>
   </template>
+
+  <alert-inline v-else>Geen publicaties gevonden.</alert-inline>
 </template>
 
 <script setup lang="ts">
