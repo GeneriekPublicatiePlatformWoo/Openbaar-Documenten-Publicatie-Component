@@ -14,7 +14,7 @@ namespace ODPC.Apis.Odrc
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly IOptions<OdrcConfig> _options = options;
 
-        public HttpClient Create(OdpUser user, string handeling)
+        public HttpClient Create(OdpUser user, string? handeling)
         {
             var config = _options.Value;
             var client = _httpClientFactory.CreateClient();
