@@ -26,9 +26,9 @@
 
       <menu class="reset">
         <li>
-          <router-link :to="{ name: 'publicaties' }" class="button button-secondary"
-            >Annuleren</router-link
-          >
+          <button type="button" title="Opslaan" class="button secondary" @click="navigateBack">
+            Annuleren
+          </button>
         </li>
 
         <li>
@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
+import { previousRoute } from "@/router";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import toast from "@/stores/toast";
@@ -87,6 +88,14 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
+const navigateBack = () => {
+  if (previousRoute.value?.name === "publicaties") {
+    router.push({ name: "publicaties", query: previousRoute.value?.query });
+  } else {
+    router.push({ name: "publicaties" });
+  }
+};
+
 const submit = async () => {
   if (validateForm(formRef.value).invalid) return;
 
@@ -100,7 +109,7 @@ const submit = async () => {
 
   toast.add({ text: "De publicatie is succesvol opgeslagen." });
 
-  router.push({ name: "publicaties" });
+  navigateBack();
 };
 </script>
 

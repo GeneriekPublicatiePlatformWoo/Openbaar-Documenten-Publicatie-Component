@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { ref } from "vue";
+import { createRouter, createWebHistory, type RouteLocationNormalizedLoadedGeneric } from "vue-router";
 import LoginView from "@/views/LoginView.vue";
 import PublicatiesView from "@/views/PublicatiesView.vue";
 import getUser from "@/stores/user";
@@ -70,15 +71,22 @@ const router = createRouter({
   ]
 });
 
-router.beforeEach(async (to) => {
+const previousRoute = ref<RouteLocationNormalizedLoadedGeneric | null>(null);
+
+router.beforeEach(async (to, from, next) => {
   document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
   const user = await getUser(false);
 
+  previousRoute.value = from;
+
   if (requiresAuth && !user?.isLoggedIn) {
     return { name: "login" };
   }
+
+  next();
 });
 
 export default router;
+export { previousRoute };

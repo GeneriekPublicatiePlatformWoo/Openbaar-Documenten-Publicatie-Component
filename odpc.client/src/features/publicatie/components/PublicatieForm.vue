@@ -4,6 +4,12 @@
 
     <section>
       <div class="form-group">
+        <label for="uuid">ID</label>
+
+        {{ model.uuid }}
+      </div>
+
+      <div class="form-group">
         <label for="titel">Titel *</label>
 
         <input
