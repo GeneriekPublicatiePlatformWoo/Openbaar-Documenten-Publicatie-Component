@@ -21,7 +21,10 @@ export const usePagedSearch = <T, U extends string>(
 
   const router = useRouter();
 
-  const urlSearchParams = useUrlSearchParams("history", { initialValue: params });
+  const urlSearchParams = useUrlSearchParams("history", {
+    initialValue: params,
+    removeFalsyValues: true
+  });
 
   const pagedResult = ref(null) as Ref<PagedResult<T> | null>;
 
