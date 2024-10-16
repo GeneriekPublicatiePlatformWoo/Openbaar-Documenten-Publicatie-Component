@@ -12,11 +12,9 @@
   }
 }
 
-// html,
-// body {
-//   height: 100%;
-//   overflow-y: scroll;
-// }
+body {
+  overflow-y: scroll;
+}
 
 // Link card
 .card-link {
@@ -30,7 +28,13 @@
   h2 {
     font-weight: normal;
     text-decoration: underline;
-    margin-block: 0;
+    margin-block: 0 var(--spacing-small);
+  }
+
+  h3 {
+    color: var(--text-light);
+    font-weight: normal;
+    margin-block: var(--spacing-small);
   }
 
   &:hover h2 {
@@ -79,6 +83,16 @@
         display: block;
       }
     }
+  }
+}
+
+.form-group-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: var(--spacing-small);
+
+  label {
+    grid-column: span 2;
   }
 }
 

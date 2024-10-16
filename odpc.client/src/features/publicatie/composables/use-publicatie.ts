@@ -1,7 +1,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
-import type { Publicatie } from "./types";
+import type { Publicatie } from "../types";
 
 const PUBAPI_URL = `/api/v1/publicaties`;
 
@@ -10,7 +10,7 @@ export const usePublicatie = (uuid?: string) => {
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
-    creatiedatum: new Date().toISOString().split("T")[0]
+    registratiedatum: new Date().toISOString().split("T")[0]
   });
 
   const {

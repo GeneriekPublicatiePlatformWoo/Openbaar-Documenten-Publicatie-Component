@@ -9,7 +9,7 @@ export type Publicatie = {
   officieleTitel: string;
   verkorteTitel: string;
   omschrijving: string;
-  creatiedatum: string;
+  registratiedatum: string;
   status?: keyof typeof PublicatieStatus;
 };
 

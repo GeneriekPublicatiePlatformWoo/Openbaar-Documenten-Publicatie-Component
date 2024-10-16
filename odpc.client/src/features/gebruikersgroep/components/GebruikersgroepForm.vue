@@ -113,14 +113,4 @@ ul {
   flex-wrap: wrap;
   column-gap: var(--spacing-small);
 }
-
-.form-group-button {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  column-gap: var(--spacing-small);
-
-  label {
-    grid-column: span 2;
-  }
-}
 </style>

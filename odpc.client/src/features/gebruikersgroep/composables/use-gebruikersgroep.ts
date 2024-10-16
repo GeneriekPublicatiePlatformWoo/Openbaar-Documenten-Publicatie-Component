@@ -1,7 +1,7 @@
 import { ref, onMounted, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
-import type { Gebruikersgroep } from "./types";
+import type { Gebruikersgroep } from "../types";
 import { waardelijstIds } from "@/features/waardelijst";
 
 const GGAPI_URL = `/api/v1/gebruikersgroepen`;
