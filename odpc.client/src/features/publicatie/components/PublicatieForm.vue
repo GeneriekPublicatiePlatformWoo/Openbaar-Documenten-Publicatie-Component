@@ -1,9 +1,9 @@
 <template>
-  <fieldset>
+  <fieldset :disabled="disabled">
     <legend>Publicatie</legend>
 
     <section>
-      <div class="form-group form-group-radio">
+      <div v-if="!disabled" class="form-group form-group-radio">
         <label>
           <input type="radio" v-model="model.status" :value="PublicatieStatus.gepubliceerd" />
           Gepubliceerd
@@ -15,10 +15,12 @@
         >
       </div>
 
+      <alert-inline v-else>Deze publicatie is ingetrokken.</alert-inline>
+
       <div class="form-group">
         <label for="uuid">ID</label>
 
-        <input id="uuid" type="text" v-model="model.uuid" readonly />
+        <input id="uuid" type="text" v-model="model.uuid" readonly aria-readonly="true" />
       </div>
 
       <div class="form-group">
@@ -54,9 +56,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import AlertInline from "@/components/AlertInline.vue";
 import { PublicatieStatus, type Publicatie } from "../types";
 
-const props = defineProps<{ modelValue: Publicatie }>();
+const props = defineProps<{ modelValue: Publicatie; disabled: boolean }>();
 
 const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();
 
@@ -67,7 +70,7 @@ const model = computed({
 </script>
 
 <style lang="scss" scoped>
-input:read-only {
-  background-color: var(--accent-bg);
+input[type="text"]:read-only {
+  background-color: var(--disabled);
 }
 </style>

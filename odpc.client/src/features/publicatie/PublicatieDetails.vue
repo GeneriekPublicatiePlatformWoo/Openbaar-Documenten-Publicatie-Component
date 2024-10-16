@@ -7,7 +7,11 @@
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
 
-      <publicatie-form v-else v-model="publicatie" />
+      <publicatie-form
+        v-else
+        v-model="publicatie"
+        :disabled="status === PublicatieStatus.ingetrokken"
+      />
 
       <alert-inline v-if="documentenError"
         >Er is iets misgegaan bij het ophalen van de documenten...</alert-inline
@@ -18,6 +22,7 @@
         v-model:documenten="documenten"
         v-model:files="files"
         @removeDocument="removeDocument"
+        :disabled="status === PublicatieStatus.ingetrokken"
       />
     </section>
 
@@ -32,20 +37,30 @@
         </li>
 
         <li>
-          <button type="submit" title="Opslaan" :disabled="error">Opslaan</button>
+          <button
+            type="submit"
+            title="Opslaan"
+            :disabled="error || status === PublicatieStatus.ingetrokken"
+          >
+            Opslaan
+          </button>
         </li>
       </menu>
     </div>
 
-    <prompt-modal :dialog="dialog" confirm-message="Ja, intrekken" cancel-message="Nee, gepubliceerd laten">
-      <p>Weet u zeker dat u dit deze publicatie wilt intrekken?</p>
-      <p>Let op: deze actie kan niet ongedaan worden gemaakt.</p>
+    <prompt-modal
+      :dialog="dialog"
+      confirm-message="Ja, intrekken"
+      cancel-message="Nee, gepubliceerd laten"
+    >
+      <span>Weet u zeker dat u dit deze publicatie wilt intrekken?</span>
+      <span><strong>Let op:</strong> deze actie kan niet ongedaan worden gemaakt.</span>
     </prompt-modal>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { previousRoute } from "@/router";
 import { useConfirmDialog } from "@vueuse/core";
@@ -58,6 +73,7 @@ import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
+import { PublicatieStatus } from "./types";
 
 const router = useRouter();
 
@@ -78,8 +94,16 @@ const loading = computed(
 const error = computed(() => !!publicatieError.value || !!documentenError.value);
 
 // Publicatie
+const status = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
+
 const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(
   props.uuid
+);
+
+watch(
+  () => publicatie.value.status,
+  (value) => (status.value = value),
+  { once: true }
 );
 
 // Documenten
@@ -108,7 +132,15 @@ const navigate = () => {
 const submit = async () => {
   if (validateForm(formRef.value).invalid) return;
 
-  // const { isCanceled } = await dialog.reveal();
+  if (publicatie.value.status === PublicatieStatus.ingetrokken) {
+    const { isCanceled } = await dialog.reveal();
+
+    if (isCanceled) {
+      publicatie.value.status = PublicatieStatus.gepubliceerd;
+
+      return;
+    }
+  }
 
   try {
     await submitPublicatie();
