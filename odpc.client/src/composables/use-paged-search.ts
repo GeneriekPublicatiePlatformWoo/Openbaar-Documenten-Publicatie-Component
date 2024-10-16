@@ -1,38 +1,32 @@
 import { ref, watch, computed, onMounted, type Ref } from "vue";
 import { useRouter } from "vue-router";
-import { useUrlSearchParams, type UrlParams } from "@vueuse/core";
+import { useUrlSearchParams } from "@vueuse/core";
 import { useFetchApi } from "@/api/use-fetch-api";
 
 const API_URL = `/api/v1`;
 const PAGE_SIZE = 5;
 
-export type PagedResult<T> = {
+type PagedResult<T> = {
   count: number;
   next?: string;
   previous?: string;
   results: T[];
 };
 
-export const usePagedSearch = <T, U extends string>(endpoint: string, params: UrlParams) => {
-  type QueryParams = Record<U, string> & { page: string };
-  type QueryParam = keyof QueryParams;
+export const usePagedSearch = <T, U extends string>(
+  endpoint: string,
+  params: { page: string } & { [key in U]: string }
+) => {
+  type QueryParams = typeof params;
 
-  const requiredParams = { page: "" };
+  const router = useRouter();
 
-  params = { ...requiredParams, ...params };
-
-  const paramKeys = Object.keys(params) as QueryParam[];
-
-  const urlSearchParams = useUrlSearchParams("history", {
-    initialValue: params,
-    removeFalsyValues: true
-  });
-
-  const queryParams = ref(params) as Ref<QueryParams>;
+  const urlSearchParams = useUrlSearchParams("history", { initialValue: params });
 
   const pagedResult = ref(null) as Ref<PagedResult<T> | null>;
 
-  const router = useRouter();
+  const queryParams = ref(params) as Ref<QueryParams>;
+  const paramKeys = Object.keys(params) as (keyof QueryParams)[];
 
   const initQueryParams = () => {
     queryParams.value = paramKeys.reduce(
@@ -49,6 +43,10 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
     queryParams.value.page = `${+queryParams.value.page - 1}`;
   };
 
+  const pageCount = computed(() =>
+    pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
+  );
+
   const searchParams = computed(
     () =>
       new URLSearchParams(
@@ -60,32 +58,16 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
       )
   );
 
-  const pageCount = computed(() =>
-    pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
-  );
+  watch(searchParams, async (newParams, oldParams) => {
+    // Reset to page 1 when a filter or the sorting changes
+    if (newParams.get("page") === oldParams.get("page") && queryParams.value.page !== "1") {
+      queryParams.value.page = "1";
 
-  watch(searchParams, async (newValue, oldValue) => {
-    const newParams = Object.fromEntries(newValue.entries());
-    const oldParams = Object.fromEntries(oldValue.entries());
-
-    // Reset page when a filter or sorting changes
-    if (newParams.page === oldParams.page) {
-      for (const key of paramKeys) {
-        if (key === "page") continue;
-
-        if (
-          newParams.page !== "1" &&
-          (newParams[key] !== oldParams[key] || newParams[key] !== urlSearchParams[key])
-        ) {
-          queryParams.value.page = "1";
-
-          return false;
-        }
-      }
+      return false;
     }
 
     // Update history
-    router.push({ query: { ...newParams } });
+    router.replace({ query: { ...Object.fromEntries(newParams.entries()) } });
 
     // Search but wait if fetching
     await new Promise<void>((resolve) => {
@@ -112,8 +94,8 @@ export const usePagedSearch = <T, U extends string>(endpoint: string, params: Ur
   onMounted(initQueryParams);
 
   return {
-    queryParams,
     pagedResult,
+    queryParams,
     pageCount,
     onNext,
     onPrev,

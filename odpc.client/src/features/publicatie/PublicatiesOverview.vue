@@ -31,24 +31,30 @@
 
   <template v-else>
     <section>
-      <div class="form-group form-group-sort">
+      <div class="form-group">
         <label for="sorteer">Sorteer op</label>
 
         <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
-          <option v-for="(value, key) in publicatieSortingOptions" :key="key" :value="key">
+          <option v-for="(value, key) in sortingOptions" :key="key" :value="key">
             {{ value }}
           </option>
         </select>
       </div>
 
-      <page-nav
-        v-if="pageCount"
-        :paged-result="pagedResult"
-        :page="queryParams.page"
-        :page-count="pageCount"
-        @on-next="onNext"
-        @on-prev="onPrev"
-      />
+      <div v-if="pageCount" class="page-nav">
+        <p>
+          <strong>{{ pagedResult?.count || 0 }}</strong>
+          {{ pagedResult?.count === 1 ? "resultaat" : "resultaten" }}
+        </p>
+
+        <p>
+          <button type="button" :disabled="!pagedResult?.previous" @click="onPrev">&laquo;</button>
+
+          <span>pagina {{ queryParams.page }} van {{ pageCount }}</span>
+
+          <button type="button" :disabled="!pagedResult?.next" @click="onNext">&raquo;</button>
+        </p>
+      </div>
     </section>
 
     <ul v-if="pagedResult?.results.length" class="reset" aria-live="polite">
@@ -88,34 +94,36 @@ import { ref, watch } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
-import PageNav from "./components/PageNav.vue";
-import { usePagedSearch } from "@/features/publicatie/composables/use-paged-search";
-import {
-  publicatieSearchParams,
-  publicatieSortingOptions,
-  type Publicatie,
-  type PublicatieSearchParam
-} from "./types";
+import { usePagedSearch } from "@/composables/use-paged-search";
+import { type Publicatie } from "./types";
 
 const searchString = ref("");
 const fromDate = ref<string>("");
 const untilDate = ref<string>("");
 
-const { queryParams, pagedResult, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
+const sortingOptions = {
+  officiele_titel: "Title (a-z)",
+  "-officiele_titel": "Title (z-a)",
+  verkorte_titel: "Verkorte title (a-z)",
+  "-verkorte_titel": "Verkorte title (z-a)",
+  registratiedatum: "Registratiedatum (oud-nieuw)",
+  "-registratiedatum": "Registratiedatum (nieuw-oud)"
+};
+
+const searchParamsConfig = {
+  page: "1",
+  sorteer: "-registratiedatum",
+  search: "",
+  registratiedatum__gte: "",
+  registratiedatum__lte: ""
+};
+
+const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
   Publicatie,
-  PublicatieSearchParam
->("publicaties", publicatieSearchParams);
+  keyof typeof searchParamsConfig
+>("publicaties", searchParamsConfig);
 
-// Set query params for search
-const onSearch = () =>
-  (queryParams.value = {
-    ...queryParams.value,
-    search: searchString.value,
-    registratiedatum__gte: fromDate.value,
-    registratiedatum__lte: untilDate.value
-  });
-
-// Update refs from url query params
+// Set refs from urlQueryParams/config once on mounted
 watch(
   () => ({
     search: queryParams.value.search,
@@ -126,8 +134,18 @@ watch(
     searchString.value = search;
     fromDate.value = registratiedatum__gte;
     untilDate.value = registratiedatum__lte;
-  }
+  },
+  { once: true }
 );
+
+// Set queryParams linked to refs on search
+const onSearch = () =>
+  (queryParams.value = {
+    ...queryParams.value,
+    search: searchString.value,
+    registratiedatum__gte: fromDate.value,
+    registratiedatum__lte: untilDate.value
+  });
 </script>
 
 <style lang="scss" scoped>
@@ -147,6 +165,26 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
   column-gap: var(--spacing-extralarge);
+}
+
+.page-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  column-gap: var(--spacing-large);
+
+  p {
+    margin-block: var(--spacing-large);
+  }
+
+  button {
+    padding-block: var(--spacing-extrasmall);
+    margin-block: 0;
+  }
+
+  span {
+    margin-inline: var(--spacing-default);
+  }
 }
 
 ul {
