@@ -49,20 +49,38 @@
         </select>
       </div>
 
-      <ul class="reset page-nav">
-        <li>
+      <div class="page-nav">
+        <p>
           <strong>{{ pagedResult?.count || 0 }}</strong>
           {{ pagedResult?.count === 1 ? "resultaat" : "resultaten" }}
-        </li>
+        </p>
 
-        <li>
-          <button type="button" :disabled="!pagedResult?.previous" @click="onPrev">&laquo;</button>
+        <menu class="reset">
+          <li>
+            <button
+              type="button"
+              aria-label="Vorige pagina"
+              :disabled="!pagedResult?.previous"
+              @click="onPrev"
+            >
+              &laquo;
+            </button>
+          </li>
 
-          <span>pagina {{ queryParams.page }} van {{ pageCount }}</span>
+          <li>pagina {{ queryParams.page }} van {{ pageCount }}</li>
 
-          <button type="button" :disabled="!pagedResult?.next" @click="onNext">&raquo;</button>
-        </li>
-      </ul>
+          <li>
+            <button
+              type="button"
+              aria-label="Volgende pagina"
+              :disabled="!pagedResult?.next"
+              @click="onNext"
+            >
+              &raquo;
+            </button>
+          </li>
+        </menu>
+      </div>
     </section>
 
     <ul class="reset card-link-list" aria-live="polite">
@@ -139,10 +157,10 @@ const searchParamsConfig = {
 
 const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
   Publicatie,
-  keyof typeof searchParamsConfig
+  typeof searchParamsConfig
 >("publicaties", searchParamsConfig);
 
-// Set refs from urlQueryParams/config once on mounted
+// Init: set refs linked to queryParams from urlQueryParams/config once on mounted
 watch(
   () => ({
     search: queryParams.value.search,
@@ -157,7 +175,7 @@ watch(
   { once: true }
 );
 
-// Set queryParams linked to refs on search
+// onSearch: set queryParams linked to refs
 const onSearch = () =>
   (queryParams.value = {
     ...queryParams.value,
@@ -179,6 +197,7 @@ select,
 
 menu {
   display: flex;
+  align-items: center;
   gap: var(--spacing-default);
   margin-block-end: var(--spacing-default);
 }
@@ -217,12 +236,12 @@ section {
   align-items: center;
   column-gap: var(--spacing-large);
 
-  button {
-    padding-block: var(--spacing-extrasmall);
+  menu {
+    margin-block-end: 0;
   }
 
-  span {
-    margin-inline: var(--spacing-default);
+  button {
+    padding-block: var(--spacing-extrasmall);
   }
 }
 

@@ -13,9 +13,9 @@ type PagedResult<T> = {
   results: T[];
 };
 
-export const usePagedSearch = <T, U extends string>(
+export const usePagedSearch = <T, P extends { page: string }>(
   endpoint: string,
-  params: { page: string } & { [key in U]: string }
+  params: P
 ) => {
   type QueryParams = typeof params;
 
