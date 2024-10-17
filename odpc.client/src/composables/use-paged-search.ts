@@ -13,15 +13,16 @@ type PagedResult<T> = {
   results: T[];
 };
 
-export const usePagedSearch = <T, U extends string>(
+export const usePagedSearch = <T, QueryParams extends { page: string }>(
   endpoint: string,
-  params: { page: string } & { [key in U]: string }
+  params: QueryParams
 ) => {
-  type QueryParams = typeof params;
-
   const router = useRouter();
 
-  const urlSearchParams = useUrlSearchParams("history", { initialValue: params });
+  const urlSearchParams = useUrlSearchParams("history", {
+    initialValue: params,
+    removeFalsyValues: true
+  });
 
   const pagedResult = ref(null) as Ref<PagedResult<T> | null>;
 

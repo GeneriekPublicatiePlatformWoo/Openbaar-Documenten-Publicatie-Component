@@ -1,5 +1,5 @@
 <template>
-  <h1>Publicaties</h1>
+  <h1>Overzicht publicaties</h1>
 
   <publicaties-overview />
 </template>

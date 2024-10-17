@@ -10,7 +10,7 @@ export type Publicatie = {
   verkorteTitel: string;
   omschrijving: string;
   registratiedatum: string;
-  status?: keyof typeof PublicatieStatus;
+  status: keyof typeof PublicatieStatus;
 };
 
 export type PublicatieDocument = {

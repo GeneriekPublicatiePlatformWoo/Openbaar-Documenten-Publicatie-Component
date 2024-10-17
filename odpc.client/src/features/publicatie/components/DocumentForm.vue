@@ -1,8 +1,8 @@
 <template>
-  <fieldset v-if="model" aria-live="polite">
+  <fieldset v-if="model" aria-live="polite" :disabled="disabled">
     <legend>Documenten</legend>
 
-    <template v-if="!model.some((doc) => !doc.uuid)">
+    <template v-if="!model.some((doc) => !doc.uuid) && !disabled">
       <file-upload @filesSelected="filesSelected" />
 
       <h2 v-if="model.length">Toegevoegde documenten</h2>
@@ -11,19 +11,21 @@
     <details
       v-for="(doc, index) in model"
       :key="index"
-      :class="{ nieuw: !doc.uuid, ingetrokken: doc.status === PublicatieStatus.ingetrokken }"
+      :class="{
+        nieuw: !doc.uuid
+      }"
       :open="!doc.uuid"
     >
       <template v-if="doc.uuid">
         <summary>
-          <template v-if="doc.status === PublicatieStatus.ingetrokken"
+          <template v-if="doc.status === PublicatieStatus.ingetrokken || disabled"
             ><s :aria-describedby="`status-${index}`">{{ doc.bestandsnaam }}</s>
             <span :id="`status-${index}`" role="status">(ingetrokken)</span></template
           >
           <template v-else>{{ doc.bestandsnaam }}</template>
         </summary>
 
-        <div class="form-group form-group-radio">
+        <div v-if="!disabled" class="form-group form-group-radio">
           <label>
             <input type="radio" v-model="doc.status" :value="PublicatieStatus.gepubliceerd" />
             Gepubliceerd
@@ -78,6 +80,10 @@
       </button>
     </details>
 
+    <alert-inline v-if="disabled && !model.length"
+      >Er zijn geen gekoppelde documenten.</alert-inline
+    >
+
     <prompt-modal :dialog="dialog" confirm-message="Ja, verwijderen" cancel-message="Nee, behouden">
       <p>Weet u zeker dat u dit document wilt verwijderen?</p>
     </prompt-modal>
@@ -88,12 +94,13 @@
 import { computed } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import toast from "@/stores/toast";
+import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
 import { mimeTypesMap } from "../service";
 import FileUpload from "./FileUpload.vue";
 
-const props = defineProps<{ documenten: PublicatieDocument[] }>();
+const props = defineProps<{ documenten: PublicatieDocument[]; disabled: boolean }>();
 
 const emit = defineEmits<{
   (e: "update:documenten", payload: PublicatieDocument[]): void;

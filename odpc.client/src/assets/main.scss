@@ -25,20 +25,25 @@ body {
   padding: var(--spacing-large);
   border: 1px solid var(--color-grey);
 
+  &:hover,
+  &:focus {
+    background-color: var(--accent-bg);
+  }
+
   h2 {
     font-weight: normal;
-    text-decoration: underline;
     margin-block: 0 var(--spacing-small);
+  }
+
+  span {
+    color: var(--text-light);
+    margin-inline: var(--spacing-small) 0;
   }
 
   h3 {
     color: var(--text-light);
     font-weight: normal;
     margin-block: var(--spacing-small);
-  }
-
-  &:hover h2 {
-    text-decoration: none;
   }
 
   &.icon-after {
@@ -113,6 +118,7 @@ body {
 }
 
 // Button
+a[class*="icon"],
 button[class*="icon"] {
   display: flex;
   column-gap: var(--spacing-small);
