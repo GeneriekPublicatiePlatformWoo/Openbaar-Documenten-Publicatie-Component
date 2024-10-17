@@ -9,7 +9,7 @@ namespace ODPC.Features.Documenten.InitialiseerDocument
         public IActionResult Post(PublicatieDocument document)
         {
             document.Uuid = Guid.NewGuid();
-            document.Creatiedatum = DateOnly.FromDateTime(DateTime.Now);
+            document.Creatiedatum = DateTime.Now;
 
             var halve = document.Bestandsomvang / 2;
             var firstSize = Math.Ceiling(halve);

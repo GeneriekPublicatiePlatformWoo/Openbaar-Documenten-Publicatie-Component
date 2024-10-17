@@ -2,7 +2,7 @@ import { ref, onMounted, watch, type ComputedRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import { mimeTypesMap, uploadFile } from "../service";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
+import { PublicatieStatus, Documenthandelingen, type PublicatieDocument } from "../types";
 
 const DOCAPI_URL = `/api/v1/documenten`;
 
@@ -10,6 +10,10 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const getInitialDocument = (): PublicatieDocument => ({
     publicatie: "",
     officieleTitel: "",
+    documenthandeling: {
+      soortHandeling: Documenthandelingen.ondertekening,
+      tijdstip: new Date().toISOString().split("T")[0]
+    },
     verkorteTitel: "",
     omschrijving: "",
     creatiedatum: new Date().toISOString().split("T")[0],
@@ -95,7 +99,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   // Document
 
   const docUUID = ref<string>();
-  const uploadingFile = ref(false);
+  const uploadingFile = ref<Readonly<boolean>>(false);
 
   const {
     post: postDocument,

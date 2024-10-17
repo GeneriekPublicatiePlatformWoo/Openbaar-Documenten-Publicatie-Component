@@ -43,10 +43,10 @@
       </summary>
 
       <div class="form-group">
-        <label for="titel">Titel *</label>
+        <label :for="`document_titel_${index}`">Titel *</label>
 
         <input
-          id="titel"
+          :id="`document_titel_${index}`"
           type="text"
           v-model="doc.officieleTitel"
           required
@@ -58,17 +58,43 @@
         <span :id="`titelError-${index}`" class="error">Titel is een verplicht veld</span>
       </div>
 
-      <div class="form-group">
-        <label for="verkorte_titel">Verkorte titel</label>
+      <div class="form-groups">
+        <div class="form-group">
+          <label :for="`documenthandeling_${index}`">Documenthandeling</label>
 
-        <input id="verkorte_titel" type="text" v-model="doc.verkorteTitel" />
+          <select
+            :name="`documenthandeling_${index}`"
+            :id="`documenthandeling_${index}`"
+            v-model="doc.documenthandeling.soortHandeling"
+          >
+            <option v-for="(value, key) in Documenthandelingen" :key="key" :value="key">
+              {{ value }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label :for="`tijdstip_${index}`">Datum</label>
+
+          <input type="date" :id="`tijdstip_${index}`" v-model="doc.documenthandeling.tijdstip" :max="today" />
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="omschrijving">Omschrijving</label>
+      <details>
+        <summary>Meer details</summary>
 
-        <textarea id="omschrijving" v-model="doc.omschrijving" rows="4"></textarea>
-      </div>
+        <div class="form-group">
+          <label :for="`verkorte_titel_${index}`">Verkorte titel</label>
+
+          <input :id="`verkorte_titel_${index}`" type="text" v-model="doc.verkorteTitel" />
+        </div>
+
+        <div class="form-group">
+          <label :for="`omschrijving_${index}`">Omschrijving</label>
+
+          <textarea :id="`omschrijving_${index}`" v-model="doc.omschrijving" rows="4"></textarea>
+        </div>
+      </details>
 
       <button
         v-if="!doc.uuid"
@@ -91,12 +117,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useConfirmDialog } from "@vueuse/core";
 import toast from "@/stores/toast";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
+import { PublicatieStatus, Documenthandelingen, type PublicatieDocument } from "../types";
 import { mimeTypesMap } from "../service";
 import FileUpload from "./FileUpload.vue";
 
@@ -112,6 +138,8 @@ const model = computed<PublicatieDocument[]>({
   get: () => props.documenten,
   set: (value) => emit("update:documenten", value)
 });
+
+const today = ref(new Date().toISOString().split("T")[0]);
 
 const dialog = useConfirmDialog();
 
@@ -158,8 +186,8 @@ details {
     margin-inline-start: var(--spacing-extrasmall);
   }
 
-  &.nieuw {
-    summary {
+  fieldset > &.nieuw { // ...
+    & > summary {
       list-style: none;
       pointer-events: none;
 
@@ -171,6 +199,10 @@ details {
 
   &.ingetrokken {
     background-color: var(--disabled);
+  }
+
+  & > details {
+    background-color: #fff;
   }
 }
 
@@ -185,6 +217,15 @@ dl {
   dd {
     margin-inline-start: 0;
     margin-block-end: var(--spacing-small);
+  }
+}
+
+.form-groups {
+  display: flex;
+  gap: var(--spacing-default);
+
+  .form-group {
+    flex-grow: 1;
   }
 }
 </style>

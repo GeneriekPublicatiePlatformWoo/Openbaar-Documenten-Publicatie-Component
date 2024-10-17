@@ -13,10 +13,22 @@ export type Publicatie = {
   status: keyof typeof PublicatieStatus;
 };
 
+export const Documenthandelingen = Object.freeze({
+  ondertekening: "ondertekening",
+  ontvangst: "ontvangst",
+  vaststelling: "vaststelling"
+});
+
+export type Documenthandeling = {
+  soortHandeling: keyof typeof Documenthandelingen;
+  tijdstip: string;
+};
+
 export type PublicatieDocument = {
   uuid?: string;
   publicatie: string;
   officieleTitel: string;
+  documenthandeling: Documenthandeling;
   verkorteTitel?: string;
   omschrijving?: string;
   creatiedatum: string;

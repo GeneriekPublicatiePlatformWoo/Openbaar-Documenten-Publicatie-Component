@@ -1,4 +1,5 @@
 ﻿using ODPC.Features.Publicaties;
+using System.Text.Json;
 
 namespace ODPC.Features.Documenten
 {
@@ -11,9 +12,14 @@ namespace ODPC.Features.Documenten
                 Uuid = Guid.NewGuid(),
                 Publicatie = PublicatiesMock.Publicaties.Keys.First(),
                 OfficieleTitel = "Belangrijk document",
+                Documenthandeling = new Documenthandeling
+                {
+                    SoortHandeling = "ondertekening",
+                    Tijdstip = DateOnly.FromDateTime(new DateTime(2024, 09, 23))
+                },
                 VerkorteTitel = "Document",
                 Omschrijving = "",
-                Creatiedatum = new DateOnly(2024, 09, 23),
+                Creatiedatum = new DateTime(2024, 09, 23),
                 Bestandsformaat = "DOCX",
                 Bestandsnaam = "belangrijk.docx",
                 Bestandsomvang = 100000,
