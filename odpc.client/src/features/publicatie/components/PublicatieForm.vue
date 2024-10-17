@@ -2,7 +2,7 @@
   <fieldset :disabled="disabled">
     <legend>Publicatie</legend>
 
-    <section>
+    <template v-if="model.uuid">
       <div v-if="!disabled" class="form-group form-group-radio">
         <label>
           <input type="radio" v-model="model.status" :value="PublicatieStatus.gepubliceerd" />
@@ -22,35 +22,35 @@
 
         <input id="uuid" type="text" v-model="model.uuid" readonly aria-readonly="true" />
       </div>
+    </template>
 
-      <div class="form-group">
-        <label for="titel">Titel *</label>
+    <div class="form-group">
+      <label for="titel">Titel *</label>
 
-        <input
-          id="titel"
-          type="text"
-          v-model="model.officieleTitel"
-          required
-          aria-required="true"
-          aria-describedby="titelError"
-          :aria-invalid="!model.officieleTitel"
-        />
+      <input
+        id="titel"
+        type="text"
+        v-model="model.officieleTitel"
+        required
+        aria-required="true"
+        aria-describedby="titelError"
+        :aria-invalid="!model.officieleTitel"
+      />
 
-        <span id="titelError" class="error">Titel is een verplicht veld</span>
-      </div>
+      <span id="titelError" class="error">Titel is een verplicht veld</span>
+    </div>
 
-      <div class="form-group">
-        <label for="verkorte_titel">Verkorte titel</label>
+    <div class="form-group">
+      <label for="verkorte_titel">Verkorte titel</label>
 
-        <input id="verkorte_titel" type="text" v-model="model.verkorteTitel" />
-      </div>
+      <input id="verkorte_titel" type="text" v-model="model.verkorteTitel" />
+    </div>
 
-      <div class="form-group">
-        <label for="omschrijving">Omschrijving</label>
+    <div class="form-group">
+      <label for="omschrijving">Omschrijving</label>
 
-        <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
-      </div>
-    </section>
+      <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
+    </div>
   </fieldset>
 </template>
 

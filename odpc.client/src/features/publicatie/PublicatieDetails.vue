@@ -100,11 +100,7 @@ const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = use
   props.uuid
 );
 
-watch(
-  () => publicatie.value.status,
-  (value) => (status.value = value),
-  { once: true }
-);
+watch(loadingPublicatie, () => (status.value = publicatie.value.status));
 
 // Documenten
 const {

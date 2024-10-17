@@ -1,5 +1,9 @@
 import { ref } from "vue";
-import { createRouter, createWebHistory, type RouteLocationNormalizedLoadedGeneric } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalizedLoadedGeneric
+} from "vue-router";
 import LoginView from "@/views/LoginView.vue";
 import PublicatiesView from "@/views/PublicatiesView.vue";
 import getUser from "@/stores/user";
