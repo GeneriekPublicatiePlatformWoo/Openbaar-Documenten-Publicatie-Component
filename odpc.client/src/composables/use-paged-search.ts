@@ -13,12 +13,10 @@ type PagedResult<T> = {
   results: T[];
 };
 
-export const usePagedSearch = <T, P extends { page: string }>(
+export const usePagedSearch = <T, QueryParams extends { page: string }>(
   endpoint: string,
-  params: P
+  params: QueryParams
 ) => {
-  type QueryParams = typeof params;
-
   const router = useRouter();
 
   const urlSearchParams = useUrlSearchParams("history", {
