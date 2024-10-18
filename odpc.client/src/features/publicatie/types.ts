@@ -1,16 +1,16 @@
-export const PUBLICATIESTATUS = {
-  draft: "Concept",
-  published: "Gepubliceerd",
-  retracted: "Ingetrokken"
-} as const;
+export const PublicatieStatus = Object.freeze({
+  concept: "concept",
+  gepubliceerd: "gepubliceerd",
+  ingetrokken: "ingetrokken"
+});
 
 export type Publicatie = {
   uuid?: string;
   officieleTitel: string;
   verkorteTitel: string;
   omschrijving: string;
-  creatiedatum: string;
-  status?: keyof typeof PUBLICATIESTATUS;
+  registratiedatum: string;
+  status?: keyof typeof PublicatieStatus;
 };
 
 export type PublicatieDocument = {
@@ -24,6 +24,7 @@ export type PublicatieDocument = {
   bestandsformaat: string;
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[];
+  status: keyof typeof PublicatieStatus;
 };
 
 export type Bestandsdeel = {

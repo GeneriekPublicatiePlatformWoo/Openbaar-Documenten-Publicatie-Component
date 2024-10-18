@@ -12,11 +12,9 @@
   }
 }
 
-// html,
-// body {
-//   height: 100%;
-//   overflow-y: scroll;
-// }
+body {
+  overflow-y: scroll;
+}
 
 // Link card
 .card-link {
@@ -30,7 +28,13 @@
   h2 {
     font-weight: normal;
     text-decoration: underline;
-    margin-block: 0;
+    margin-block: 0 var(--spacing-small);
+  }
+
+  h3 {
+    color: var(--text-light);
+    font-weight: normal;
+    margin-block: var(--spacing-small);
   }
 
   &:hover h2 {
@@ -55,23 +59,50 @@
   flex-direction: column;
   margin-block-end: var(--spacing-default);
 
+  &.form-group-radio {
+    flex-direction: row;
+    gap: var(--spacing-default);
+  }
+
   label {
     font-weight: var(--font-bold);
     margin-block-end: var(--spacing-small);
   }
 
-  input[type="text"].small {
-    max-width: var(--section-width);
+  input {
+    & + .error {
+      display: none;
+      color: var(--code);
+    }
+
+    &:invalid.invalid {
+      border-color: var(--code);
+      outline-color: var(--code);
+
+      & + .error {
+        display: block;
+      }
+    }
+  }
+}
+
+.form-group-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: var(--spacing-small);
+
+  label {
+    grid-column: span 2;
   }
 }
 
 .form-submit {
   display: flex;
-  justify-content: flex-end;
-  grid-gap: var(--spacing-default);
+  justify-content: space-between;
 
-  &.error {
-    justify-content: flex-start;
+  menu {
+    display: flex;
+    gap: var(--spacing-default);
   }
 }
 
@@ -79,4 +110,10 @@
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+// Button
+button[class*="icon"] {
+  display: flex;
+  column-gap: var(--spacing-small);
 }

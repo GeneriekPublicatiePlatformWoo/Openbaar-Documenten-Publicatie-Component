@@ -4,7 +4,7 @@
 
     <section>
       <div class="form-group">
-        <label for="titel">Titel</label>
+        <label for="titel">Titel *</label>
 
         <input
           id="titel"
@@ -12,7 +12,11 @@
           v-model="model.officieleTitel"
           required
           aria-required="true"
+          aria-describedby="titelError"
+          :aria-invalid="!model.officieleTitel"
         />
+
+        <span id="titelError" class="error">Titel is een verplicht veld</span>
       </div>
 
       <div class="form-group">
@@ -36,9 +40,7 @@ import type { Publicatie } from "../types";
 
 const props = defineProps<{ modelValue: Publicatie }>();
 
-const emit = defineEmits<{
-  (e: "update:modelValue", payload: Publicatie): void;
-}>();
+const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();
 
 const model = computed({
   get: () => props.modelValue,

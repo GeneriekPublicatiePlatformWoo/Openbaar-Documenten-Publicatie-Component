@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
 using Serilog;
@@ -40,6 +41,10 @@ try
 
     var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
+    builder.Services.Configure<OdrcConfig>(builder.Configuration.GetSection("Odrc"));
+    builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
+
+
 
     var app = builder.Build();
 

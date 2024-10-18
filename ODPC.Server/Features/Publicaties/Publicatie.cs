@@ -6,7 +6,7 @@
         public string? OfficieleTitel { get; set; }
         public string? VerkorteTitel { get; set; }
         public string? Omschrijving { get; set; }
-        public DateOnly Creatiedatum { get; set; }
+        public DateTime Registratiedatum { get; set; }
         public string? Status { get; set; }
     }
 }

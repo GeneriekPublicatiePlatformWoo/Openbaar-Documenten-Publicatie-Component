@@ -216,6 +216,7 @@ label[type="button"] {
   line-height: normal;
 }
 
+button.secondary,
 .button.secondary,
 a.button-secondary {
   background-color: var(--bg);
@@ -556,7 +557,7 @@ mark {
 }
 
 mark a {
-  color: #0d47a1;
+  color: var(--accent);
 }
 
 img,
@@ -710,5 +711,5 @@ sub {
   border-radius: var(--standard-border-radius);
   padding: 1.5rem;
   margin-block-start: 0;
-  margin-block-end: 2rem;
+  margin-block-end: 1rem;
 }

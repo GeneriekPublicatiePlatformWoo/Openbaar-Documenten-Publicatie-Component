@@ -7,24 +7,22 @@ import {
   type WaardelijstItem
 } from "./types";
 
-export const getWaardelijsten = () => {
-  const {
-    data,
-    isFetching: loadingListItems,
-    error: listItemstError
-  } = useFetchApi(`/api/waardelijsten`).json<WaardelijstItem[]>();
+const {
+  data,
+  isFetching: loadingWaardelijstItems,
+  error: waardelijstItemsError
+} = useFetchApi(`/api/v1/waardelijsten`).json<WaardelijstItem[]>();
 
-  const groupedWaardelijstItems = computed<GroupedWaardelijstItems>(() =>
-    Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardelijstItems, key) => {
-      result[key as Waardelijst] =
-        data.value
-          ?.filter((item) => item.type === key)
-          ?.sort((a, b) => a.name.localeCompare(b.name)) || [];
-      return result;
-    }, {} as GroupedWaardelijstItems)
-  );
+const waardelijstIds = computed(() => data.value?.map((item) => item.id) || []);
 
-  const waardelijstIds = computed(() => data.value?.map((item) => item.id) || []);
+const groupedWaardelijstItems = computed<GroupedWaardelijstItems>(() =>
+  Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardelijstItems, key) => {
+    result[key as Waardelijst] =
+      data.value
+        ?.filter((item) => item.type === key)
+        ?.sort((a, b) => a.name.localeCompare(b.name)) || [];
+    return result;
+  }, {} as GroupedWaardelijstItems)
+);
 
-  return { groupedWaardelijstItems, waardelijstIds, loadingListItems, listItemstError };
-};
+export { waardelijstIds, groupedWaardelijstItems, loadingWaardelijstItems, waardelijstItemsError };

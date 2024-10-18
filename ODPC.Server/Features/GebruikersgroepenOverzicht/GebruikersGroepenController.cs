@@ -5,7 +5,7 @@ using ODPC.Features.Gebruikersgroepen;
 
 namespace ODPC.Features.GebruikersgroepenOverzicht
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class GebruikersGroepenController(OdpcDbContext context) : ControllerBase
     {

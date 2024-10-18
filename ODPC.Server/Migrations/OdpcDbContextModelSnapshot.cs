@@ -57,6 +57,21 @@ namespace ODPC.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepGebruiker", b =>
+                {
+                    b.Property<string>("GebruikerId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("GebruikersgroepUuid")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("GebruikerId", "GebruikersgroepUuid");
+
+                    b.HasIndex("GebruikersgroepUuid");
+
+                    b.ToTable("GebruikersgroepGebruikers");
+                });
+
             modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepWaardelijst", b =>
                 {
                     b.Property<Guid>("GebruikersgroepUuid")
@@ -68,6 +83,17 @@ namespace ODPC.Migrations
                     b.HasKey("GebruikersgroepUuid", "WaardelijstId");
 
                     b.ToTable("GebruikersgroepWaardelijsten");
+                });
+
+            modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepGebruiker", b =>
+                {
+                    b.HasOne("ODPC.Data.Entities.Gebruikersgroep", "Gebruikersgroep")
+                        .WithMany()
+                        .HasForeignKey("GebruikersgroepUuid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gebruikersgroep");
                 });
 
             modelBuilder.Entity("ODPC.Data.Entities.GebruikersgroepWaardelijst", b =>

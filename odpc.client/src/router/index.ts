@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "@/views/LoginView.vue";
 import PublicatiesView from "@/views/PublicatiesView.vue";
-import PublicatieView from "@/views/PublicatieView.vue";
 import getUser from "@/stores/user";
 
 const resetFocus = () => {
@@ -42,7 +41,7 @@ const router = createRouter({
     {
       path: "/publicaties/:uuid?",
       name: "publicatie",
-      component: PublicatieView,
+      component: () => import("../views/PublicatieView.vue"),
       props: true,
       meta: {
         title: "Publicatie",
@@ -59,7 +58,7 @@ const router = createRouter({
       }
     },
     {
-      path: "/beheer/gebruikersgroepen/:id",
+      path: "/beheer/gebruikersgroepen/:uuid?",
       name: "gebruikersgroep",
       component: () => import("../views/beheer/GebruikersgroepView.vue"),
       props: true,
