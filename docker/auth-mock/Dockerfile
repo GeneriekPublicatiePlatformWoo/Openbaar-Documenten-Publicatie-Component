@@ -1,7 +1,7 @@
-FROM node:18-alpine
+FROM node:lts-alpine3.19
 WORKDIR /app
 COPY package.json .
-RUN npm install oidc-provider
+RUN npm install
 COPY server.mjs .
 RUN chown -R node:node /app
 
