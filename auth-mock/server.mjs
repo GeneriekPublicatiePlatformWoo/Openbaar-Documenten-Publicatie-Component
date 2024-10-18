@@ -21,8 +21,8 @@ const oidc = new Provider(`http://${host}:${port}`, {
   async findAccount(ctx, id) {
     return {
       accountId: id,
-      async claims(use, scope) {
-        return { sub: id, roles: ["test"], name: id, preferred_username: id };
+      claims(use, scope) {
+        return { sub: id, roles: [id], name: id, preferred_username: id };
       },
     };
   },
