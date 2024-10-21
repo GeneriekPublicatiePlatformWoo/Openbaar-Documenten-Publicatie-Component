@@ -140,22 +140,25 @@ namespace ODPC.Authentication
         private static Task ChallengeAsync(HttpContext httpContext)
         {
             var request = httpContext.Request;
-            var returnUrl = (request.Query["returnUrl"].FirstOrDefault() ?? string.Empty)
-                .AsSpan()
-                .TrimStart('/');
-
-            var fullReturnUrl = $"{request.Scheme}://{request.Host}{request.PathBase}/{returnUrl}";
+            var returnPath = GetSafeReturnPath(request);
 
             if (httpContext.User.Identity?.IsAuthenticated ?? false)
             {
-                httpContext.Response.Redirect(fullReturnUrl);
+                httpContext.Response.Redirect(returnPath);
                 return Task.CompletedTask;
             }
 
             return httpContext.ChallengeAsync(new AuthenticationProperties
             {
-                RedirectUri = fullReturnUrl,
+                RedirectUri = returnPath,
             });
+        }
+
+        private static string GetSafeReturnPath(HttpRequest request)
+        {
+            var returnUrl = request.Query["returnUrl"].FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(returnUrl) || new Uri(returnUrl, UriKind.RelativeOrAbsolute).IsAbsoluteUri) return "/";
+            return $"/{returnUrl.AsSpan().TrimStart('/')}";
         }
     }
 }
