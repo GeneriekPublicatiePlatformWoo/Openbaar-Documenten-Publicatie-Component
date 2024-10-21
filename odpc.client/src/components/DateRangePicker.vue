@@ -80,6 +80,7 @@ watch(untilDate, (value) => {
 </script>
 
 <style lang="scss" scoped>
+input,
 .form-group {
   margin-block-end: 0;
 }

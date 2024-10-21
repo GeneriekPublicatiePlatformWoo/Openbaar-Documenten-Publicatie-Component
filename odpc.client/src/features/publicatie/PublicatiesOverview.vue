@@ -1,7 +1,11 @@
 <template>
-  <p>
-    <router-link :to="{ name: 'publicatie' }" class="button">Nieuwe publicatie</router-link>
-  </p>
+  <menu class="reset">
+    <li>
+      <router-link :to="{ name: 'publicatie' }" class="button icon-after note"
+        >Nieuwe publicatie</router-link
+      >
+    </li>
+  </menu>
 
   <form>
     <fieldset :disabled="isFetching">
@@ -16,7 +20,13 @@
       <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDate" />
 
       <div class="form-group-button">
-        <button type="button" class="icon-after loupe" aria-label="Zoek" @click="onSearch">
+        <button
+          type="button"
+          class="icon-after loupe"
+          aria-label="Zoek"
+          @click="onSearch"
+          :disabled="isFetching"
+        >
           Zoek
         </button>
       </div>
@@ -25,13 +35,11 @@
 
   <simple-spinner v-if="isFetching"></simple-spinner>
 
-  <alert-inline v-else-if="error"
-    >Er is iets misgegaan, probeer het nogmaals. {{ error }}</alert-inline
-  >
+  <alert-inline v-else-if="error">Er is iets misgegaan, probeer het nogmaals.</alert-inline>
 
-  <template v-else>
+  <template v-else-if="pageCount">
     <section>
-      <div class="form-group">
+      <div class="form-group form-group-inline">
         <label for="sorteer">Sorteer op</label>
 
         <select name="sorteer" id="sorteer" v-model="queryParams.sorteer">
@@ -41,25 +49,49 @@
         </select>
       </div>
 
-      <div v-if="pageCount" class="page-nav">
+      <div class="page-nav">
         <p>
           <strong>{{ pagedResult?.count || 0 }}</strong>
           {{ pagedResult?.count === 1 ? "resultaat" : "resultaten" }}
         </p>
 
-        <p>
-          <button type="button" :disabled="!pagedResult?.previous" @click="onPrev">&laquo;</button>
+        <menu class="reset">
+          <li>
+            <button
+              type="button"
+              aria-label="Vorige pagina"
+              :disabled="!pagedResult?.previous"
+              @click="onPrev"
+            >
+              &laquo;
+            </button>
+          </li>
 
-          <span>pagina {{ queryParams.page }} van {{ pageCount }}</span>
+          <li>pagina {{ queryParams.page }} van {{ pageCount }}</li>
 
-          <button type="button" :disabled="!pagedResult?.next" @click="onNext">&raquo;</button>
-        </p>
+          <li>
+            <button
+              type="button"
+              aria-label="Volgende pagina"
+              :disabled="!pagedResult?.next"
+              @click="onNext"
+            >
+              &raquo;
+            </button>
+          </li>
+        </menu>
       </div>
     </section>
 
-    <ul v-if="pagedResult?.results.length" class="reset" aria-live="polite">
+    <ul class="reset card-link-list" aria-live="polite">
       <li
-        v-for="{ uuid, officieleTitel, verkorteTitel, registratiedatum } in pagedResult?.results"
+        v-for="{
+          uuid,
+          officieleTitel,
+          verkorteTitel,
+          registratiedatum,
+          status
+        } in pagedResult?.results"
         :key="uuid"
       >
         <router-link
@@ -67,7 +99,12 @@
           :title="officieleTitel"
           class="card-link icon-after pen"
         >
-          <h2>{{ officieleTitel }}</h2>
+          <h2 v-if="status === PublicatieStatus.ingetrokken">
+            <s :aria-describedby="`status-${uuid}`">{{ officieleTitel }}</s>
+            <span :id="`status-${uuid}`" role="status">(ingetrokken)</span>
+          </h2>
+
+          <h2 v-else>{{ officieleTitel }}</h2>
 
           <h3>{{ verkorteTitel }}</h3>
 
@@ -84,9 +121,9 @@
         </router-link>
       </li>
     </ul>
-
-    <p v-else>Geen publicaties gevonden.</p>
   </template>
+
+  <alert-inline v-else>Geen publicaties gevonden.</alert-inline>
 </template>
 
 <script setup lang="ts">
@@ -95,11 +132,11 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
 import { usePagedSearch } from "@/composables/use-paged-search";
-import { type Publicatie } from "./types";
+import { PublicatieStatus, type Publicatie } from "./types";
 
 const searchString = ref("");
-const fromDate = ref<string>("");
-const untilDate = ref<string>("");
+const fromDate = ref("");
+const untilDate = ref("");
 
 const sortingOptions = {
   officiele_titel: "Title (a-z)",
@@ -120,10 +157,10 @@ const searchParamsConfig = {
 
 const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
   Publicatie,
-  keyof typeof searchParamsConfig
+  typeof searchParamsConfig
 >("publicaties", searchParamsConfig);
 
-// Set refs from urlQueryParams/config once on mounted
+// Init: set refs linked to queryParams from urlQueryParams/config once on mounted
 watch(
   () => ({
     search: queryParams.value.search,
@@ -138,7 +175,7 @@ watch(
   { once: true }
 );
 
-// Set queryParams linked to refs on search
+// onSearch: set queryParams linked to refs
 const onSearch = () =>
   (queryParams.value = {
     ...queryParams.value,
@@ -149,22 +186,48 @@ const onSearch = () =>
 </script>
 
 <style lang="scss" scoped>
+// reset margins, use gaps
+p,
+button,
+input,
+select,
+.form-group {
+  margin-block: 0;
+}
+
+menu {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-default);
+  margin-block-end: var(--spacing-default);
+}
+
 fieldset {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  column-gap: var(--spacing-default);
+  gap: var(--spacing-default);
 
   .form-group {
     flex-grow: 1;
-    margin-block-end: 0;
   }
 }
 
 section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--section-width), 1fr));
-  column-gap: var(--spacing-extralarge);
+  gap: var(--spacing-default);
+  margin-block-end: var(--spacing-default);
+
+  .form-group-inline {
+    flex-direction: row;
+    align-items: center;
+
+    label {
+      margin-block: 0;
+      margin-inline-end: var(--spacing-default);
+    }
+  }
 }
 
 .page-nav {
@@ -173,21 +236,16 @@ section {
   align-items: center;
   column-gap: var(--spacing-large);
 
-  p {
-    margin-block: var(--spacing-large);
+  menu {
+    margin-block-end: 0;
   }
 
   button {
     padding-block: var(--spacing-extrasmall);
-    margin-block: 0;
-  }
-
-  span {
-    margin-inline: var(--spacing-default);
   }
 }
 
-ul {
+.card-link-list {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-default);
