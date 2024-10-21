@@ -140,7 +140,7 @@ namespace ODPC.Authentication
         private static Task ChallengeAsync(HttpContext httpContext)
         {
             var request = httpContext.Request;
-            var returnPath = GetSafeReturnPath(request);
+            var returnPath = GetRelativeReturnUrl(request);
 
             if (httpContext.User.Identity?.IsAuthenticated ?? false)
             {
@@ -154,7 +154,14 @@ namespace ODPC.Authentication
             });
         }
 
-        private static string GetSafeReturnPath(HttpRequest request)
+        /// <summary>
+        /// We gebruiken een query parameter om te bepalen waar we naartoe moeten redirecten na inlog.
+        /// Dat is gebruikersinput. Daarom willen we valideren dat die query parameter daadwerkelijk een relatieve url is.
+        /// Zo niet, redirecten we naar de root van de applicatie.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private static string GetRelativeReturnUrl(HttpRequest request)
         {
             var returnUrl = request.Query["returnUrl"].FirstOrDefault();
             if (string.IsNullOrWhiteSpace(returnUrl) || new Uri(returnUrl, UriKind.RelativeOrAbsolute).IsAbsoluteUri) return "/";
