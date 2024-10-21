@@ -3,7 +3,7 @@ import type { OptionProps } from "@/components/CheckboxList.vue";
 export const WAARDELIJSTEN = {
   ORGANISATIE: "Organisatie",
   INFORMATIECATEGORIE: "Informatiecategorie",
-  THEMA: "Thema"
+  // THEMA: "Thema"
   // DOCUMENTSOORT: 'Documentsoort'
 } as const;
 

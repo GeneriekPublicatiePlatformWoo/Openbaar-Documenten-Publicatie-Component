@@ -1,6 +1,10 @@
 <template>
-  <details>
-    <summary>{{ title }}</summary>
+  <details data-required-group="checkbox">
+    <summary>{{ title }} {{ required ? "*" : "" }}</summary>
+
+    <p v-if="required" class="error" :id="`description-${getCurrentInstance()?.uid}`">
+      Er moet minimaal één optie gekozen worden.
+    </p>
 
     <div class="checkbox check-all">
       <label
@@ -9,13 +13,21 @@
     </div>
 
     <div class="checkbox" v-for="({ id, name }, key) in options" :key="key">
-      <label><input type="checkbox" :value="id" v-model="model" /> {{ name }} </label>
+      <label
+        ><input
+          type="checkbox"
+          :value="id"
+          v-model="model"
+          :aria-describedby="`description-${getCurrentInstance()?.uid}`"
+        />
+        {{ name }}
+      </label>
     </div>
   </details>
 </template>
 
 <script setup lang="ts" generic="T extends OptionProps">
-import { computed } from "vue";
+import { computed, getCurrentInstance } from "vue";
 
 export type OptionProps = {
   id: string;
@@ -26,6 +38,7 @@ const props = defineProps<{
   title: string;
   options: T[];
   modelValue: string[];
+  required?: boolean;
 }>();
 
 const emit = defineEmits<{

@@ -11,7 +11,8 @@ export const usePublicatie = (uuid?: string) => {
     verkorteTitel: "",
     omschrijving: "",
     registratiedatum: new Date().toISOString().split("T")[0],
-    status: "gepubliceerd"
+    status: "gepubliceerd",
+    gekoppeldeItems: []
   });
 
   const {

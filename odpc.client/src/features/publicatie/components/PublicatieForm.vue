@@ -40,23 +40,36 @@
       <span id="titelError" class="error">Titel is een verplicht veld</span>
     </div>
 
-    <div class="form-group">
-      <label for="verkorte_titel">Verkorte titel</label>
+    <details>
+      <summary>Meer details</summary>
 
-      <input id="verkorte_titel" type="text" v-model="model.verkorteTitel" />
-    </div>
+      <div class="form-group">
+        <label for="verkorte_titel">Verkorte titel</label>
 
-    <div class="form-group">
-      <label for="omschrijving">Omschrijving</label>
+        <input id="verkorte_titel" type="text" v-model="model.verkorteTitel" />
+      </div>
 
-      <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
-    </div>
+      <div class="form-group">
+        <label for="omschrijving">Omschrijving</label>
+
+        <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
+      </div>
+    </details>
+
+    <checkbox-list
+      title="Informatiecategorieën"
+      :options="groupedWaardelijstItems[`INFORMATIECATEGORIE`]"
+      v-model="model.gekoppeldeItems"
+      :required="true"
+    />
   </fieldset>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
+import CheckboxList from "@/components/CheckboxList.vue";
+import { groupedWaardelijstItems } from "@/features/waardelijst";
 import { PublicatieStatus, type Publicatie } from "../types";
 
 const props = defineProps<{ modelValue: Publicatie; disabled: boolean }>();

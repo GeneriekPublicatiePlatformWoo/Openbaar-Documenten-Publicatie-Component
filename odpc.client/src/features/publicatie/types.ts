@@ -11,6 +11,7 @@ export type Publicatie = {
   omschrijving: string;
   registratiedatum: string;
   status: keyof typeof PublicatieStatus;
+  gekoppeldeItems: string[];
 };
 
 export type PublicatieDocument = {
