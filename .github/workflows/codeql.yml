@@ -44,7 +44,7 @@ jobs:
       matrix:
         include:
         - language: csharp
-          build-mode: autobuild
+          build-mode: manual
         - language: javascript-typescript
           build-mode: none
         # CodeQL supports the following values keywords for 'language': 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
@@ -80,8 +80,10 @@ jobs:
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
     - if: matrix.build-mode == 'manual'
       uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.x'
     - if: matrix.build-mode == 'manual'
-      run: dotnet build
+      run: dotnet build ODPC.sln 
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
