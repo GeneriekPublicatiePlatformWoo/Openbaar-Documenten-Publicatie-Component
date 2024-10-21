@@ -7,7 +7,7 @@ using ODPC.Config;
 namespace ODPC.Features.Publicaties.PublicatieRegistreren
 {
     [ApiController]
-    public class PublicatieRegistrerenController(OdpUser user, IOdrcClientFactory clientFactory) : ControllerBase
+    public class PublicatieRegistrerenController(OdpcUser user, IOdrcClientFactory clientFactory) : ControllerBase
     {
         private readonly IOdrcClientFactory _clientFactory = clientFactory;
 

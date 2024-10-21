@@ -6,7 +6,7 @@ namespace ODPC.Apis.Odrc
 {
     public interface IOdrcClientFactory
     {
-        HttpClient Create(OdpUser user, string handeling);
+        HttpClient Create(OdpcUser user, string handeling);
     }
 
     public class OdrcClientFactory(IHttpClientFactory httpClientFactory, IOptions<OdrcConfig> options) : IOdrcClientFactory
@@ -14,7 +14,7 @@ namespace ODPC.Apis.Odrc
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
         private readonly IOptions<OdrcConfig> _options = options;
 
-        public HttpClient Create(OdpUser user, string? handeling)
+        public HttpClient Create(OdpcUser user, string? handeling)
         {
             var config = _options.Value;
             var client = _httpClientFactory.CreateClient();
