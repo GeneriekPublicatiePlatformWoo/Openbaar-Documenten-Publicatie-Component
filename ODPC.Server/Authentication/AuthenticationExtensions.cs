@@ -140,22 +140,32 @@ namespace ODPC.Authentication
         private static Task ChallengeAsync(HttpContext httpContext)
         {
             var request = httpContext.Request;
-            var returnUrl = (request.Query["returnUrl"].FirstOrDefault() ?? string.Empty)
-                .AsSpan()
-                .TrimStart('/');
-
-            var fullReturnUrl = $"{request.Scheme}://{request.Host}{request.PathBase}/{returnUrl}";
+            var returnPath = GetRelativeReturnUrl(request);
 
             if (httpContext.User.Identity?.IsAuthenticated ?? false)
             {
-                httpContext.Response.Redirect(fullReturnUrl);
+                httpContext.Response.Redirect(returnPath);
                 return Task.CompletedTask;
             }
 
             return httpContext.ChallengeAsync(new AuthenticationProperties
             {
-                RedirectUri = fullReturnUrl,
+                RedirectUri = returnPath,
             });
+        }
+
+        /// <summary>
+        /// We gebruiken een query parameter om te bepalen waar we naartoe moeten redirecten na inlog.
+        /// Dat is gebruikersinput. Daarom willen we valideren dat die query parameter daadwerkelijk een relatieve url is.
+        /// Zo niet, redirecten we naar de root van de applicatie.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private static string GetRelativeReturnUrl(HttpRequest request)
+        {
+            var returnUrl = request.Query["returnUrl"].FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(returnUrl) || new Uri(returnUrl, UriKind.RelativeOrAbsolute).IsAbsoluteUri) return "/";
+            return $"/{returnUrl.AsSpan().TrimStart('/')}";
         }
     }
 }
