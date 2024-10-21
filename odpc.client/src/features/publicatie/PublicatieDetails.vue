@@ -10,7 +10,7 @@
       <publicatie-form
         v-else
         v-model="publicatie"
-        :disabled="status === PublicatieStatus.ingetrokken"
+        :disabled="initialStatus === PublicatieStatus.ingetrokken"
       />
 
       <alert-inline v-if="documentenError"
@@ -22,7 +22,7 @@
         v-model:documenten="documenten"
         v-model:files="files"
         @removeDocument="removeDocument"
-        :disabled="status === PublicatieStatus.ingetrokken"
+        :disabled="initialStatus === PublicatieStatus.ingetrokken"
       />
     </section>
 
@@ -40,7 +40,7 @@
           <button
             type="submit"
             title="Opslaan"
-            :disabled="error || status === PublicatieStatus.ingetrokken"
+            :disabled="error || initialStatus === PublicatieStatus.ingetrokken"
           >
             Opslaan
           </button>
@@ -94,13 +94,15 @@ const loading = computed(
 const error = computed(() => !!publicatieError.value || !!documentenError.value);
 
 // Publicatie
-const status = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
 
 const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(
   props.uuid
 );
 
-watch(loadingPublicatie, () => (status.value = publicatie.value.status));
+// Initial publicatie status in seperate ref to manage UI-state
+const initialStatus = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
+
+watch(loadingPublicatie, () => (initialStatus.value = publicatie.value.status));
 
 // Documenten
 const {
@@ -132,6 +134,7 @@ const submit = async () => {
     const { isCanceled } = await dialog.reveal();
 
     if (isCanceled) {
+      // Reset publicatie status in model to 'gepubliceerd' when user doesn't want to retract
       publicatie.value.status = PublicatieStatus.gepubliceerd;
 
       return;
