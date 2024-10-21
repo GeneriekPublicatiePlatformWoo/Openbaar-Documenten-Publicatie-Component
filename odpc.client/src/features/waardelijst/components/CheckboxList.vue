@@ -12,15 +12,15 @@
       </label>
     </div>
 
-    <div class="checkbox" v-for="({ id, name }, key) in options" :key="key">
+    <div class="checkbox" v-for="({ uuid, naam }, key) in options" :key="key">
       <label
         ><input
           type="checkbox"
-          :value="id"
+          :value="uuid"
           v-model="model"
           :aria-describedby="`description-${getCurrentInstance()?.uid}`"
         />
-        {{ name }}
+        {{ naam }}
       </label>
     </div>
   </details>
@@ -28,11 +28,7 @@
 
 <script setup lang="ts" generic="T extends OptionProps">
 import { computed, getCurrentInstance } from "vue";
-
-export type OptionProps = {
-  id: string;
-  name: string;
-};
+import type { OptionProps } from "../types";
 
 const props = defineProps<{
   title: string;
@@ -50,7 +46,7 @@ const model = computed({
   set: (value) => emit("update:modelValue", value)
 });
 
-const itemIds = computed(() => props.options.map((option) => option.id));
+const itemIds = computed(() => props.options.map((option) => option.uuid));
 
 const allSelected = computed(
   () =>

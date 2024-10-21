@@ -1,4 +1,3 @@
-import type { OptionProps } from "@/components/CheckboxList.vue";
 
 export const WAARDELIJSTEN = {
   ORGANISATIE: "Organisatie",
@@ -7,12 +6,9 @@ export const WAARDELIJSTEN = {
   // DOCUMENTSOORT: 'Documentsoort'
 } as const;
 
-export type Waardelijst = keyof typeof WAARDELIJSTEN;
-
-export type WaardelijstItem = {
-  type: Waardelijst;
-} & OptionProps;
-
-export type GroupedWaardelijstItems = {
-  [key in Waardelijst]: WaardelijstItem[];
+export type OptionProps = {
+  uuid: string;
+  naam: string;
 };
+
+export type WaardelijstItem = OptionProps;

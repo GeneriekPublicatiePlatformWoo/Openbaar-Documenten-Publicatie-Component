@@ -14,7 +14,7 @@
         @removeGebruiker="removeGebruiker"
       />
 
-      <alert-inline v-if="waardelijstItemsError"
+      <alert-inline v-if="waardelijstenError"
         >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
       >
 
@@ -64,7 +64,7 @@ import toast from "@/stores/toast";
 import { validateForm } from "@/helpers/validate";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
 import WaardelijstenForm from "./components/WaardelijstenForm.vue";
-import { loadingWaardelijstItems, waardelijstItemsError } from "@/features/waardelijst";
+import { loadingWaardelijsten, waardelijstenError } from "@/features/waardelijst";
 import { useGebruikersgroep } from "./composables/use-gebruikersgroep";
 
 const router = useRouter();
@@ -75,8 +75,8 @@ const formRef = ref<HTMLFormElement>();
 
 const dialog = useConfirmDialog();
 
-const loading = computed(() => loadingGebruikersgroep.value || loadingWaardelijstItems.value);
-const error = computed(() => !!gebruikersgroepError.value || !!waardelijstItemsError.value);
+const loading = computed(() => loadingGebruikersgroep.value || loadingWaardelijsten.value);
+const error = computed(() => !!gebruikersgroepError.value || !!waardelijstenError.value);
 
 const {
   gebruikersgroep,

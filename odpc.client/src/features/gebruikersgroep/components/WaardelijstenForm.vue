@@ -3,10 +3,14 @@
     <legend>Waardelijsten</legend>
 
     <checkbox-list
-      v-for="(value, key) in WAARDELIJSTEN"
-      :key="key"
-      :title="value"
-      :options="groupedWaardelijstItems[key]"
+      :title="WAARDELIJSTEN.ORGANISATIE"
+      :options="organisaties || []"
+      v-model="model"
+    />
+
+    <checkbox-list
+      :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
+      :options="informatiecategorieen || []"
       v-model="model"
     />
   </fieldset>
@@ -14,8 +18,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import CheckboxList from "@/components/CheckboxList.vue";
-import { WAARDELIJSTEN, groupedWaardelijstItems } from "@/features/waardelijst";
+import CheckboxList from "@/features/waardelijst/components/CheckboxList.vue";
+import { WAARDELIJSTEN, organisaties, informatiecategorieen } from "@/features/waardelijst";
 
 const props = defineProps<{ modelValue: string[] }>();
 

@@ -58,8 +58,8 @@
 
     <checkbox-list
       title="Informatiecategorieën"
-      :options="groupedWaardelijstItems[`INFORMATIECATEGORIE`]"
-      v-model="model.gekoppeldeItems"
+      :options="informatiecategorieen || []"
+      v-model="model.gekoppeldeInformatiecategorieen"
       :required="true"
     />
   </fieldset>
@@ -68,8 +68,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
-import CheckboxList from "@/components/CheckboxList.vue";
-import { groupedWaardelijstItems } from "@/features/waardelijst";
+import CheckboxList from "@/features/waardelijst/components/CheckboxList.vue";
+import { informatiecategorieen } from "@/features/waardelijst";
 import { PublicatieStatus, type Publicatie } from "../types";
 
 const props = defineProps<{ modelValue: Publicatie; disabled: boolean }>();

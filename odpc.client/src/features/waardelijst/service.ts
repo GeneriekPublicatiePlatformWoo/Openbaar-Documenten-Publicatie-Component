@@ -1,28 +1,41 @@
-import { computed } from "vue";
-import { useFetchApi } from "@/api/use-fetch-api";
-import {
-  WAARDELIJSTEN,
-  type GroupedWaardelijstItems,
-  type Waardelijst,
-  type WaardelijstItem
-} from "./types";
+import { computed, ref } from "vue";
+import { useFetchApi, type PagedResult } from "@/api";
+import type { WaardelijstItem } from "./types";
 
-const {
-  data,
-  isFetching: loadingWaardelijstItems,
-  error: waardelijstItemsError
-} = useFetchApi(`/api/v1/waardelijsten`).json<WaardelijstItem[]>();
+const API_URL = `/api/v1`;
 
-const waardelijstIds = computed(() => data.value?.map((item) => item.id) || []);
+const organisaties = ref<WaardelijstItem[]>();
+const informatiecategorieen = ref<WaardelijstItem[]>();
 
-const groupedWaardelijstItems = computed<GroupedWaardelijstItems>(() =>
-  Object.keys(WAARDELIJSTEN).reduce((result: GroupedWaardelijstItems, key) => {
-    result[key as Waardelijst] =
-      data.value
-        ?.filter((item) => item.type === key)
-        ?.sort((a, b) => a.name.localeCompare(b.name)) || [];
-    return result;
-  }, {} as GroupedWaardelijstItems)
+const loadingWaardelijsten = ref(false);
+const waardelijstenError = ref<string>();
+
+(async () => {
+  loadingWaardelijsten.value = true;
+
+  try {
+    const [{ data: organisatieData }, { data: informatiecategorieData }] = await Promise.all([
+      useFetchApi(`${API_URL}/organisaties`).json<PagedResult<WaardelijstItem>>(),
+      useFetchApi(`${API_URL}/informatiecategorieen`).json<PagedResult<WaardelijstItem>>()
+    ]);
+
+    organisaties.value = organisatieData.value?.results;
+    informatiecategorieen.value = informatiecategorieData.value?.results;
+  } catch (err) {
+    waardelijstenError.value = "Error";
+  } finally {
+    loadingWaardelijsten.value = false;
+  }
+})();
+
+const waardelijstIds = computed(() =>
+  [...(organisaties.value || []), ...(informatiecategorieen.value || [])].map((item) => item.uuid)
 );
 
-export { waardelijstIds, groupedWaardelijstItems, loadingWaardelijstItems, waardelijstItemsError };
+export {
+  organisaties,
+  informatiecategorieen,
+  waardelijstIds,
+  loadingWaardelijsten,
+  waardelijstenError
+};

@@ -8,5 +8,6 @@
         public string? Omschrijving { get; set; }
         public DateTime Registratiedatum { get; set; }
         public string Status { get; set; }
+        public required List<string> GekoppeldeInformatiecategorieen { get; set; }
     }
 }

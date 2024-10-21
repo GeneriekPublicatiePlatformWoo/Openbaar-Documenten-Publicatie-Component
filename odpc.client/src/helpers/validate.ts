@@ -2,11 +2,13 @@ export const validateForm = (form?: HTMLFormElement): { valid?: boolean; invalid
   let isFormValid = true;
 
   // Checkboxes
-  const checkboxGroups = form?.querySelectorAll("details[data-required-group='checkbox']") as NodeListOf<HTMLDetailsElement>;
+  const checkboxGroups = form?.querySelectorAll(
+    "details[data-required-group='checkbox']"
+  ) as NodeListOf<HTMLDetailsElement>;
 
   checkboxGroups.forEach((group) => {
     const checkboxes = group.querySelectorAll('[type="checkbox"]') as NodeListOf<HTMLInputElement>;
-    const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+    const isAnyChecked = Array.from(checkboxes).some((checkbox) => checkbox.checked);
 
     if (!isAnyChecked) {
       group.classList.add("invalid");
@@ -36,4 +38,3 @@ export const validateForm = (form?: HTMLFormElement): { valid?: boolean; invalid
 
   return { invalid: true };
 };
-
