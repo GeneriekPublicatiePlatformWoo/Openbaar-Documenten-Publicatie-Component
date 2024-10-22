@@ -7,8 +7,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=localdev
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-      - Odrc__BaseUrl=http://odrc/
-      - Odrc__ApiKey=xxx
+      - ODRC_BASE_URL=http://odrc/
+      - ODRC_API_KEY=xxx
     image: ${DOCKER_REGISTRY-}odpc
     build:
       context: .
