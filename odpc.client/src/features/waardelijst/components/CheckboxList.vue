@@ -1,5 +1,5 @@
 <template>
-  <details data-required-group="checkbox">
+  <details :data-required-group="required ? 'checkbox' : null">
     <summary>{{ title }} {{ required ? "*" : "" }}</summary>
 
     <p v-if="required" class="error" :id="`description-${getCurrentInstance()?.uid}`">
