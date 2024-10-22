@@ -11,7 +11,7 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-informatiecategorieen="mijnInformatiecategorieen"
+        :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
       />
 
       <alert-inline v-if="documentenError"
@@ -74,8 +74,8 @@ import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
+import { useWaardelijstenUser } from "@/features/waardelijst/composables/use-waardelijsten-user";
 import { PublicatieStatus } from "./types";
-import { useWaardelijstenUser } from "../waardelijst/composables/use-waardelijsten-user";
 
 const router = useRouter();
 
@@ -101,7 +101,7 @@ const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = use
   props.uuid
 );
 
-// Initial publicatie status in seperate ref to manage UI-state
+// Store initial publicatie status in seperate ref to manage UI-state
 const initialStatus = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
 
 watch(loadingPublicatie, () => (initialStatus.value = publicatie.value.status));
@@ -121,7 +121,7 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
-// Waardelijsten
+// Mijn waardelijsten
 const { mijnInformatiecategorieen, loadingWaardelijstenUser, waardelijstenUserError } =
   useWaardelijstenUser();
 

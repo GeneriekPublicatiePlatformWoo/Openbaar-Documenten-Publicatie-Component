@@ -1,19 +1,14 @@
-import { computed } from "vue";
-import { useFetchApi, type PagedResult } from "@/api";
+import { useFetchApi } from "@/api";
 import type { WaardelijstItem } from "../types";
 
 const API_URL = `/api/v1`;
 
 export const useWaardelijstenUser = () => {
   const {
-    data,
+    data: mijnInformatiecategorieen,
     isFetching: loadingWaardelijstenUser,
     error: waardelijstenUserError
-  } = useFetchApi(() => `${API_URL}/mijn-informatiecategorieen`).json<
-    PagedResult<WaardelijstItem>
-  >();
-
-  const mijnInformatiecategorieen = computed(() => data.value?.results || []);
+  } = useFetchApi(() => `${API_URL}/mijn-informatiecategorieen`).json<WaardelijstItem[]>();
 
   return {
     mijnInformatiecategorieen,
