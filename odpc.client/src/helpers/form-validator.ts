@@ -29,13 +29,6 @@ export default class FormValidator {
 
       const isAnyChecked = () => Array.from(checkboxes).some((checkbox) => checkbox.checked);
 
-      checkboxes.forEach((checkbox) => {
-        checkbox.addEventListener(
-          "change",
-          () => isAnyChecked() && group.classList.remove("invalid")
-        );
-      });
-
       if (!isAnyChecked()) {
         group.classList.add("invalid");
         group.open = true;
