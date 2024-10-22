@@ -35,7 +35,7 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
       ) as NodeListOf<HTMLInputElement>;
 
       const isAnyChecked = () => Array.from(checkboxes).some((checkbox) => checkbox.checked);
-      
+
       const onCheckboxChange = () =>
         !isAnyChecked() ? group.classList.add("invalid") : group.classList.remove("invalid");
 
