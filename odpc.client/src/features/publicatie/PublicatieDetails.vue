@@ -2,7 +2,7 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
-    <section>
+    <section v-if="mijnInformatiecategorieen?.length">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
@@ -11,7 +11,7 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
+        :mijn-informatiecategorieen="mijnInformatiecategorieen"
       />
 
       <alert-inline v-if="documentenError"
@@ -26,6 +26,8 @@
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
       />
     </section>
+
+    <alert-inline v-else>U bent niet gekoppeld aan een actieve gebruikersgroep.</alert-inline>
 
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
@@ -93,7 +95,11 @@ const loading = computed(
 );
 
 const error = computed(
-  () => !!publicatieError.value || !!documentenError.value || !!waardelijstenUserError.value
+  () =>
+    !!publicatieError.value ||
+    !!documentenError.value ||
+    !!waardelijstenUserError.value ||
+    !mijnInformatiecategorieen.value?.length // not linked to active gebruikersgroep
 );
 
 // Publicatie
@@ -121,7 +127,7 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
-// Mijn waardelijsten
+// Waardelijsten user
 const { mijnInformatiecategorieen, loadingWaardelijstenUser, waardelijstenUserError } =
   useWaardelijstenUser();
 
