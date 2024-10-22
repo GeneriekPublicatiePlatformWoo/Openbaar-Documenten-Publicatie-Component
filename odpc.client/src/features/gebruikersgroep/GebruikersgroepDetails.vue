@@ -63,7 +63,7 @@ import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
 import FormValidator from "@/helpers/form-validator";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
-import WaardelijstenForm from "./components/WaardelijstenForm.vue";
+import WaardelijstenForm from "@/features/waardelijst/components/WaardelijstenForm.vue";
 import { loadingWaardelijsten, waardelijstenError } from "@/features/waardelijst";
 import { useGebruikersgroep } from "./composables/use-gebruikersgroep";
 

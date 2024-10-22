@@ -3,14 +3,16 @@
     <legend>Waardelijsten</legend>
 
     <checkbox-list
+      v-if="organisaties.length"
       :title="WAARDELIJSTEN.ORGANISATIE"
-      :options="organisaties || []"
+      :options="organisaties"
       v-model="model"
     />
 
     <checkbox-list
+      v-if="informatiecategorieen.length"
       :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
-      :options="informatiecategorieen || []"
+      :options="informatiecategorieen"
       v-model="model"
     />
   </fieldset>
@@ -18,8 +20,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import CheckboxList from "@/features/waardelijst/components/CheckboxList.vue";
-import { WAARDELIJSTEN, organisaties, informatiecategorieen } from "@/features/waardelijst";
+import CheckboxList from "./CheckboxList.vue";
+import { WAARDELIJSTEN, organisaties, informatiecategorieen } from "../";
 
 const props = defineProps<{ modelValue: string[] }>();
 
