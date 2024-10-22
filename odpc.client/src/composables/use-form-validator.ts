@@ -1,7 +1,7 @@
-import { onMounted, onUnmounted, ref, type ComputedRef } from "vue";
+import { ref, onUnmounted, type ComputedRef } from "vue";
 
 export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefined>) => {
-  const isValid = ref<boolean>(false);
+  const isValid = ref(false);
 
   const validateForm = () => {
     if (!formRef.value) {
@@ -11,20 +11,39 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
 
     isValid.value = validateCheckboxGroups(formRef.value) && formRef.value.checkValidity();
 
-    !isValid.value && focusInvalidInput(formRef.value);
+    if (!isValid.value) {
+      focusInvalidInput(formRef.value);
+    }
   };
 
+  const checkboxListeners: (() => void)[] = [];
+
   const validateCheckboxGroups = (form: HTMLFormElement) => {
+    checkboxListeners.forEach((remove) => remove());
+
     const checkboxGroups = form.querySelectorAll(
       "details[data-required-group='checkbox']"
     ) as NodeListOf<HTMLDetailsElement>;
 
+    if (checkboxGroups.length === 0) return true;
+
     return Array.from(checkboxGroups).every((group) => {
+      group.classList.remove("invalid");
+
       const checkboxes = group.querySelectorAll(
         '[type="checkbox"]'
       ) as NodeListOf<HTMLInputElement>;
 
       const isAnyChecked = () => Array.from(checkboxes).some((checkbox) => checkbox.checked);
+      
+      const onCheckboxChange = () =>
+        !isAnyChecked() ? group.classList.add("invalid") : group.classList.remove("invalid");
+
+      // Add listener to reevaluate invalid style
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", onCheckboxChange);
+        checkboxListeners.push(() => checkbox.removeEventListener("change", onCheckboxChange));
+      });
 
       if (!isAnyChecked()) {
         group.classList.add("invalid");
@@ -33,11 +52,9 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
         checkboxes[0]?.focus();
 
         return false;
-      } else {
-        group.classList.remove("invalid");
-
-        return true;
       }
+
+      return true;
     });
   };
 
@@ -54,8 +71,7 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
     invalidInputs[0]?.focus();
   };
 
-  onMounted(() => console.log(`add listeners`));
-  onUnmounted(() => console.log(`remove listeners`));
+  onUnmounted(() => checkboxListeners.forEach((remove) => remove()));
 
   return {
     validateForm,
