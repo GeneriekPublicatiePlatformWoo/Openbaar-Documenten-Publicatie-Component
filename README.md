@@ -13,4 +13,6 @@
 | `OIDC_CLIENT_SECRET`                | Secret voor de OpenID Connect Identity Provider  <details> <summary>Meer informatie </summary>Bijvoorbeeld: `VM2B!ccnebNe.M*gxH63*NXc8iTiAGhp` </details> |
 | `OIDC_ROLE_CLAIM_TYPE`    | De naam van de claim in het JWT token van de OpenID Connect Provider waarin de rollen van de ingelogde gebruiker staan. <br/> (default waarde is `roles`)|
 | `OIDC_ID_CLAIM_TYPE`    | De naam van de claim in het JWT token van de OpenID Connect Provider waarin de unieke identificatie van de ingelogde gebruiker staat. <br/> (default waarde is `preferred_username` met een fallback op `email`)|
-| `OIDC_NAME_CLAIM_TYPE`    | De naam van de claim in het JWT token van de OpenID Connect Provider waarin de volledige naam van de ingelogde gebruiker staat <br/> (default waarde is `name`)
+| `OIDC_NAME_CLAIM_TYPE`    | De naam van de claim in het JWT token van de OpenID Connect Provider waarin de volledige naam van de ingelogde gebruiker staat <br/> (default waarde is `name`)|
+| `ODRC_BASE_URL`    | De base url van de ODRC (Registratiecomponent) waarmee gekoppeld moet worden. <details> <summary>Meer informatie </summary>Bijvoorbeeld: `https://odrc.mijn-gemeente.nl` </details> |
+| `ODRC_API_KEY`    | De geheime sleutel voor de ODRC (Registratiecomponent) waarmee gekoppeld moet worden. <details> <summary>Meer informatie </summary>Bijvoorbeeld: `VM2B!ccnebNe.M*gxH63*NXc8iTiAGhp`</details> |
