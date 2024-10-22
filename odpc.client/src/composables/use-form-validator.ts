@@ -1,6 +1,8 @@
-import { ref, onUnmounted, type ComputedRef, watchEffect } from "vue";
+import { ref, onUnmounted, watchEffect } from "vue";
 
-export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefined>) => {
+export const useFormValidator = () => {
+  const formRef = ref<HTMLFormElement>();
+
   const isValid = ref(false);
 
   const validateForm = () => {
@@ -94,7 +96,8 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
   onUnmounted(() => checkboxListeners.forEach((remove) => remove()));
 
   return {
-    validateForm,
-    isValid
+    formRef,
+    isValid,
+    validateForm
   };
 };

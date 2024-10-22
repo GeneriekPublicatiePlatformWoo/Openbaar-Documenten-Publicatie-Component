@@ -139,9 +139,7 @@ const navigate = () => {
   }
 };
 
-const formRef = ref<HTMLFormElement>();
-
-const { isValid, validateForm } = useFormValidator(computed(() => formRef.value));
+const { formRef, isValid, validateForm } = useFormValidator();
 
 const submit = async () => {
   validateForm();
