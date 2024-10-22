@@ -2,8 +2,6 @@ import { computed, ref } from "vue";
 import { useFetchApi, type PagedResult } from "@/api";
 import type { WaardelijstItem } from "./types";
 
-const API_URL = `/api/v1`;
-
 const organisaties = ref<WaardelijstItem[]>([]);
 const informatiecategorieen = ref<WaardelijstItem[]>([]);
 
@@ -15,8 +13,12 @@ const waardelijstenError = ref<string>();
 
   try {
     const [{ data: organisatieData }, { data: informatiecategorieData }] = await Promise.all([
-      useFetchApi(`${API_URL}/organisaties`).json<PagedResult<WaardelijstItem>>(),
-      useFetchApi(`${API_URL}/informatiecategorieen`).json<PagedResult<WaardelijstItem>>()
+      useFetchApi(`${import.meta.env.VITE_API_URL}/organisaties`).json<
+        PagedResult<WaardelijstItem>
+      >(),
+      useFetchApi(`${import.meta.env.VITE_API_URL}/informatiecategorieen`).json<
+        PagedResult<WaardelijstItem>
+      >()
     ]);
 
     organisaties.value = organisatieData.value?.results || [];
