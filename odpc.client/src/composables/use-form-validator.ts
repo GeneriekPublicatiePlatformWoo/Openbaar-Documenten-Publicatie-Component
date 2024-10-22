@@ -1,4 +1,4 @@
-import { ref, onUnmounted, type ComputedRef } from "vue";
+import { ref, onUnmounted, type ComputedRef, watchEffect } from "vue";
 
 export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefined>) => {
   const isValid = ref(false);
@@ -9,43 +9,24 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
       return;
     }
 
-    isValid.value = validateCheckboxGroups(formRef.value) && formRef.value.checkValidity();
+    isValid.value = validateCheckboxGroups() && formRef.value.checkValidity();
 
     if (!isValid.value) {
       focusInvalidInput(formRef.value);
     }
   };
 
-  const checkboxListeners: (() => void)[] = [];
-
-  const validateCheckboxGroups = (form: HTMLFormElement) => {
-    checkboxListeners.forEach((remove) => remove());
-
-    const checkboxGroups = form.querySelectorAll(
-      "details[data-required-group='checkbox']"
-    ) as NodeListOf<HTMLDetailsElement>;
+  const validateCheckboxGroups = () => {
+    const checkboxGroups = getCheckboxGroups();
 
     if (checkboxGroups.length === 0) return true;
 
     return Array.from(checkboxGroups).every((group) => {
       group.classList.remove("invalid");
 
-      const checkboxes = group.querySelectorAll(
-        '[type="checkbox"]'
-      ) as NodeListOf<HTMLInputElement>;
+      const checkboxes = getCheckboxesFromGroup(group);
 
-      const isAnyChecked = () => Array.from(checkboxes).some((checkbox) => checkbox.checked);
-
-      const onCheckboxChange = () =>
-        !isAnyChecked() ? group.classList.add("invalid") : group.classList.remove("invalid");
-
-      // Add listener to reevaluate invalid style
-      checkboxes.forEach((checkbox) => {
-        checkbox.addEventListener("change", onCheckboxChange);
-        checkboxListeners.push(() => checkbox.removeEventListener("change", onCheckboxChange));
-      });
-
-      if (!isAnyChecked()) {
+      if (!isAnyChecked(checkboxes)) {
         group.classList.add("invalid");
         group.open = true;
 
@@ -58,8 +39,11 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
     });
   };
 
+  // Input type text
   const focusInvalidInput = (form: HTMLFormElement) => {
-    const invalidInputs = form.querySelectorAll("input:invalid") as NodeListOf<HTMLInputElement>;
+    const invalidInputs = form.querySelectorAll(
+      "input[type='text']:invalid"
+    ) as NodeListOf<HTMLInputElement>;
 
     invalidInputs.forEach((input) => {
       input.classList.add("invalid");
@@ -70,6 +54,42 @@ export const useFormValidator = (formRef: ComputedRef<HTMLFormElement | undefine
 
     invalidInputs[0]?.focus();
   };
+
+  // Input type checkbox
+  const getCheckboxGroups = () =>
+    formRef.value?.querySelectorAll(
+      "details[data-required-group='checkbox']"
+    ) as NodeListOf<HTMLDetailsElement>;
+
+  const getCheckboxesFromGroup = (group: HTMLDetailsElement) =>
+    group.querySelectorAll("[type='checkbox']") as NodeListOf<HTMLInputElement>;
+
+  const isAnyChecked = (checkboxes: NodeListOf<HTMLInputElement>) =>
+    Array.from(checkboxes).some((checkbox) => checkbox.checked);
+
+  const onCheckboxChange = (group: HTMLDetailsElement, checkboxes: NodeListOf<HTMLInputElement>) =>
+    !isAnyChecked(checkboxes) ? group.classList.add("invalid") : group.classList.remove("invalid");
+
+  const checkboxListeners: (() => void)[] = [];
+
+  // Add listeners to reevaluate invalid style
+  const addCheckboxListeners = () => {
+    checkboxListeners.forEach((remove) => remove());
+
+    getCheckboxGroups().forEach((group) => {
+      const checkboxes = getCheckboxesFromGroup(group);
+
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", () => onCheckboxChange(group, checkboxes));
+
+        checkboxListeners.push(() =>
+          checkbox.removeEventListener("change", () => onCheckboxChange(group, checkboxes))
+        );
+      });
+    });
+  };
+
+  watchEffect(() => formRef.value && addCheckboxListeners());
 
   onUnmounted(() => checkboxListeners.forEach((remove) => remove()));
 

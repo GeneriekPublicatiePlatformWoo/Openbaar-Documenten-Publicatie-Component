@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
+  <form v-if="!loading" @submit.prevent="submit" ref="formRef" novalidate>
     <section v-if="mijnInformatiecategorieen?.length">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
