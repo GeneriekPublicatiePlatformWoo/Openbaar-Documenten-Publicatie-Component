@@ -4,8 +4,8 @@ import type { WaardelijstItem } from "./types";
 
 const API_URL = `/api/v1`;
 
-const organisaties = ref<WaardelijstItem[]>();
-const informatiecategorieen = ref<WaardelijstItem[]>();
+const organisaties = ref<WaardelijstItem[]>([]);
+const informatiecategorieen = ref<WaardelijstItem[]>([]);
 
 const loadingWaardelijsten = ref(false);
 const waardelijstenError = ref<string>();
@@ -19,17 +19,17 @@ const waardelijstenError = ref<string>();
       useFetchApi(`${API_URL}/informatiecategorieen`).json<PagedResult<WaardelijstItem>>()
     ]);
 
-    organisaties.value = organisatieData.value?.results;
-    informatiecategorieen.value = informatiecategorieData.value?.results;
-  } catch (err) {
-    waardelijstenError.value = "Error";
+    organisaties.value = organisatieData.value?.results || [];
+    informatiecategorieen.value = informatiecategorieData.value?.results || [];
+  } catch (error) {
+    waardelijstenError.value = `Waardelijsten error: ${error}`;
   } finally {
     loadingWaardelijsten.value = false;
   }
 })();
 
 const waardelijstIds = computed(() =>
-  [...(organisaties.value || []), ...(informatiecategorieen.value || [])].map((item) => item.uuid)
+  [...organisaties.value, ...informatiecategorieen.value].map((item) => item.uuid)
 );
 
 export {

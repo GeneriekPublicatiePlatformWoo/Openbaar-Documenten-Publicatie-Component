@@ -3,25 +3,23 @@
     <summary>{{ title }} {{ required ? "*" : "" }}</summary>
 
     <p v-if="required" class="error" :id="`description-${getCurrentInstance()?.uid}`">
-      Er moet minimaal één optie gekozen worden.
+      Kies minimaal één optie.
     </p>
 
     <div class="checkbox check-all">
       <label
-        ><input type="checkbox" @click="toggleAll" :checked="allSelected" /> selecteer alles
+        ><input
+          type="checkbox"
+          @click="toggleAll"
+          :checked="allSelected"
+          :aria-describedby="`description-${getCurrentInstance()?.uid}`"
+        />
+        selecteer alles
       </label>
     </div>
 
     <div class="checkbox" v-for="({ uuid, naam }, key) in options" :key="key">
-      <label
-        ><input
-          type="checkbox"
-          :value="uuid"
-          v-model="model"
-          :aria-describedby="`description-${getCurrentInstance()?.uid}`"
-        />
-        {{ naam }}
-      </label>
+      <label><input type="checkbox" :value="uuid" v-model="model" />{{ naam }}</label>
     </div>
   </details>
 </template>

@@ -58,7 +58,7 @@
 
     <checkbox-list
       title="Informatiecategorieën"
-      :options="informatiecategorieen || []"
+      :options="mijnInformatiecategorieen"
       v-model="model.gekoppeldeInformatiecategorieen"
       :required="true"
     />
@@ -69,10 +69,14 @@
 import { computed } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import CheckboxList from "@/features/waardelijst/components/CheckboxList.vue";
-import { informatiecategorieen } from "@/features/waardelijst";
 import { PublicatieStatus, type Publicatie } from "../types";
+import type { WaardelijstItem } from "@/features/waardelijst";
 
-const props = defineProps<{ modelValue: Publicatie; disabled: boolean }>();
+const props = defineProps<{
+  modelValue: Publicatie;
+  disabled: boolean;
+  mijnInformatiecategorieen: WaardelijstItem[];
+}>();
 
 const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();
 

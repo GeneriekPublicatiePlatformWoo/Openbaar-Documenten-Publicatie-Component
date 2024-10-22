@@ -61,7 +61,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import { validateForm } from "@/helpers/validate";
+import FormValidator from "@/helpers/form-validator";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
 import WaardelijstenForm from "./components/WaardelijstenForm.vue";
 import { loadingWaardelijsten, waardelijstenError } from "@/features/waardelijst";
@@ -70,8 +70,6 @@ import { useGebruikersgroep } from "./composables/use-gebruikersgroep";
 const router = useRouter();
 
 const props = defineProps<{ uuid?: string }>();
-
-const formRef = ref<HTMLFormElement>();
 
 const dialog = useConfirmDialog();
 
@@ -88,8 +86,13 @@ const {
   removeGebruiker
 } = useGebruikersgroep(props.uuid);
 
+const formRef = ref<HTMLFormElement>();
+const formValidator = computed<FormValidator | undefined>(
+  () => formRef.value && new FormValidator(formRef.value)
+);
+
 const submit = async () => {
-  if (validateForm(formRef.value).invalid) return;
+  if (!formValidator.value?.isValid()) return;
 
   try {
     await submitGebruikersgroep();

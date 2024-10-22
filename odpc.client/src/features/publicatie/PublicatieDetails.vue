@@ -11,6 +11,7 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
+        :mijn-informatiecategorieen="mijnInformatiecategorieen"
       />
 
       <alert-inline v-if="documentenError"
@@ -68,18 +69,17 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import { validateForm } from "@/helpers/validate";
+import FormValidator from "@/helpers/form-validator";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
 import { PublicatieStatus } from "./types";
+import { useWaardelijstenUser } from "../waardelijst/composables/use-waardelijsten-user";
 
 const router = useRouter();
 
 const props = defineProps<{ uuid?: string }>();
-
-const formRef = ref<HTMLFormElement>();
 
 const dialog = useConfirmDialog();
 
@@ -87,14 +87,16 @@ const loading = computed(
   () =>
     loadingPublicatie.value ||
     loadingDocumenten.value ||
+    loadingWaardelijstenUser.value ||
     loadingDocument.value ||
     uploadingFile.value
 );
 
-const error = computed(() => !!publicatieError.value || !!documentenError.value);
+const error = computed(
+  () => !!publicatieError.value || !!documentenError.value || !!waardelijstenUserError.value
+);
 
 // Publicatie
-
 const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(
   props.uuid
 );
@@ -119,6 +121,10 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
+// Waardelijsten
+const { mijnInformatiecategorieen, loadingWaardelijstenUser, waardelijstenUserError } =
+  useWaardelijstenUser();
+
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {
     router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
@@ -127,8 +133,13 @@ const navigate = () => {
   }
 };
 
+const formRef = ref<HTMLFormElement>();
+const formValidator = computed<FormValidator | undefined>(
+  () => formRef.value && new FormValidator(formRef.value)
+);
+
 const submit = async () => {
-  if (validateForm(formRef.value).invalid) return;
+  if (!formValidator.value?.isValid()) return;
 
   if (publicatie.value.status === PublicatieStatus.ingetrokken) {
     const { isCanceled } = await dialog.reveal();
