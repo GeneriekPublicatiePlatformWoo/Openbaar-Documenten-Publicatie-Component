@@ -71,7 +71,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import FormValidator from "@/helpers/form-validator";
+import { useFormValidator } from "@/composables/use-form-validator";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
@@ -140,12 +140,13 @@ const navigate = () => {
 };
 
 const formRef = ref<HTMLFormElement>();
-const formValidator = computed<FormValidator | undefined>(
-  () => formRef.value && new FormValidator(formRef.value)
-);
+
+const { isValid, validateForm } = useFormValidator(computed(() => formRef.value));
 
 const submit = async () => {
-  if (!formValidator.value?.isValid()) return;
+  validateForm();
+
+  if (!isValid.value) return;
 
   if (publicatie.value.status === PublicatieStatus.ingetrokken) {
     const { isCanceled } = await dialog.reveal();

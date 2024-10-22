@@ -61,7 +61,7 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import FormValidator from "@/helpers/form-validator";
+import { useFormValidator } from "@/composables/use-form-validator";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
 import WaardelijstenForm from "@/features/waardelijst/components/WaardelijstenForm.vue";
 import { loadingWaardelijsten, waardelijstenError } from "@/features/waardelijst";
@@ -87,12 +87,13 @@ const {
 } = useGebruikersgroep(props.uuid);
 
 const formRef = ref<HTMLFormElement>();
-const formValidator = computed<FormValidator | undefined>(
-  () => formRef.value && new FormValidator(formRef.value)
-);
+
+const { isValid, validateForm } = useFormValidator(computed(() => formRef.value));
 
 const submit = async () => {
-  if (!formValidator.value?.isValid()) return;
+  validateForm();
+
+  if (!isValid.value) return;
 
   try {
     await submitGebruikersgroep();
