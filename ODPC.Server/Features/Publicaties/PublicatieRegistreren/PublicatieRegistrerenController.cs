@@ -1,18 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
-using ODPC.Authentication;
 
 namespace ODPC.Features.Publicaties.PublicatieRegistreren
 {
     [ApiController]
-    public class PublicatieRegistrerenController(OdpcUser user, IOdrcClientFactory clientFactory) : ControllerBase
+    public class PublicatieRegistrerenController(IOdrcClientFactory clientFactory, IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
     {
         private readonly IOdrcClientFactory _clientFactory = clientFactory;
 
         [HttpPost("api/v1/publicaties")]
         public async Task<IActionResult> Post(Publicatie publicatie, CancellationToken token)
         {
-            var client = _clientFactory.Create(user, "Publicatie geregistreerd");
+            var categorieen = await waardelijstItemsService.GetAsync(token);
+
+            if (publicatie.GekoppeldeInformatiecategorieen != null && publicatie.GekoppeldeInformatiecategorieen.Any(c => !categorieen.Contains(c)))
+            {
+                ModelState.AddModelError(nameof(publicatie.GekoppeldeInformatiecategorieen), "Gebruiker is niet geautoriseerd voor deze informatiecategorieën");
+                return BadRequest(ModelState);
+            }
+
+            var client = _clientFactory.Create("Publicatie geregistreerd");
             var response = await client.PostAsJsonAsync("/api/v1/publicaties/", publicatie, token);
 
             response.EnsureSuccessStatusCode();

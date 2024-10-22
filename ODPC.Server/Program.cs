@@ -2,6 +2,7 @@
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
+using ODPC.Features;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -42,7 +43,7 @@ try
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
     builder.Services.Configure<OdrcConfig>(builder.Configuration.GetSection("Odrc"));
     builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
-
+    builder.Services.AddScoped<IGebruikerWaardelijstItemsService, GebruikerWaardelijstItemsService>();
 
 
     var app = builder.Build();
