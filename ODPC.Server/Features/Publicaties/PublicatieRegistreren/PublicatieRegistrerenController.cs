@@ -28,7 +28,10 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
             // TODO deze regel kan eraf als deze story is geimplementeerd: https://github.com/GeneriekPublicatiePlatformWoo/registratie-component/issues/48
             viewModel!.GekoppeldeInformatiecategorieen = publicatie.GekoppeldeInformatiecategorieen;
 
-            // TODO de mock laten we er nog even in totdat ook het ophalen van gegevens via het register verloopt
+            // TODO deze regel kan eraf als deze story is geimplementeerd: https://github.com/GeneriekPublicatiePlatformWoo/registratie-component/issues/49
+            viewModel!.Status = publicatie.Status;
+
+            // TODO de mock laten we er nog even in totdat ook het ophalen van gegevens via het register verloopt: https://github.com/GeneriekPublicatiePlatformWoo/Openbaar-Documenten-Publicatie-Component/issues/68
             PublicatiesMock.Publicaties[viewModel!.Uuid] = viewModel;
 
             return Ok(viewModel);
