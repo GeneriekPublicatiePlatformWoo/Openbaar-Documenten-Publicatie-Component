@@ -30,7 +30,8 @@ export const useFormValidator = () => {
 
       if (!isAnyChecked(checkboxes)) {
         group.classList.add("invalid");
-        group.open = true;
+        
+        if (group instanceof HTMLDetailsElement) group.open = true;
 
         checkboxes[0]?.focus();
 
@@ -60,16 +61,16 @@ export const useFormValidator = () => {
   // Input type checkbox
   const getCheckboxGroups = () =>
     formRef.value?.querySelectorAll(
-      "details[data-required-group='checkbox']"
-    ) as NodeListOf<HTMLDetailsElement>;
+      "[data-required-group='checkbox']"
+    ) as NodeListOf<HTMLElement>;
 
-  const getCheckboxesFromGroup = (group: HTMLDetailsElement) =>
+  const getCheckboxesFromGroup = (group: HTMLElement) =>
     group.querySelectorAll("[type='checkbox']") as NodeListOf<HTMLInputElement>;
 
   const isAnyChecked = (checkboxes: NodeListOf<HTMLInputElement>) =>
     Array.from(checkboxes).some((checkbox) => checkbox.checked);
 
-  const onCheckboxChange = (group: HTMLDetailsElement, checkboxes: NodeListOf<HTMLInputElement>) =>
+  const onCheckboxChange = (group: HTMLElement, checkboxes: NodeListOf<HTMLInputElement>) =>
     !isAnyChecked(checkboxes) ? group.classList.add("invalid") : group.classList.remove("invalid");
 
   const checkboxListeners: (() => void)[] = [];
@@ -81,12 +82,12 @@ export const useFormValidator = () => {
     getCheckboxGroups().forEach((group) => {
       const checkboxes = getCheckboxesFromGroup(group);
 
-      checkboxes.forEach((checkbox) => {
-        checkbox.addEventListener("change", () => onCheckboxChange(group, checkboxes));
+      const handler = () => onCheckboxChange(group, checkboxes);
 
-        checkboxListeners.push(() =>
-          checkbox.removeEventListener("change", () => onCheckboxChange(group, checkboxes))
-        );
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", handler);
+
+        checkboxListeners.push(() => checkbox.removeEventListener("change", handler));
       });
     });
   };

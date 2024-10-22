@@ -19,18 +19,25 @@
     </div>
 
     <div class="checkbox" v-for="({ uuid, naam }, key) in options" :key="key">
-      <label><input type="checkbox" :value="uuid" v-model="model" />{{ naam }}</label>
+      <label
+        ><input
+          type="checkbox"
+          :value="uuid"
+          v-model="model"
+          :aria-describedby="`description-${getCurrentInstance()?.uid}`"
+        />{{ naam }}</label
+      >
     </div>
   </details>
 </template>
 
-<script setup lang="ts" generic="T extends OptionProps">
+<script setup lang="ts">
 import { computed, getCurrentInstance } from "vue";
 import type { OptionProps } from "../types";
 
 const props = defineProps<{
   title: string;
-  options: T[];
+  options: OptionProps[];
   modelValue: string[];
   required?: boolean;
 }>();
