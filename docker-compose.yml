@@ -9,6 +9,7 @@ services:
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
       - ODRC_BASE_URL=http://odrc/
       - ODRC_API_KEY=xxx
+      - OIDC_ADMIN_ROLE=odpc-admin
     image: ${DOCKER_REGISTRY-}odpc
     build:
       context: .

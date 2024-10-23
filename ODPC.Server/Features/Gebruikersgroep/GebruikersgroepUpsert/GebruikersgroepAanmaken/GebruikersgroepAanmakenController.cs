@@ -1,12 +1,15 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ODPC.Authentication;
 using ODPC.Data;
 using ODPC.Data.Entities;
 
 namespace ODPC.Features.Gebruikersgroep.GebruikersgroepUpsert
 {
     [ApiController]
+    [Authorize(AdminPolicy.Name)]
     public class GebruikersgroepAanmakenController(OdpcDbContext context) : ControllerBase
     {
         private readonly OdpcDbContext _context = context;
