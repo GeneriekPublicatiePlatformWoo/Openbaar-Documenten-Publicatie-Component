@@ -7,6 +7,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=localdev
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+      - OIDC_ADMIN_ROLE=odpc-admin
     image: ${DOCKER_REGISTRY-}odpc
     build:
       context: .

@@ -29,7 +29,7 @@ namespace ODPC.Authentication
                 var name = user?.FindFirst(nameClaimType)?.Value;
                 var id = user?.FindFirst(x => idClaimTypes.Contains(x.Type))?.Value;
                 var roles = user?.FindAll(roleClaimType).Select(x=> x.Value).ToArray() ?? [];
-                var isAdmin = false;
+                var isAdmin = roles.Contains(authOptions.AdminRole);
                 return new OdpUser { IsLoggedIn = isLoggedIn, FullName = name, Id = id, Roles = roles, IsAdmin = isAdmin };
             });
 
@@ -50,7 +50,12 @@ namespace ODPC.Authentication
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.SlidingExpiration = true;
                 //options.Events.OnSigningOut = (e) => e.HttpContext.RevokeRefreshTokenAsync();
-                options.Events.OnRedirectToAccessDenied = HandleLoggedOut;
+                options.Events.OnRedirectToAccessDenied = (ctx) =>
+                {
+                    //https://www.rfc-editor.org/rfc/rfc7231#section-6.5.3
+                    ctx.Response.StatusCode = StatusCodes.Status404NotFound;
+                    return Task.CompletedTask;
+                };
                 options.Events.OnRedirectToLogin = HandleLoggedOut;
             });
 
@@ -100,7 +105,8 @@ namespace ODPC.Authentication
                     };
                 });
             }
-
+            services.AddAuthorizationBuilder()
+                .AddPolicy(AdminPolicy.Name, policy => policy.RequireRole(authOptions.AdminRole));
             services.AddDistributedMemoryCache();
             services.AddOpenIdConnectAccessTokenManagement();
         }

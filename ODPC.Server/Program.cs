@@ -33,6 +33,7 @@ try
         options.Authority = GetRequiredConfig("OIDC_AUTHORITY");
         options.ClientId = GetRequiredConfig("OIDC_CLIENT_ID");
         options.ClientSecret = GetRequiredConfig("OIDC_CLIENT_SECRET");
+        options.AdminRole = GetRequiredConfig("OIDC_ADMIN_ROLE");
         options.NameClaimType = builder.Configuration["OIDC_NAME_CLAIM_TYPE"];
         options.RoleClaimType = builder.Configuration["OIDC_ROLE_CLAIM_TYPE"];
         options.IdClaimType = builder.Configuration["OIDC_ID_CLAIM_TYPE"];
