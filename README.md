@@ -1,6 +1,14 @@
 # ODPC
+## Lokaal opstarten met Docker Compose
+Je kan ODPC lokaal opstarten door het volgende commando uit te voeren in de rootmap van de repository: `docker compose up`
+### ODRC als afhankelijkheid in Docker Compose
+We hebben ervoor gekozen om ODRC als afhankelijkheid op te nemen in Docker Compose. Dit houdt in dat er een instantie van ODRC wordt opgestart.
 
-# Omgevingsvariabelen
+De configuratie en benodigde bestanden zijn overgenomen uit [De github repository van ODRC](https://github.com/GeneriekPublicatiePlatformWoo/registratie-component). Als daar iets in wijzigt, zullen we dat hier moeten doorvoeren.
+
+Als je met een separate installatie (bijvoorbeeld een testomgeving) van ODRC wil koppelen, moet je de variabelen `ODRC_BASE_URL` en `ODRC_API_KEY` aanpassen. Dit kun je ofwel in het docker-compose.yml bestand doen (zorg dat je dit niet incheckt!), ofwel in je [user secrets bestand](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets).
+
+## Omgevingsvariabelen
 | Variabele                               | Uitleg                                                                                                                           |
 | ---------------------------------       | --------------------------------------------------------------------------------------------                                     |
 | `POSTGRES_DB`       | Naam van de database bij ODPC         |
