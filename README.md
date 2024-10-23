@@ -8,6 +8,10 @@ De configuratie en benodigde bestanden zijn overgenomen uit [De github repositor
 
 Als je met een separate installatie (bijvoorbeeld een testomgeving) van ODRC wil koppelen, moet je de variabelen `ODRC_BASE_URL` en `ODRC_API_KEY` aanpassen. Dit kun je ofwel in het docker-compose.yml bestand aanpassen (zorg dat je dit niet incheckt!), ofwel in je [user secrets bestand](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). In het laatste geval moet je de variabelen verwijderen uit het docker-compose.yml bestand.
 
+Standaard wordt bij het draaien van `docker compose up` de laatste versie van het image van ODRC opgehaald. Als je dit wil forceren kan je het commando `docker compose pull odrc-django` uitvoeren.
+
+Als je een specifieke versie van het image van ODRC wil vastpinnen, zet je dit in de enviroment variable `ODRC_VERSION`
+
 ## Omgevingsvariabelen
 | Variabele                               | Uitleg                                                                                                                           |
 | ---------------------------------       | --------------------------------------------------------------------------------------------                                     |

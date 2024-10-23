@@ -83,7 +83,7 @@ services:
       - redis
 
   odrc-django: &odrc_build
-    image: maykinmedia/woo-publications:${RELEASE:-latest}
+    image: maykinmedia/woo-publications:${ODRC_VERSION:-latest}
     pull_policy: always
     environment: &odrc_env
       - DJANGO_SETTINGS_MODULE=woo_publications.conf.docker
