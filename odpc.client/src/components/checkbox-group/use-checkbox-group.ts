@@ -12,7 +12,11 @@ export const useCheckboxGroup = () => {
       : clearCustomValidityCheckboxGroup(checkboxes);
 
   const setCustomValidityCheckboxGroup = (checkboxes: NodeListOf<HTMLInputElement>) =>
-    checkboxes.forEach((checkbox) => checkbox.setCustomValidity("Kies minimaal één optie."));
+    checkboxes.forEach((checkbox) =>
+      checkbox.setCustomValidity(
+        groupRef.value?.getAttribute("data-required-message") || "Kies minimaal één optie."
+      )
+    );
 
   const clearCustomValidityCheckboxGroup = (checkboxes: NodeListOf<HTMLInputElement>) =>
     checkboxes.forEach((checkbox) => checkbox.setCustomValidity(""));
@@ -24,7 +28,9 @@ export const useCheckboxGroup = () => {
   const addCheckboxListeners = () => {
     removeCheckboxListeners();
 
-    const checkboxes = groupRef.value?.querySelectorAll(
+    if (!groupRef.value || !groupRef.value.hasAttribute("data-required")) return;
+
+    const checkboxes = groupRef.value.querySelectorAll(
       "[type='checkbox']"
     ) as NodeListOf<HTMLInputElement>;
 

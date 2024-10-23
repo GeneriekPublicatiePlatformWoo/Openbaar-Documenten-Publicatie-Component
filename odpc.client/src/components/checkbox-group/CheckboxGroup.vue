@@ -3,7 +3,7 @@
     role="group"
     ref="groupRef"
     :aria-labelledby="`label-${instanceId}`"
-    :data-required-group="required ? 'checkbox' : undefined"
+    :data-required="required ? true : undefined"
     :data-required-message="required ? 'Kies minimaal één optie.' : undefined"
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
