@@ -16,6 +16,7 @@
           @click="toggleAll"
           :checked="allSelected"
           :aria-describedby="`description-${instanceId}`"
+          :aria-invalid="!model.length ? true : undefined"
         />
         selecteer alles
       </label>
@@ -28,6 +29,7 @@
           :value="uuid"
           v-model="model"
           :aria-describedby="`description-${instanceId}`"
+          :aria-invalid="!model.length ? true : undefined"
         />{{ naam }}</label
       >
     </div>

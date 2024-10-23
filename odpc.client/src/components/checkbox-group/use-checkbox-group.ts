@@ -1,4 +1,4 @@
-import { ref, onUnmounted, watchEffect } from "vue";
+import { ref, watchEffect, onUnmounted } from "vue";
 
 export const useCheckboxGroup = () => {
   const groupRef = ref<HTMLElement>();
@@ -6,51 +6,38 @@ export const useCheckboxGroup = () => {
   const isAnyChecked = (checkboxes: NodeListOf<HTMLInputElement>) =>
     Array.from(checkboxes).some((checkbox) => checkbox.checked);
 
-  const onCheckboxChange = (checkboxes: NodeListOf<HTMLInputElement>) =>
-    !isAnyChecked(checkboxes)
-      ? setCustomValidityCheckboxGroup(checkboxes)
-      : clearCustomValidityCheckboxGroup(checkboxes);
+  const setCustomValidityCheckboxGroup = () => {
+    const checkboxes = (groupRef.value?.querySelectorAll("[type='checkbox']") ||
+      []) as NodeListOf<HTMLInputElement>;
 
-  const setCustomValidityCheckboxGroup = (checkboxes: NodeListOf<HTMLInputElement>) =>
-    checkboxes.forEach((checkbox) => checkbox.setCustomValidity("Kies minimaal één optie."));
-
-  const clearCustomValidityCheckboxGroup = (checkboxes: NodeListOf<HTMLInputElement>) =>
-    checkboxes.forEach((checkbox) => checkbox.setCustomValidity(""));
-
-  const checkboxListeners: (() => void)[] = [];
-
-  const removeCheckboxListeners = () => checkboxListeners.forEach((remove) => remove());
-
-  const addCheckboxListeners = () => {
-    removeCheckboxListeners();
-
-    if (!groupRef.value || !groupRef.value.hasAttribute("aria-required")) return;
-
-    const checkboxes = groupRef.value.querySelectorAll(
-      "[type='checkbox']"
-    ) as NodeListOf<HTMLInputElement>;
-
-    if (!checkboxes?.length) return;
-
-    if (!isAnyChecked(checkboxes)) setCustomValidityCheckboxGroup(checkboxes);
-
-    const invalidHandler = () =>
-      groupRef.value instanceof HTMLDetailsElement && (groupRef.value.open = true);
-
-    const changeHandler = () => onCheckboxChange(checkboxes);
-
-    checkboxes.forEach((checkbox) => {
-      checkbox.addEventListener("invalid", invalidHandler);
-      checkboxListeners.push(() => checkbox.removeEventListener("invalid", invalidHandler));
-
-      checkbox.addEventListener("change", changeHandler);
-      checkboxListeners.push(() => checkbox.removeEventListener("change", changeHandler));
-    });
+    checkboxes.forEach((checkbox) =>
+      checkbox.setCustomValidity(!isAnyChecked(checkboxes) ? "Kies minimaal één optie." : "")
+    );
   };
 
-  watchEffect(() => groupRef.value && addCheckboxListeners());
+  const invalidHandler = () =>
+    groupRef.value instanceof HTMLDetailsElement && (groupRef.value.open = true);
 
-  onUnmounted(() => removeCheckboxListeners());
+  const addListeners = () => {
+    if (!groupRef.value || !groupRef.value.hasAttribute("aria-required")) return;
+
+    setCustomValidityCheckboxGroup();
+
+    groupRef.value.addEventListener("change", setCustomValidityCheckboxGroup);
+    groupRef.value.addEventListener("invalid", invalidHandler, true);
+  };
+
+  const removeListeners = () => {
+    groupRef.value?.removeEventListener("change", setCustomValidityCheckboxGroup);
+    groupRef.value?.removeEventListener("invalid", invalidHandler, true);
+  };
+
+  watchEffect(() => {
+    removeListeners();
+    addListeners();
+  });
+
+  onUnmounted(() => removeListeners());
 
   return {
     groupRef
