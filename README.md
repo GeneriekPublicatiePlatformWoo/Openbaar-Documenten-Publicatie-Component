@@ -6,7 +6,7 @@ We hebben ervoor gekozen om ODRC als afhankelijkheid op te nemen in Docker Compo
 
 De configuratie en benodigde bestanden zijn overgenomen uit [De github repository van ODRC](https://github.com/GeneriekPublicatiePlatformWoo/registratie-component). Als daar iets in wijzigt, zullen we dat hier moeten doorvoeren.
 
-Als je met een separate installatie (bijvoorbeeld een testomgeving) van ODRC wil koppelen, moet je de variabelen `ODRC_BASE_URL` en `ODRC_API_KEY` aanpassen. Dit kun je ofwel in het docker-compose.yml bestand doen (zorg dat je dit niet incheckt!), ofwel in je [user secrets bestand](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets).
+Als je met een separate installatie (bijvoorbeeld een testomgeving) van ODRC wil koppelen, moet je de variabelen `ODRC_BASE_URL` en `ODRC_API_KEY` aanpassen. Dit kun je ofwel in het docker-compose.yml bestand aanpassen (zorg dat je dit niet incheckt!), ofwel in je [user secrets bestand](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). In het laatste geval moet je de variabelen verwijderen uit het docker-compose.yml bestand.
 
 ## Omgevingsvariabelen
 | Variabele                               | Uitleg                                                                                                                           |
