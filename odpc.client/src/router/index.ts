@@ -40,7 +40,8 @@ const router = createRouter({
       name: "forbidden",
       component: ForbiddenView,
       meta: {
-        title: "Geen toegang"
+        title: "Geen toegang",
+        requiresAuth: true
       }
     },
     {
