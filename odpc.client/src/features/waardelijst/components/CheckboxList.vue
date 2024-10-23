@@ -1,10 +1,12 @@
 <template>
-  <details :data-required-group="required ? 'checkbox' : null">
-    <summary>{{ title }} {{ required ? "*" : "" }}</summary>
+  <details
+    role="group"
+    :aria-labelledby="`label-${instanceId}`"
+    :data-required-group="required ? 'checkbox' : null"
+  >
+    <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
-    <p v-if="required" class="error" :id="`description-${getCurrentInstance()?.uid}`">
-      Kies minimaal één optie.
-    </p>
+    <p v-if="required" class="error" :id="`description-${instanceId}`">Kies minimaal één optie.</p>
 
     <div class="checkbox check-all">
       <label
@@ -12,7 +14,7 @@
           type="checkbox"
           @click="toggleAll"
           :checked="allSelected"
-          :aria-describedby="`description-${getCurrentInstance()?.uid}`"
+          :aria-describedby="`description-${instanceId}`"
         />
         selecteer alles
       </label>
@@ -24,7 +26,7 @@
           type="checkbox"
           :value="uuid"
           v-model="model"
-          :aria-describedby="`description-${getCurrentInstance()?.uid}`"
+          :aria-describedby="`description-${instanceId}`"
         />{{ naam }}</label
       >
     </div>
@@ -34,6 +36,8 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance } from "vue";
 import type { OptionProps } from "../types";
+
+const instanceId = getCurrentInstance()?.uid;
 
 const props = defineProps<{
   title: string;

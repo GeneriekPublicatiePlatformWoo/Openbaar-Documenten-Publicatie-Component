@@ -30,7 +30,7 @@ export const useFormValidator = () => {
 
       if (!isAnyChecked(checkboxes)) {
         group.classList.add("invalid");
-        
+
         if (group instanceof HTMLDetailsElement) group.open = true;
 
         checkboxes[0]?.focus();
@@ -49,8 +49,6 @@ export const useFormValidator = () => {
     ) as NodeListOf<HTMLInputElement>;
 
     invalidInputs.forEach((input) => {
-      input.classList.add("invalid");
-
       const details = input.closest("details");
       if (details) details.open = true;
     });
@@ -60,9 +58,7 @@ export const useFormValidator = () => {
 
   // Input type checkbox
   const getCheckboxGroups = () =>
-    formRef.value?.querySelectorAll(
-      "[data-required-group='checkbox']"
-    ) as NodeListOf<HTMLElement>;
+    formRef.value?.querySelectorAll("[data-required-group='checkbox']") as NodeListOf<HTMLElement>;
 
   const getCheckboxesFromGroup = (group: HTMLElement) =>
     group.querySelectorAll("[type='checkbox']") as NodeListOf<HTMLInputElement>;

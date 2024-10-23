@@ -3,6 +3,8 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import type { Publicatie } from "../types";
 
+const API_URL = `/api/v1`;
+
 export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
     officieleTitel: "",
@@ -20,7 +22,7 @@ export const usePublicatie = (uuid?: string) => {
     data: publicatieData,
     isFetching: loadingPublicatie,
     error: publicatieError
-  } = useFetchApi(() => `${import.meta.env.VITE_API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
+  } = useFetchApi(() => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Publicatie>();
 

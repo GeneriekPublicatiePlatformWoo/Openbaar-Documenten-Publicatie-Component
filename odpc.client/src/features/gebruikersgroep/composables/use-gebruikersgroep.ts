@@ -4,6 +4,8 @@ import toast from "@/stores/toast";
 import type { Gebruikersgroep } from "../types";
 import { waardelijstIds } from "@/features/waardelijst";
 
+const API_URL = `/api/v1`;
+
 export const useGebruikersgroep = (uuid?: string) => {
   const gebruikersgroep = ref<Gebruikersgroep>({
     naam: "",
@@ -20,12 +22,9 @@ export const useGebruikersgroep = (uuid?: string) => {
     data: gebruikersgroepData,
     isFetching: loadingGebruikersgroep,
     error: gebruikersgroepError
-  } = useFetchApi(
-    () => `${import.meta.env.VITE_API_URL}/gebruikersgroepen${uuid ? "/" + uuid : ""}`,
-    {
-      immediate: false
-    }
-  ).json<Gebruikersgroep>();
+  } = useFetchApi(() => `${API_URL}/gebruikersgroepen${uuid ? "/" + uuid : ""}`, {
+    immediate: false
+  }).json<Gebruikersgroep>();
 
   watch(gebruikersgroepData, (value) => (gebruikersgroep.value = value || gebruikersgroep.value));
 

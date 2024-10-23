@@ -4,6 +4,8 @@ import toast from "@/stores/toast";
 import { mimeTypesMap, uploadFile } from "../service";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
 
+const API_URL = `/api/v1`;
+
 export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const getInitialDocument = (): PublicatieDocument => ({
     publicatie: "",
@@ -28,7 +30,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     data: documentenData,
     isFetching: loadingDocumenten,
     error: documentenError
-  } = useFetchApi(() => `${import.meta.env.VITE_API_URL}/documenten/?publicatie=${pubUUID.value}`, {
+  } = useFetchApi(() => `${API_URL}/documenten/?publicatie=${pubUUID.value}`, {
     immediate: false
   }).json<PublicatieDocument[]>();
 
@@ -101,12 +103,9 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
-  } = useFetchApi(
-    () => `${import.meta.env.VITE_API_URL}/documenten${docUUID.value ? "/" + docUUID.value : ""}`,
-    {
-      immediate: false
-    }
-  ).json<PublicatieDocument>();
+  } = useFetchApi(() => `${API_URL}/documenten${docUUID.value ? "/" + docUUID.value : ""}`, {
+    immediate: false
+  }).json<PublicatieDocument>();
 
   const uploadDocument = async (index: number) => {
     if (files.value?.[index] && documentData.value?.bestandsdelen?.length) {

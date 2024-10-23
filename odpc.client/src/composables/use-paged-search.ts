@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import { useUrlSearchParams } from "@vueuse/core";
 import { useFetchApi, type PagedResult } from "@/api";
 
+const API_URL = `/api/v1`;
 const PAGE_SIZE = 5;
 
 export const usePagedSearch = <T, QueryParams extends { page: string }>(
@@ -76,8 +77,7 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
   });
 
   const { get, data, isFetching, error } = useFetchApi(
-    () =>
-      `${import.meta.env.VITE_API_URL}/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
+    () => `${API_URL}/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
     {
       immediate: false
     }
