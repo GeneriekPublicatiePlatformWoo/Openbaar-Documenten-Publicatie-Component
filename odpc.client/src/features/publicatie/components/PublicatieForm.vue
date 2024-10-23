@@ -56,7 +56,7 @@
       </div>
     </details>
 
-    <checkbox-list
+    <checkbox-group
       title="Informatiecategorieën"
       :options="mijnInformatiecategorieen"
       v-model="model.gekoppeldeInformatiecategorieen"
@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
-import CheckboxList from "@/features/waardelijst/components/CheckboxList.vue";
+import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
 import { PublicatieStatus, type Publicatie } from "../types";
 import type { WaardelijstItem } from "@/features/waardelijst";
 

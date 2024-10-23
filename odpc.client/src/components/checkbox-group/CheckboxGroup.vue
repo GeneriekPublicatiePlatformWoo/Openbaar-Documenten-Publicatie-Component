@@ -1,8 +1,10 @@
 <template>
   <details
     role="group"
+    ref="groupRef"
     :aria-labelledby="`label-${instanceId}`"
-    :data-required-group="required ? 'checkbox' : null"
+    :data-required-group="required ? 'checkbox' : undefined"
+    :data-required-message="required ? 'Kies minimaal één optie.' : undefined"
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
@@ -35,9 +37,12 @@
 
 <script setup lang="ts">
 import { computed, getCurrentInstance } from "vue";
-import type { OptionProps } from "../types";
+import { useCheckboxGroup } from "./use-checkbox-group";
+import type { OptionProps } from "./types";
 
 const instanceId = getCurrentInstance()?.uid;
+
+const { groupRef } = useCheckboxGroup();
 
 const props = defineProps<{
   title: string;

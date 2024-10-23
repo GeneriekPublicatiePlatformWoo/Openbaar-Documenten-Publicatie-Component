@@ -96,7 +96,7 @@ details {
     word-break: break-word;
   }
 
-  &.invalid {
+  &:has(:user-invalid) {
     border-color: var(--code);
 
     .error {

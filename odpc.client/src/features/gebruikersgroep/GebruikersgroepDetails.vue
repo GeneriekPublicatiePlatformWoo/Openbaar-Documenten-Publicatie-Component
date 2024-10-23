@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
+  <form v-show="!loading" @submit.prevent="submit" ref="formRef">
     <section>
       <alert-inline v-if="gebruikersgroepError"
         >Er is iets misgegaan bij het ophalen van de gebruikersgroep...</alert-inline
@@ -54,14 +54,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import { useFormValidator } from "@/composables/use-form-validator";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
 import WaardelijstenForm from "@/features/waardelijst/components/WaardelijstenForm.vue";
 import { loadingWaardelijsten, waardelijstenError } from "@/features/waardelijst";
@@ -86,13 +85,7 @@ const {
   removeGebruiker
 } = useGebruikersgroep(props.uuid);
 
-const { formRef, isValid, validateForm } = useFormValidator();
-
 const submit = async () => {
-  validateForm();
-
-  if (!isValid.value) return;
-
   try {
     await submitGebruikersgroep();
   } catch {

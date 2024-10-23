@@ -2,14 +2,14 @@
   <fieldset>
     <legend>Waardelijsten</legend>
 
-    <checkbox-list
+    <checkbox-group
       v-if="organisaties.length"
       :title="WAARDELIJSTEN.ORGANISATIE"
       :options="organisaties"
       v-model="model"
     />
 
-    <checkbox-list
+    <checkbox-group
       v-if="informatiecategorieen.length"
       :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
       :options="informatiecategorieen"
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import CheckboxList from "./CheckboxList.vue";
+import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
 import { WAARDELIJSTEN, organisaties, informatiecategorieen } from "../";
 
 const props = defineProps<{ modelValue: string[] }>();

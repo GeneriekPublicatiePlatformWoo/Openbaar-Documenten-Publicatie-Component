@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-if="!loading" @submit.prevent="submit" ref="formRef" novalidate>
+  <form v-if="!loading" @submit.prevent="submit">
     <section v-if="mijnInformatiecategorieen?.length">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
@@ -71,7 +71,6 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import { useFormValidator } from "@/composables/use-form-validator";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
@@ -139,13 +138,7 @@ const navigate = () => {
   }
 };
 
-const { formRef, isValid, validateForm } = useFormValidator();
-
 const submit = async () => {
-  validateForm();
-
-  if (!isValid.value) return;
-
   if (publicatie.value.status === PublicatieStatus.ingetrokken) {
     const { isCanceled } = await dialog.reveal();
 
