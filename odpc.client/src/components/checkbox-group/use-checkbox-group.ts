@@ -1,4 +1,4 @@
-import { ref, watchEffect, onUnmounted } from "vue";
+import { ref, watchEffect } from "vue";
 
 export const useCheckboxGroup = () => {
   const groupRef = ref<HTMLElement>();
@@ -6,7 +6,7 @@ export const useCheckboxGroup = () => {
   const isAnyChecked = (checkboxes: NodeListOf<HTMLInputElement>) =>
     Array.from(checkboxes).some((checkbox) => checkbox.checked);
 
-  const setCustomValidityCheckboxGroup = () => {
+  const setCustomValidity = () => {
     const checkboxes = (groupRef.value?.querySelectorAll("[type='checkbox']") ||
       []) as NodeListOf<HTMLInputElement>;
 
@@ -15,31 +15,14 @@ export const useCheckboxGroup = () => {
     );
   };
 
-  const invalidHandler = () =>
+  const onInvalid = () =>
     groupRef.value instanceof HTMLDetailsElement && (groupRef.value.open = true);
 
-  const addListeners = () => {
-    if (!groupRef.value || !groupRef.value.hasAttribute("aria-required")) return;
-
-    setCustomValidityCheckboxGroup();
-
-    groupRef.value.addEventListener("change", setCustomValidityCheckboxGroup);
-    groupRef.value.addEventListener("invalid", invalidHandler, true);
-  };
-
-  const removeListeners = () => {
-    groupRef.value?.removeEventListener("change", setCustomValidityCheckboxGroup);
-    groupRef.value?.removeEventListener("invalid", invalidHandler, true);
-  };
-
-  watchEffect(() => {
-    removeListeners();
-    addListeners();
-  });
-
-  onUnmounted(() => removeListeners());
+  watchEffect(() => groupRef.value?.hasAttribute("aria-required") && setCustomValidity());
 
   return {
-    groupRef
+    groupRef,
+    setCustomValidity,
+    onInvalid
   };
 };

@@ -4,6 +4,8 @@
     ref="groupRef"
     :aria-labelledby="`label-${instanceId}`"
     :aria-required="required ? true : undefined"
+    @change="setCustomValidity"
+    @invalid.capture="onInvalid"
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
@@ -43,7 +45,7 @@ import type { OptionProps } from "./types";
 
 const instanceId = getCurrentInstance()?.uid;
 
-const { groupRef } = useCheckboxGroup();
+const { groupRef, setCustomValidity, onInvalid } = useCheckboxGroup();
 
 const props = defineProps<{
   title: string;
