@@ -20,7 +20,7 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
             }
 
             var client = _clientFactory.Create("Publicatie geregistreerd");
-            var response = await client.PostAsJsonAsync("/api/v1/publicaties/", publicatie, token);
+            var response = await client.PostAsJsonAsync("/api/v1/publicaties", publicatie, token);
 
             response.EnsureSuccessStatusCode();
             var viewModel = await response.Content.ReadFromJsonAsync<Publicatie>(token);
