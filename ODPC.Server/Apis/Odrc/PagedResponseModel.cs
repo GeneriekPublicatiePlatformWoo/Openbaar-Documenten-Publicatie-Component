@@ -2,7 +2,7 @@
 {
     public class PagedResponseModel<T>
     {
-        public List<T> results { get; set; }
+        public required IReadOnlyList<T> Results { get; set; }
         public int Count { get; set; }
         public string? Next { get; set; }
         public string? Previous { get; set; }

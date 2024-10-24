@@ -11,7 +11,9 @@
                 VerkorteTitel = "De Impact van de Wet open overheid op Bestuurlijke Transparantie",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 24),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
+
             },
             new()
             {
@@ -20,7 +22,8 @@
                 VerkorteTitel = "Toepassing en Resultaten van de Wet open overheid",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 23),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -29,7 +32,8 @@
                 VerkorteTitel = "Transparantie als Standaard in Bestuurlijk Nederland",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 03),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -38,7 +42,8 @@
                 VerkorteTitel = "Een Nieuwe Norm voor Openbare Informatie",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 02),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -47,7 +52,8 @@
                 VerkorteTitel = "De Toekomst van Transparantie met de Woo",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 29),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -56,7 +62,8 @@
                 VerkorteTitel = "De Praktische Uitwerking van de Woo",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 07),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -65,7 +72,8 @@
                 VerkorteTitel = "Openbaarheid en Verantwoording",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 27),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -74,7 +82,8 @@
                 VerkorteTitel = "Hoe de Woo de Overheid Hervormt",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 07),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -83,7 +92,8 @@
                 VerkorteTitel = "Successen en Uitdagingen",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 14),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -92,7 +102,8 @@
                 VerkorteTitel = "Het Effect van de Woo",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 23),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -101,7 +112,8 @@
                 VerkorteTitel = "Verantwoord Bestuur door de Wet open overheid",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 09),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             },
             new()
             {
@@ -110,7 +122,8 @@
                 VerkorteTitel = "De Woo en de Weg naar Open Overheid",
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 15),
-                Status = "gepubliceerd"
+                Status = "gepubliceerd",
+                GekoppeldeInformatiecategorieen = []
             }
         }.ToDictionary(x => x.Uuid);
     }

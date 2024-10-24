@@ -4,7 +4,7 @@ import toast from "@/stores/toast";
 import type { Gebruikersgroep } from "../types";
 import { waardelijstIds } from "@/features/waardelijst";
 
-const GGAPI_URL = `/api/v1/gebruikersgroepen`;
+const API_URL = `/api/v1`;
 
 export const useGebruikersgroep = (uuid?: string) => {
   const gebruikersgroep = ref<Gebruikersgroep>({
@@ -22,7 +22,7 @@ export const useGebruikersgroep = (uuid?: string) => {
     data: gebruikersgroepData,
     isFetching: loadingGebruikersgroep,
     error: gebruikersgroepError
-  } = useFetchApi(() => `${GGAPI_URL}${uuid ? "/" + uuid : ""}`, {
+  } = useFetchApi(() => `${API_URL}/gebruikersgroepen${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Gebruikersgroep>();
 

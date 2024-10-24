@@ -22,14 +22,14 @@ namespace ODPC.Authentication
 
             services.AddHttpContextAccessor();
 
-            services.AddScoped<OdpUser>(s =>
+            services.AddScoped<OdpcUser>(s =>
             {
                 var user = s.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
                 var isLoggedIn = user?.Identity?.IsAuthenticated ?? false;
                 var name = user?.FindFirst(nameClaimType)?.Value;
                 var id = user?.FindFirst(x => idClaimTypes.Contains(x.Type))?.Value;
                 var roles = user?.FindAll(roleClaimType).Select(x=> x.Value).ToArray() ?? [];
-                return new OdpUser { IsLoggedIn = isLoggedIn, FullName = name, Id = id, Roles = roles };
+                return new OdpcUser { IsLoggedIn = isLoggedIn, FullName = name, Id = id, Roles = roles };
             });
 
             var authBuilder = services.AddAuthentication(options =>
@@ -107,7 +107,7 @@ namespace ODPC.Authentication
         public static IEndpointRouteBuilder MapOdpcAuthEndpoints(this IEndpointRouteBuilder endpoints)
         {
             endpoints.MapGet("api/logoff", LogoffAsync).AllowAnonymous();
-            endpoints.MapGet("api/me", (OdpUser user) => user).AllowAnonymous();
+            endpoints.MapGet("api/me", (OdpcUser user) => user).AllowAnonymous();
             endpoints.MapGet("api/challenge", ChallengeAsync).AllowAnonymous();
 
             return endpoints;

@@ -2,6 +2,7 @@
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
+using ODPC.Features;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -41,7 +42,7 @@ try
     var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
     builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
-
+    builder.Services.AddScoped<IGebruikerWaardelijstItemsService, GebruikerWaardelijstItemsService>();
 
 
     var app = builder.Build();

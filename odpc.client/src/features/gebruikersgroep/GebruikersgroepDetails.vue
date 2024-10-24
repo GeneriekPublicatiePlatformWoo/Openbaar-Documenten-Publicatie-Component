@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
+  <form v-show="!loading" @submit.prevent="submit" ref="formRef">
     <section>
       <alert-inline v-if="gebruikersgroepError"
         >Er is iets misgegaan bij het ophalen van de gebruikersgroep...</alert-inline
@@ -14,7 +14,7 @@
         @removeGebruiker="removeGebruiker"
       />
 
-      <alert-inline v-if="waardelijstItemsError"
+      <alert-inline v-if="waardelijstenError"
         >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
       >
 
@@ -54,29 +54,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import { validateForm } from "@/helpers/validate";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
-import WaardelijstenForm from "./components/WaardelijstenForm.vue";
-import { loadingWaardelijstItems, waardelijstItemsError } from "@/features/waardelijst";
+import WaardelijstenForm from "@/features/waardelijst/components/WaardelijstenForm.vue";
+import { loadingWaardelijsten, waardelijstenError } from "@/features/waardelijst";
 import { useGebruikersgroep } from "./composables/use-gebruikersgroep";
 
 const router = useRouter();
 
 const props = defineProps<{ uuid?: string }>();
 
-const formRef = ref<HTMLFormElement>();
-
 const dialog = useConfirmDialog();
 
-const loading = computed(() => loadingGebruikersgroep.value || loadingWaardelijstItems.value);
-const error = computed(() => !!gebruikersgroepError.value || !!waardelijstItemsError.value);
+const loading = computed(() => loadingGebruikersgroep.value || loadingWaardelijsten.value);
+const error = computed(() => !!gebruikersgroepError.value || !!waardelijstenError.value);
 
 const {
   gebruikersgroep,
@@ -89,8 +86,6 @@ const {
 } = useGebruikersgroep(props.uuid);
 
 const submit = async () => {
-  if (validateForm(formRef.value).invalid) return;
-
   try {
     await submitGebruikersgroep();
   } catch {

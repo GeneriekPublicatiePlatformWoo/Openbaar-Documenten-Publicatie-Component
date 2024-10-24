@@ -1,18 +1,17 @@
-import type { OptionProps } from "@/components/CheckboxList.vue";
+import type { OptionProps } from "@/components/checkbox-group/types";
 
 export const WAARDELIJSTEN = {
   ORGANISATIE: "Organisatie",
-  INFORMATIECATEGORIE: "Informatiecategorie",
-  THEMA: "Thema"
+  INFORMATIECATEGORIE: "Informatiecategorie"
+  // THEMA: "Thema"
   // DOCUMENTSOORT: 'Documentsoort'
 } as const;
 
-export type Waardelijst = keyof typeof WAARDELIJSTEN;
-
-export type WaardelijstItem = {
-  type: Waardelijst;
-} & OptionProps;
-
-export type GroupedWaardelijstItems = {
-  [key in Waardelijst]: WaardelijstItem[];
-};
+export type WaardelijstItem = OptionProps &
+  Partial<{
+    identifier: string;
+    naamMeervoud: string;
+    definitie: string;
+    oorsprong: string;
+    order: number;
+  }>;
