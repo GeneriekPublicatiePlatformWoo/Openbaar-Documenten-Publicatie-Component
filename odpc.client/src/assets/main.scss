@@ -95,14 +95,6 @@ details {
   summary {
     word-break: break-word;
   }
-
-  &:has(:user-invalid) {
-    border-color: var(--code);
-
-    .error {
-      color: var(--code);
-    }
-  }
 }
 
 .form-group-button {
