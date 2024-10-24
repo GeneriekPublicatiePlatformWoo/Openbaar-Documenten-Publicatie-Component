@@ -4,8 +4,8 @@
     ref="groupRef"
     :aria-labelledby="`label-${instanceId}`"
     :aria-required="required ? true : undefined"
-    @change="setCustomValidity"
-    @invalid.capture="onInvalid"
+    @change="required && setCustomValidity()"
+    @invalid.capture="required && onInvalid()"
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
@@ -83,5 +83,15 @@ const toggleAll = () => {
   padding-block-end: var(--spacing-small);
   margin-block-end: var(--spacing-small);
   border-bottom: 1px solid var(--color-grey);
+}
+
+details {
+  &:has(:user-invalid) {
+    border-color: var(--code);
+
+    .error {
+      color: var(--code);
+    }
+  }
 }
 </style>
