@@ -20,7 +20,7 @@ namespace ODPC.Features.WaardeLijstenOverzicht
             //user en audit log handeling meegeven is misschien nog niet nodig, maar doet geen kwaad
             var client = clientFactory.Create(user, "Waardelijsten ophalen");
 
-            var response = await client.GetAsync("/api/v1/informatiecategorieen/", new CancellationToken());
+            var response = await client.GetAsync("/api/v1/informatiecategorieen", new CancellationToken());
 
             response.EnsureSuccessStatusCode();
 
