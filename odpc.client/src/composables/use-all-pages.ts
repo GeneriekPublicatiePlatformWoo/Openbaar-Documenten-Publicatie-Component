@@ -4,7 +4,7 @@ import { ref } from "vue";
 
 const fetchPage = <T>(url: string, signal?: AbortSignal | undefined) =>
   fetch(url, { headers: { "is-api": "true" }, signal })
-    .then((r) => (r.ok ? r : Promise.reject(r.status)))
+    .then((r) => (r.ok ? r : Promise.reject(r)))
     .then((r) => r.json() as Promise<PagedResult<T>>);
 
 const fetchAllPages = async <T>(url: string, signal?: AbortSignal | undefined): Promise<T[]> => {
