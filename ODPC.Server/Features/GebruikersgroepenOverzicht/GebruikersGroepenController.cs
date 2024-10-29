@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ODPC.Authentication;
 using ODPC.Data;
 using ODPC.Features.Gebruikersgroepen;
 
@@ -7,6 +9,7 @@ namespace ODPC.Features.GebruikersgroepenOverzicht
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize(AdminPolicy.Name)]
     public class GebruikersGroepenController(OdpcDbContext context) : ControllerBase
     {
 

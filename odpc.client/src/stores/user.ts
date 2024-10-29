@@ -3,6 +3,7 @@ export type User = {
   id: string;
   fullName: string;
   roles: string[];
+  isAdmin: boolean;
 };
 
 // cache de gefetchde user, zodat deze niet onnodig opnieuw wordt opgevraagd van de server
