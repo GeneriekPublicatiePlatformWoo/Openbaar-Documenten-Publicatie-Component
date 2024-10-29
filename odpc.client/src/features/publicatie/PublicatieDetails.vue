@@ -1,8 +1,8 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-show="!loading" @submit.prevent="submit" ref="formRef" novalidate>
-    <section>
+  <form v-if="!loading" @submit.prevent="submit">
+    <section v-if="mijnInformatiecategorieen?.length">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
@@ -11,6 +11,7 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
+        :mijn-informatiecategorieen="mijnInformatiecategorieen"
       />
 
       <alert-inline v-if="documentenError"
@@ -25,6 +26,8 @@
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
       />
     </section>
+
+    <alert-inline v-else>U bent niet gekoppeld aan een actieve gebruikersgroep.</alert-inline>
 
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
@@ -68,18 +71,16 @@ import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
 import toast from "@/stores/toast";
-import { validateForm } from "@/helpers/validate";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
+import { useWaardelijstenUser } from "./composables/use-waardelijsten-user";
 import { PublicatieStatus } from "./types";
 
 const router = useRouter();
 
 const props = defineProps<{ uuid?: string }>();
-
-const formRef = ref<HTMLFormElement>();
 
 const dialog = useConfirmDialog();
 
@@ -87,19 +88,25 @@ const loading = computed(
   () =>
     loadingPublicatie.value ||
     loadingDocumenten.value ||
+    loadingWaardelijstenUser.value ||
     loadingDocument.value ||
     uploadingFile.value
 );
 
-const error = computed(() => !!publicatieError.value || !!documentenError.value);
+const error = computed(
+  () =>
+    !!publicatieError.value ||
+    !!documentenError.value ||
+    !!waardelijstenUserError.value ||
+    !mijnInformatiecategorieen.value?.length // not linked to active gebruikersgroep
+);
 
 // Publicatie
-
 const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = usePublicatie(
   props.uuid
 );
 
-// Initial publicatie status in seperate ref to manage UI-state
+// Store initial publicatie status in seperate ref to manage UI-state
 const initialStatus = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
 
 watch(loadingPublicatie, () => (initialStatus.value = publicatie.value.status));
@@ -119,6 +126,10 @@ const {
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
+// Waardelijsten user
+const { mijnInformatiecategorieen, loadingWaardelijstenUser, waardelijstenUserError } =
+  useWaardelijstenUser();
+
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {
     router.push({ name: previousRoute.value.name, query: previousRoute.value?.query });
@@ -128,8 +139,6 @@ const navigate = () => {
 };
 
 const submit = async () => {
-  if (validateForm(formRef.value).invalid) return;
-
   if (publicatie.value.status === PublicatieStatus.ingetrokken) {
     const { isCanceled } = await dialog.reveal();
 

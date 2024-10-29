@@ -5,12 +5,12 @@ namespace ODPC.Apis.Odrc
 {
     public interface IOdrcClientFactory
     {
-        HttpClient Create(OdpUser user, string handeling);
+        HttpClient Create(string handeling);
     }
 
-    public class OdrcClientFactory(IHttpClientFactory httpClientFactory, IConfiguration config) : IOdrcClientFactory
+    public class OdrcClientFactory(IHttpClientFactory httpClientFactory, IConfiguration config, OdpcUser user) : IOdrcClientFactory
     {
-        public HttpClient Create(OdpUser user, string? handeling)
+        public HttpClient Create(string? handeling)
         {
             var client = httpClientFactory.CreateClient();
             client.BaseAddress = new(config["ODRC_BASE_URL"]!);
