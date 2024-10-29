@@ -27,7 +27,13 @@ try
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks();
 
-    string GetRequiredConfig(string key) => builder.Configuration[key] ?? throw new Exception($"Environment variable {key} is missing");
+    string GetRequiredConfig(string key)
+    {
+        var value = builder.Configuration[key];
+        return string.IsNullOrWhiteSpace(value)
+            ? throw new Exception($"Environment variable {key} is missing or empty")
+            : value;
+    };
 
     builder.Services.AddAuth(options =>
     {
