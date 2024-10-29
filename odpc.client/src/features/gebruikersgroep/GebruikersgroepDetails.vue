@@ -7,12 +7,7 @@
         >Er is iets misgegaan bij het ophalen van de gebruikersgroep...</alert-inline
       >
 
-      <gebruikersgroep-form
-        v-else
-        v-model="gebruikersgroep"
-        @addGebruiker="addGebruiker"
-        @removeGebruiker="removeGebruiker"
-      />
+      <gebruikersgroep-form v-else v-model="gebruikersgroep" />
 
       <waardelijsten-form v-model="gebruikersgroep.gekoppeldeWaardelijsten" />
     </section>
@@ -73,9 +68,7 @@ const {
   loadingGebruikersgroep,
   gebruikersgroepError,
   submitGebruikersgroep,
-  removeGebruikersgroep,
-  addGebruiker,
-  removeGebruiker
+  removeGebruikersgroep
 } = useGebruikersgroep(props.uuid);
 
 const submit = async () => {
