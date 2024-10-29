@@ -16,10 +16,12 @@ const fetchAllPages = async <T>(url: string, signal?: AbortSignal | undefined): 
 export const useAllPages = <T>(url: string) => {
   const error = ref(false);
   const loading = ref(true);
-  const abortController = new AbortController();
   const data = asyncComputed(
     (onCancel) => {
+      const abortController = new AbortController();
+
       onCancel(() => abortController.abort());
+
       return fetchAllPages<T>(url, abortController.signal).catch(() => {
         error.value = true;
         return [] as T[];
