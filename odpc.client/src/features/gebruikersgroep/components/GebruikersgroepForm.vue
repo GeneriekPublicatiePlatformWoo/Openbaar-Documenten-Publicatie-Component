@@ -8,11 +8,11 @@
       <input
         id="titel"
         type="text"
-        v-model="model.naam"
+        v-model="naam"
         required
         aria-required="true"
         aria-describedby="titelError"
-        :aria-invalid="!model.naam"
+        :aria-invalid="!naam"
       />
 
       <span id="titelError" class="error">Naam is een verplicht veld</span>
@@ -21,7 +21,7 @@
     <div class="form-group">
       <label for="omschrijving">Omschrijving</label>
 
-      <textarea id="omschrijving" v-model="model.omschrijving" rows="4"></textarea>
+      <textarea id="omschrijving" v-model="omschrijving" rows="4"></textarea>
     </div>
 
     <div class="form-group form-group-button">
@@ -32,14 +32,14 @@
         type="text"
         v-model="gebruiker"
         :aria-invalid="!gebruiker.trim().length"
-        @keydown.enter.prevent="onAddGebruiker"
+        @keydown.enter.prevent="addGebruiker"
       />
 
       <button
         type="button"
         :disabled="!gebruiker.trim().length"
         :aria-disabled="!gebruiker.trim().length"
-        @click="onAddGebruiker"
+        @click="addGebruiker"
       >
         Toevoegen
       </button>
@@ -48,16 +48,16 @@
     <details ref="detailsRef" aria-live="polite">
       <summary>Toegevoegde gebruikers</summary>
 
-      <p v-if="!model.gekoppeldeGebruikers.length">Er zijn nog geen gebruikers toegevoegd.</p>
+      <p v-if="!gekoppeldeGebruikers.length">Er zijn nog geen gebruikers toegevoegd.</p>
 
       <ul v-else class="reset">
-        <li v-for="(gekoppeldeGebruiker, index) in model.gekoppeldeGebruikers" :key="index">
+        <li v-for="(gekoppeldeGebruiker, index) in gekoppeldeGebruikers" :key="index">
           <button
             type="button"
             :title="`${gekoppeldeGebruiker} verwijderen`"
             :aria-label="`${gekoppeldeGebruiker} verwijderen`"
             class="button secondary icon-after xmark"
-            @click="$emit('removeGebruiker', index)"
+            @click="() => removeGebruiker(index)"
           >
             {{ gekoppeldeGebruiker }}
           </button>
@@ -68,42 +68,52 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, useModel } from "vue";
 import toast from "@/stores/toast";
 import type { Gebruikersgroep } from "../types";
 
 const props = defineProps<{ modelValue: Gebruikersgroep }>();
 
-const emit = defineEmits<{
-  (e: "update:modelValue", payload: Gebruikersgroep): void;
-  (e: "addGebruiker", payload: string): void;
-  (e: "removeGebruiker", payload: number): void;
-}>();
+const model = useModel(props, "modelValue");
 
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value)
-});
+const useModelProperty = <K extends keyof Gebruikersgroep>(key: K) =>
+  computed({
+    get: () => model.value[key],
+    set: (v) => {
+      model.value = { ...props.modelValue, [key]: v };
+    }
+  });
 
 const detailsRef = ref<HTMLDetailsElement>();
 
 const gebruiker = ref("");
 
-const onAddGebruiker = () => {
+const naam = useModelProperty("naam");
+
+const omschrijving = useModelProperty("omschrijving");
+
+const gekoppeldeGebruikers = useModelProperty("gekoppeldeGebruikers");
+
+const addGebruiker = () => {
   if (!gebruiker.value.trim().length) return;
 
   detailsRef.value && (detailsRef.value.open = true);
 
-  if (model.value.gekoppeldeGebruikers.includes(gebruiker.value)) {
+  if (gekoppeldeGebruikers.value.includes(gebruiker.value)) {
     toast.add({
       text: "Deze gebruiker is al toegevoegd.",
       type: "error"
     });
-  } else {
-    emit("addGebruiker", gebruiker.value.trim());
+    return;
   }
 
+  gekoppeldeGebruikers.value = [...gekoppeldeGebruikers.value, gebruiker.value.trim()];
+
   gebruiker.value = "";
+};
+
+const removeGebruiker = (index: number) => {
+  gekoppeldeGebruikers.value = gekoppeldeGebruikers.value.filter((_, i) => i !== index);
 };
 </script>
 

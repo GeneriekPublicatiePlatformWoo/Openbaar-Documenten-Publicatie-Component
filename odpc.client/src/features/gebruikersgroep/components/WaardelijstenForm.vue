@@ -1,28 +1,50 @@
 <template>
-  <fieldset>
+  <SimpleSpinner v-if="loading" />
+  <alert-inline v-else-if="error"
+    >Er is iets misgegaan bij het ophalen van de waardelijsten...</alert-inline
+  >
+  <fieldset v-else>
     <legend>Waardelijsten</legend>
 
-    <checkbox-list
-      v-for="(value, key) in WAARDELIJSTEN"
-      :key="key"
-      :title="value"
-      :options="groupedWaardelijstItems[key]"
+    <checkbox-group
+      v-if="organisaties.length"
+      :title="WAARDELIJSTEN.ORGANISATIE"
+      :options="organisaties"
+      v-model="model"
+    />
+
+    <checkbox-group
+      v-if="informatiecategorieen.length"
+      :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
+      :options="informatiecategorieen"
       v-model="model"
     />
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import CheckboxList from "@/components/CheckboxList.vue";
-import { WAARDELIJSTEN, groupedWaardelijstItems } from "@/features/waardelijst";
-
+import { computed, useModel } from "vue";
+import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
+import AlertInline from "@/components/AlertInline.vue";
+import SimpleSpinner from "@/components/SimpleSpinner.vue";
+import { WAARDELIJSTEN, type WaardelijstItem } from "../types";
+import { useAllPages } from "@/composables/use-all-pages";
 const props = defineProps<{ modelValue: string[] }>();
 
-const emit = defineEmits<{ (e: "update:modelValue", payload: string[]): void }>();
+const model = useModel(props, "modelValue");
 
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value)
-});
+const {
+  data: organisaties,
+  loading: organisatiesLoading,
+  error: organisatiesError
+} = useAllPages<WaardelijstItem>("/api/v1/organisaties");
+
+const {
+  data: informatiecategorieen,
+  error: informatiecategorieenError,
+  loading: informatiecategorieenLoading
+} = useAllPages<WaardelijstItem>("/api/v1/informatiecategorieen");
+
+const error = computed(() => organisatiesError.value || informatiecategorieenError.value);
+const loading = computed(() => informatiecategorieenLoading.value || organisatiesLoading.value);
 </script>

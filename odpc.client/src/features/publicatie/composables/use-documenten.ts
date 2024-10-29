@@ -4,7 +4,7 @@ import toast from "@/stores/toast";
 import { mimeTypesMap, uploadFile } from "../service";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
 
-const DOCAPI_URL = `/api/v1/documenten`;
+const API_URL = `/api/v1`;
 
 export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const getInitialDocument = (): PublicatieDocument => ({
@@ -30,7 +30,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     data: documentenData,
     isFetching: loadingDocumenten,
     error: documentenError
-  } = useFetchApi(() => `${DOCAPI_URL}/?publicatie=${pubUUID.value}`, {
+  } = useFetchApi(() => `${API_URL}/documenten/?publicatie=${pubUUID.value}`, {
     immediate: false
   }).json<PublicatieDocument[]>();
 
@@ -103,7 +103,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
-  } = useFetchApi(() => `${DOCAPI_URL}${docUUID.value ? "/" + docUUID.value : ""}`, {
+  } = useFetchApi(() => `${API_URL}/documenten${docUUID.value ? "/" + docUUID.value : ""}`, {
     immediate: false
   }).json<PublicatieDocument>();
 

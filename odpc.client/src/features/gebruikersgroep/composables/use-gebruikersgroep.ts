@@ -2,9 +2,8 @@ import { ref, onMounted, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import type { Gebruikersgroep } from "../types";
-import { waardelijstIds } from "@/features/waardelijst";
 
-const GGAPI_URL = `/api/v1/gebruikersgroepen`;
+const API_URL = `/api/v1`;
 
 export const useGebruikersgroep = (uuid?: string) => {
   const gebruikersgroep = ref<Gebruikersgroep>({
@@ -22,20 +21,13 @@ export const useGebruikersgroep = (uuid?: string) => {
     data: gebruikersgroepData,
     isFetching: loadingGebruikersgroep,
     error: gebruikersgroepError
-  } = useFetchApi(() => `${GGAPI_URL}${uuid ? "/" + uuid : ""}`, {
+  } = useFetchApi(() => `${API_URL}/gebruikersgroepen${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Gebruikersgroep>();
 
   watch(gebruikersgroepData, (value) => (gebruikersgroep.value = value || gebruikersgroep.value));
 
   const submitGebruikersgroep = async () => {
-    gebruikersgroep.value = {
-      ...gebruikersgroep.value,
-      gekoppeldeWaardelijsten: gebruikersgroep.value.gekoppeldeWaardelijsten.filter((id) =>
-        waardelijstIds.value.includes(id)
-      )
-    };
-
     uuid
       ? await putGebruikersgroep(gebruikersgroep).execute()
       : await postGebruikersgroep(gebruikersgroep).execute();
@@ -67,12 +59,6 @@ export const useGebruikersgroep = (uuid?: string) => {
     }
   };
 
-  const addGebruiker = (gebruiker: string) =>
-    gebruikersgroep.value.gekoppeldeGebruikers.push(gebruiker);
-
-  const removeGebruiker = (index: number) =>
-    gebruikersgroep.value.gekoppeldeGebruikers.splice(index, 1);
-
   onMounted(async () => uuid && (await getGebruikersgroep().execute()));
 
   return {
@@ -80,8 +66,6 @@ export const useGebruikersgroep = (uuid?: string) => {
     loadingGebruikersgroep,
     gebruikersgroepError,
     submitGebruikersgroep,
-    removeGebruikersgroep,
-    addGebruiker,
-    removeGebruiker
+    removeGebruikersgroep
   };
 };

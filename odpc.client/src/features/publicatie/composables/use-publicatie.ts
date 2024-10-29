@@ -3,7 +3,7 @@ import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import type { Publicatie } from "../types";
 
-const PUBAPI_URL = `/api/v1/publicaties`;
+const API_URL = `/api/v1`;
 
 export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
@@ -11,7 +11,8 @@ export const usePublicatie = (uuid?: string) => {
     verkorteTitel: "",
     omschrijving: "",
     registratiedatum: new Date().toISOString().split("T")[0],
-    status: "gepubliceerd"
+    status: "gepubliceerd",
+    gekoppeldeInformatiecategorieen: []
   });
 
   const {
@@ -21,7 +22,7 @@ export const usePublicatie = (uuid?: string) => {
     data: publicatieData,
     isFetching: loadingPublicatie,
     error: publicatieError
-  } = useFetchApi(() => `${PUBAPI_URL}${uuid ? "/" + uuid : ""}`, {
+  } = useFetchApi(() => `${API_URL}/publicaties${uuid ? "/" + uuid : ""}`, {
     immediate: false
   }).json<Publicatie>();
 
