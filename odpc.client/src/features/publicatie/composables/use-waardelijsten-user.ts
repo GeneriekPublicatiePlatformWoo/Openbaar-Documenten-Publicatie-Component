@@ -1,5 +1,5 @@
 import { useFetchApi } from "@/api";
-import type { WaardelijstItem } from "../types";
+import type { OptionProps } from "@/components/checkbox-group/types";
 
 const API_URL = `/api/v1`;
 
@@ -8,7 +8,7 @@ export const useWaardelijstenUser = () => {
     data: mijnInformatiecategorieen,
     isFetching: loadingWaardelijstenUser,
     error: waardelijstenUserError
-  } = useFetchApi(() => `${API_URL}/mijn-informatiecategorieen`).json<WaardelijstItem[]>();
+  } = useFetchApi(() => `${API_URL}/mijn-informatiecategorieen`).json<OptionProps[]>();
 
   return {
     mijnInformatiecategorieen,

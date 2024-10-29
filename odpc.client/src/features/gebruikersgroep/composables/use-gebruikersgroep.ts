@@ -2,7 +2,6 @@ import { ref, onMounted, watch } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import toast from "@/stores/toast";
 import type { Gebruikersgroep } from "../types";
-import { waardelijstIds } from "@/features/waardelijst";
 
 const API_URL = `/api/v1`;
 
@@ -29,13 +28,6 @@ export const useGebruikersgroep = (uuid?: string) => {
   watch(gebruikersgroepData, (value) => (gebruikersgroep.value = value || gebruikersgroep.value));
 
   const submitGebruikersgroep = async () => {
-    gebruikersgroep.value = {
-      ...gebruikersgroep.value,
-      gekoppeldeWaardelijsten: gebruikersgroep.value.gekoppeldeWaardelijsten.filter((id) =>
-        waardelijstIds.value.includes(id)
-      )
-    };
-
     uuid
       ? await putGebruikersgroep(gebruikersgroep).execute()
       : await postGebruikersgroep(gebruikersgroep).execute();

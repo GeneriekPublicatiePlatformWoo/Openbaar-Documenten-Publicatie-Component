@@ -70,12 +70,12 @@ import { computed } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
 import { PublicatieStatus, type Publicatie } from "../types";
-import type { WaardelijstItem } from "@/features/waardelijst";
+import type { OptionProps } from "@/components/checkbox-group/types";
 
 const props = defineProps<{
   modelValue: Publicatie;
   disabled: boolean;
-  mijnInformatiecategorieen: WaardelijstItem[];
+  mijnInformatiecategorieen: OptionProps[];
 }>();
 
 const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();

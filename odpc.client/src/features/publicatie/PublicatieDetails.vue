@@ -75,7 +75,7 @@ import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
 import { usePublicatie } from "./composables/use-publicatie";
 import { useDocumenten } from "./composables/use-documenten";
-import { useWaardelijstenUser } from "@/features/waardelijst/composables/use-waardelijsten-user";
+import { useWaardelijstenUser } from "./composables/use-waardelijsten-user";
 import { PublicatieStatus } from "./types";
 
 const router = useRouter();
