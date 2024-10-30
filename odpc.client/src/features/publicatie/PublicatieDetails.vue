@@ -27,7 +27,7 @@
       />
     </section>
 
-    <alert-inline v-else>U bent niet gekoppeld aan een actieve gebruikersgroep.</alert-inline>
+    <alert-inline v-else>U bent niet gekoppeld aan een actieve gebruikersgroep. Neem contact op met uw beheerder.</alert-inline>
 
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
