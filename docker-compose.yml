@@ -1,7 +1,7 @@
 services:
   odpc:
     environment:
-      - POSTGRES_HOST=db
+      - POSTGRES_HOST=postgres-db
       - POSTGRES_DB=ODPC
       - POSTGRES_PORT=5432
       - POSTGRES_USER=postgres
