@@ -24,7 +24,7 @@ services:
     ports:
       - "62230:8080"
     depends_on:
-      - db
+      - postgres-db
   postgres-db:
     image: postgis/postgis:${PG_VERSION:-16-master}
     volumes:
