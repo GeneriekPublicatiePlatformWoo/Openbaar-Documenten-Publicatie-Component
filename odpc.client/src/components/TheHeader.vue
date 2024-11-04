@@ -8,17 +8,9 @@
           <router-link :to="{ name: 'publicaties' }">Publicaties</router-link>
         </li>
 
-        <li>
+        <li v-if="user?.isAdmin">
           <router-link :to="{ name: 'gebruikersgroepen' }">Gebruikersgroepen</router-link>
         </li>
-
-        <!-- <li v-if="user?.isLoggedIn">
-          <a href="/api/logoff" title="Uitloggen">Uitloggen</a>
-        </li>
-
-        <li v-else>
-          <a href="/api/challenge" title="Inloggen">Inloggen</a>
-        </li> -->
       </ul>
     </nav>
   </header>

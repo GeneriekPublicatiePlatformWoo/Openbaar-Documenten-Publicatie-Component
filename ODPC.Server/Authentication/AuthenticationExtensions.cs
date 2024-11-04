@@ -22,14 +22,15 @@ namespace ODPC.Authentication
 
             services.AddHttpContextAccessor();
 
-            services.AddScoped<OdpUser>(s =>
+            services.AddScoped<OdpcUser>(s =>
             {
                 var user = s.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
                 var isLoggedIn = user?.Identity?.IsAuthenticated ?? false;
                 var name = user?.FindFirst(nameClaimType)?.Value;
                 var id = user?.FindFirst(x => idClaimTypes.Contains(x.Type))?.Value;
                 var roles = user?.FindAll(roleClaimType).Select(x=> x.Value).ToArray() ?? [];
-                return new OdpUser { IsLoggedIn = isLoggedIn, FullName = name, Id = id, Roles = roles };
+                var isAdmin = roles.Contains(authOptions.AdminRole);
+                return new OdpcUser { IsLoggedIn = isLoggedIn, FullName = name, Id = id, Roles = roles, IsAdmin = isAdmin };
             });
 
             var authBuilder = services.AddAuthentication(options =>
@@ -49,7 +50,12 @@ namespace ODPC.Authentication
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.SlidingExpiration = true;
                 //options.Events.OnSigningOut = (e) => e.HttpContext.RevokeRefreshTokenAsync();
-                options.Events.OnRedirectToAccessDenied = HandleLoggedOut;
+                options.Events.OnRedirectToAccessDenied = (ctx) =>
+                {
+                    //https://www.rfc-editor.org/rfc/rfc7231#section-6.5.3
+                    ctx.Response.StatusCode = StatusCodes.Status404NotFound;
+                    return Task.CompletedTask;
+                };
                 options.Events.OnRedirectToLogin = HandleLoggedOut;
             });
 
@@ -100,7 +106,8 @@ namespace ODPC.Authentication
                     };
                 });
             }
-
+            services.AddAuthorizationBuilder()
+                .AddPolicy(AdminPolicy.Name, policy => policy.RequireRole(authOptions.AdminRole));
             services.AddDistributedMemoryCache();
             services.AddOpenIdConnectAccessTokenManagement();
         }
@@ -108,7 +115,7 @@ namespace ODPC.Authentication
         public static IEndpointRouteBuilder MapOdpcAuthEndpoints(this IEndpointRouteBuilder endpoints)
         {
             endpoints.MapGet("api/logoff", LogoffAsync).AllowAnonymous();
-            endpoints.MapGet("api/me", (OdpUser user) => user).AllowAnonymous();
+            endpoints.MapGet("api/me", (OdpcUser user) => user).AllowAnonymous();
             endpoints.MapGet("api/challenge", ChallengeAsync).AllowAnonymous();
 
             return endpoints;
@@ -141,22 +148,32 @@ namespace ODPC.Authentication
         private static Task ChallengeAsync(HttpContext httpContext)
         {
             var request = httpContext.Request;
-            var returnUrl = (request.Query["returnUrl"].FirstOrDefault() ?? string.Empty)
-                .AsSpan()
-                .TrimStart('/');
-
-            var fullReturnUrl = $"{request.Scheme}://{request.Host}{request.PathBase}/{returnUrl}";
+            var returnPath = GetRelativeReturnUrl(request);
 
             if (httpContext.User.Identity?.IsAuthenticated ?? false)
             {
-                httpContext.Response.Redirect(fullReturnUrl);
+                httpContext.Response.Redirect(returnPath);
                 return Task.CompletedTask;
             }
 
             return httpContext.ChallengeAsync(new AuthenticationProperties
             {
-                RedirectUri = fullReturnUrl,
+                RedirectUri = returnPath,
             });
+        }
+
+        /// <summary>
+        /// We gebruiken een query parameter om te bepalen waar we naartoe moeten redirecten na inlog.
+        /// Dat is gebruikersinput. Daarom willen we valideren dat die query parameter daadwerkelijk een relatieve url is.
+        /// Zo niet, redirecten we naar de root van de applicatie.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private static string GetRelativeReturnUrl(HttpRequest request)
+        {
+            var returnUrl = request.Query["returnUrl"].FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(returnUrl) || new Uri(returnUrl, UriKind.RelativeOrAbsolute).IsAbsoluteUri) return "/";
+            return $"/{returnUrl.AsSpan().TrimStart('/')}";
         }
     }
 }

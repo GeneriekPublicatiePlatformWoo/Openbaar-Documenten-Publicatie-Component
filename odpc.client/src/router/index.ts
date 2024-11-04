@@ -1,5 +1,11 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { ref } from "vue";
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalizedLoadedGeneric
+} from "vue-router";
 import LoginView from "@/views/LoginView.vue";
+import ForbiddenView from "@/views/ForbiddenView.vue";
 import PublicatiesView from "@/views/PublicatiesView.vue";
 import getUser from "@/stores/user";
 
@@ -30,6 +36,15 @@ const router = createRouter({
       }
     },
     {
+      path: "/forbidden",
+      name: "forbidden",
+      component: ForbiddenView,
+      meta: {
+        title: "Geen toegang",
+        requiresAuth: true
+      }
+    },
+    {
       path: "/publicaties/overzicht",
       name: "publicaties",
       component: PublicatiesView,
@@ -54,7 +69,7 @@ const router = createRouter({
       component: () => import("../views/beheer/GebruikersgroepenView.vue"),
       meta: {
         title: "Gebruikersgroepen",
-        requiresAuth: true
+        requiresAdmin: true
       }
     },
     {
@@ -64,21 +79,32 @@ const router = createRouter({
       props: true,
       meta: {
         title: "Gebruikersgroep",
-        requiresAuth: true
+        requiresAdmin: true
       }
     }
   ]
 });
 
-router.beforeEach(async (to) => {
+const previousRoute = ref<RouteLocationNormalizedLoadedGeneric>();
+
+router.beforeEach(async (to, from) => {
   document.title = `${to.meta?.title || ""} | ${import.meta.env.VITE_APP_TITLE}`;
 
+  previousRoute.value = from;
+
   const requiresAuth = to.matched.some((route) => route.meta.requiresAuth);
+  const requiresAdmin = to.matched.some((route) => route.meta.requiresAdmin);
+
   const user = await getUser(false);
 
-  if (requiresAuth && !user?.isLoggedIn) {
+  if ((requiresAuth || requiresAdmin) && !user?.isLoggedIn) {
     return { name: "login" };
+  }
+
+  if (requiresAdmin && !user?.isAdmin) {
+    return { name: "forbidden" };
   }
 });
 
 export default router;
+export { previousRoute };

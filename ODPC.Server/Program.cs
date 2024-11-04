@@ -2,6 +2,7 @@
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
+using ODPC.Features;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -26,7 +27,13 @@ try
     builder.Services.AddControllers();
     builder.Services.AddHealthChecks();
 
-    string GetRequiredConfig(string key) => builder.Configuration[key] ?? throw new Exception($"Environment variable {key} is missing");
+    string GetRequiredConfig(string key)
+    {
+        var value = builder.Configuration[key];
+        return string.IsNullOrWhiteSpace(value)
+            ? throw new Exception($"Environment variable {key} is missing or empty")
+            : value;
+    };
 
     builder.Services.AddAuth(options =>
     {
@@ -34,6 +41,7 @@ try
         options.Authority = GetRequiredConfig("OIDC_AUTHORITY");
         options.ClientId = GetRequiredConfig("OIDC_CLIENT_ID");
         options.ClientSecret = GetRequiredConfig("OIDC_CLIENT_SECRET");
+        options.AdminRole = GetRequiredConfig("OIDC_ADMIN_ROLE");
         options.NameClaimType = builder.Configuration["OIDC_NAME_CLAIM_TYPE"];
         options.RoleClaimType = builder.Configuration["OIDC_ROLE_CLAIM_TYPE"];
         options.IdClaimType = builder.Configuration["OIDC_ID_CLAIM_TYPE"];
@@ -41,9 +49,8 @@ try
 
     var connStr = $"Username={builder.Configuration["POSTGRES_USER"]};Password={builder.Configuration["POSTGRES_PASSWORD"]};Host={builder.Configuration["POSTGRES_HOST"]};Database={builder.Configuration["POSTGRES_DB"]};Port={builder.Configuration["POSTGRES_PORT"]}";
     builder.Services.AddDbContext<OdpcDbContext>(opt => opt.UseNpgsql(connStr));
-    builder.Services.Configure<OdrcConfig>(builder.Configuration.GetSection("Odrc"));
     builder.Services.AddScoped<IOdrcClientFactory, OdrcClientFactory>();
-
+    builder.Services.AddScoped<IGebruikerWaardelijstItemsService, GebruikerWaardelijstItemsService>();
 
 
     var app = builder.Build();

@@ -14,8 +14,9 @@ services:
       - OIDC_NAME_CLAIM_TYPE=sub
       - OIDC_ROLE_CLAIM_TYPE=sub
       - OIDC_ID_CLAIM_TYPE=sub
-      - Odrc__BaseUrl=http://odrc/
-      - Odrc__ApiKey=xxx
+      - ODRC_BASE_URL=http://odrc/
+      - ODRC_API_KEY=xxx
+      - OIDC_ADMIN_ROLE=odpc-admin
     image: ${DOCKER_REGISTRY-}odpc
     build:
       context: .
@@ -24,13 +25,13 @@ services:
       - "62230:8080"
     depends_on:
       - db
-  db:
+  postgres-db:
     image: postgis/postgis:${PG_VERSION:-16-master}
     volumes:
-      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init_db.sql
+      - postgres-db:/var/lib/postgresql/data
+      - ./docker/odrc/db/init-db.sql:/docker-entrypoint-initdb.d/init_db.sql
       - ./docker/open-zaak/db/0001-init-open-zaak-db.sql:/docker-entrypoint-initdb.d/0001-init-open-zaak-db.sql
       - ./docker/open-zaak/db/0002-extensions.sh:/docker-entrypoint-initdb.d/0002-extensions.sh
-      - db:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=localdev
     restart: always
@@ -65,7 +66,7 @@ services:
       - DB_NAME=openzaak
       - DB_USER=postgres
       - DB_PASSWORD=localdev
-      - DB_HOST=db
+      - DB_HOST=postgres-db
       - IS_HTTPS=no
       - CACHE_DEFAULT=redis:6379/1
       - CACHE_AXES=redis:6379/1
@@ -86,7 +87,7 @@ services:
       - oz-media:/app/media # Shared media volume to get access to saved OAS files
       - oz-private-media:/app/private-media
     depends_on:
-      - db
+      - postgres-db
       - redis
       - openzaak-celery
     extra_hosts:
@@ -100,17 +101,18 @@ services:
     volumes: *openzaak_web_volumes
     command: /celery_worker.sh
     depends_on:
-      - db
+      - postgres-db
       - redis
 
   odrc-django: &odrc_build
-    image: maykinmedia/woo-publications:${RELEASE:-latest}
+    image: maykinmedia/woo-publications:${ODRC_VERSION:-latest}
+    pull_policy: always
     environment: &odrc_env
       - DJANGO_SETTINGS_MODULE=woo_publications.conf.docker
       - SECRET_KEY=${SECRET_KEY:-django-insecure-fgggi4*bl2wdg&@0&)t7ewy5-2!b3l4lhx4_+^zpw%x2i28v8}
       - DB_NAME=woo_publications
       - DB_USER=postgres
-      - DB_HOST=db
+      - DB_HOST=postgres-db
       - DB_PASSWORD=localdev
       - CACHE_DEFAULT=redis:6379/0
       - CACHE_AXES=redis:6379/0
@@ -126,7 +128,7 @@ services:
       - ENVIRONMENT_FOREGROUND_COLOR=white
       - DEBUG=True
     volumes: &odrc_volumes
-      - ./docker/fixtures/:/app/fixtures
+      - ./docker/odrc/fixtures/:/app/fixtures
       - media:/app/media
       - log:/app/log
     extra_hosts:
@@ -137,9 +139,10 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
+      - postgres-db
       - redis
 
+# we need a reverse proxy for odrc because django doesn't support chunked requests
   odrc:
     image: nginx:stable-alpine
     restart: always
@@ -147,9 +150,11 @@ services:
       - 8002:80
     volumes: 
       - ./docker/nginx:/etc/nginx/conf.d/
+    depends_on:
+      - odrc-django
 
 volumes:
-  db:
+  postgres-db:
   redis-data:
   oz-media:
   oz-private-media:
