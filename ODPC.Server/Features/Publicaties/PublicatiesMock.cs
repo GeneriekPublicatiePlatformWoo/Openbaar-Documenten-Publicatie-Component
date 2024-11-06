@@ -12,7 +12,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 24),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
 
             },
             new()
@@ -23,7 +23,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 23),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -33,7 +33,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 03),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -43,7 +43,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 02),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -53,7 +53,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 29),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -63,7 +63,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 07),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -73,7 +73,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 27),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -83,7 +83,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 07),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -93,7 +93,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 14),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -103,7 +103,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 23),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -113,7 +113,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 08, 09),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             },
             new()
             {
@@ -123,7 +123,7 @@
                 Omschrijving = "",
                 Registratiedatum = new DateTime(2024, 05, 15),
                 Status = "gepubliceerd",
-                GekoppeldeInformatiecategorieen = []
+                InformatieCategorieen = []
             }
         }.ToDictionary(x => x.Uuid);
     }

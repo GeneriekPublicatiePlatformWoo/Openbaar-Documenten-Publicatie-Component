@@ -59,7 +59,7 @@
     <checkbox-group
       title="Informatiecategorieën"
       :options="mijnInformatiecategorieen"
-      v-model="model.gekoppeldeInformatiecategorieen"
+      v-model="model.informatieCategorieen"
       :required="true"
     />
   </fieldset>

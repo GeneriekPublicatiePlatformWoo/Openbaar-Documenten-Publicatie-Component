@@ -12,7 +12,7 @@ export const usePublicatie = (uuid?: string) => {
     omschrijving: "",
     registratiedatum: new Date().toISOString().split("T")[0],
     status: "gepubliceerd",
-    gekoppeldeInformatiecategorieen: []
+    informatieCategorieen: []
   });
 
   const {
