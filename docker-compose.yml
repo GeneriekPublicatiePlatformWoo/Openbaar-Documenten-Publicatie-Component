@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=localdev
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
       - ODRC_BASE_URL=http://odrc/
-      - ODRC_API_KEY=xxx
+      - ODRC_API_KEY=insecure-ea1a8d297e3b2d3313b8a30b18959c3
       - OIDC_ADMIN_ROLE=odpc-admin
     image: ${DOCKER_REGISTRY-}odpc
     build:
@@ -29,7 +29,7 @@ services:
       - POSTGRES_PASSWORD=localdev
     restart: always
     ports:
-      - "5432:5432"
+      - "5432"
   redis:
     image: redis:7
     command: ["redis-server", "--appendonly", "yes"]
