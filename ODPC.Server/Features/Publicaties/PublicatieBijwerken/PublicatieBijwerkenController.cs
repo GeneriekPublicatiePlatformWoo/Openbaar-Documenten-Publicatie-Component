@@ -10,9 +10,9 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
         {
             var categorieen = await waardelijstItemsService.GetAsync(token);
 
-            if (publicatie.GekoppeldeInformatiecategorieen != null && publicatie.GekoppeldeInformatiecategorieen.Any(c => !categorieen.Contains(c)))
+            if (publicatie.InformatieCategorieen != null && publicatie.InformatieCategorieen.Any(c => !categorieen.Contains(c)))
             {
-                ModelState.AddModelError(nameof(publicatie.GekoppeldeInformatiecategorieen), "Gebruiker is niet geautoriseerd voor deze informatiecategorieën");
+                ModelState.AddModelError(nameof(publicatie.InformatieCategorieen), "Gebruiker is niet geautoriseerd voor deze informatiecategorieën");
                 return BadRequest(ModelState);
             }
 

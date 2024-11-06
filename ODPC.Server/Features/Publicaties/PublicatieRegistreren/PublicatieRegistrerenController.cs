@@ -13,9 +13,9 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
         {
             var categorieen = await waardelijstItemsService.GetAsync(token);
 
-            if (publicatie.GekoppeldeInformatiecategorieen != null && publicatie.GekoppeldeInformatiecategorieen.Any(c => !categorieen.Contains(c)))
+            if (publicatie.InformatieCategorieen != null && publicatie.InformatieCategorieen.Any(c => !categorieen.Contains(c)))
             {
-                ModelState.AddModelError(nameof(publicatie.GekoppeldeInformatiecategorieen), "Gebruiker is niet geautoriseerd voor deze informatiecategorieën");
+                ModelState.AddModelError(nameof(publicatie.InformatieCategorieen), "Gebruiker is niet geautoriseerd voor deze informatiecategorieën");
                 return BadRequest(ModelState);
             }
 
@@ -26,7 +26,7 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
             var viewModel = await response.Content.ReadFromJsonAsync<Publicatie>(token);
 
             // TODO deze regel kan eraf als deze story is geimplementeerd: https://github.com/GeneriekPublicatiePlatformWoo/registratie-component/issues/48
-            viewModel!.GekoppeldeInformatiecategorieen = publicatie.GekoppeldeInformatiecategorieen;
+            viewModel!.InformatieCategorieen = publicatie.InformatieCategorieen;
 
             // TODO deze regel kan eraf als deze story is geimplementeerd: https://github.com/GeneriekPublicatiePlatformWoo/registratie-component/issues/49
             viewModel!.Status = publicatie.Status;
