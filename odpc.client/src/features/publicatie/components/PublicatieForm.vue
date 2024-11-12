@@ -57,10 +57,19 @@
     </details>
 
     <checkbox-group
+      type="radio"
+      :required="true"
+      title="Organisaties"
+      :options="mijnOrganisaties"
+      v-model="model.publisher"
+    />
+
+    <checkbox-group
+      type="checkbox"
+      :required="true"
       title="Informatiecategorieën"
       :options="mijnInformatiecategorieen"
       v-model="model.informatieCategorieen"
-      :required="true"
     />
   </fieldset>
 </template>

@@ -24,9 +24,15 @@ export const useWaardelijstenUser = () => {
     () => mijnOrganisatiesError.value || mijnInformatiecategorieenError.value
   );
 
+  const mijnWaardelijstenUuids = computed(() => [
+    ...(mijnOrganisaties.value?.map((item) => item.uuid) || []),
+    ...(mijnInformatiecategorieen.value?.map((item) => item.uuid) || [])
+  ]);
+
   return {
     mijnOrganisaties,
     mijnInformatiecategorieen,
+    mijnWaardelijstenUuids,
     loadingWaardelijstenUser,
     waardelijstenUserError
   };

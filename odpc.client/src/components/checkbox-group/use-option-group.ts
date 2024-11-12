@@ -1,17 +1,17 @@
 import { ref, watchEffect } from "vue";
 
-export const useCheckboxGroup = () => {
+export const useOptionGroup = () => {
   const groupRef = ref<HTMLElement>();
 
-  const isAnyChecked = (checkboxes: NodeListOf<HTMLInputElement>) =>
-    Array.from(checkboxes).some((checkbox) => checkbox.checked);
+  const isAnyChecked = (options: NodeListOf<HTMLInputElement>) =>
+    Array.from(options).some((option) => option.checked);
 
   const setCustomValidity = () => {
-    const checkboxes = (groupRef.value?.querySelectorAll("[type='checkbox']") ||
+    const options = (groupRef.value?.querySelectorAll("[type='checkbox'], [type='radio']") ||
       []) as NodeListOf<HTMLInputElement>;
 
-    checkboxes.forEach((checkbox) =>
-      checkbox.setCustomValidity(!isAnyChecked(checkboxes) ? "Kies minimaal één optie." : "")
+    options.forEach((option) =>
+      option.setCustomValidity(!isAnyChecked(options) ? "Kies minimaal één optie." : "")
     );
   };
 

@@ -9,9 +9,11 @@
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
-    <p v-if="required" class="error" :id="`description-${instanceId}`">Kies minimaal één optie.</p>
+    <p v-if="required" class="error" :id="`description-${instanceId}`">
+      {{ type === "radio" ? "Kies één optie." : "Kies minimaal één optie." }}
+    </p>
 
-    <div class="checkbox check-all">
+    <div v-if="type === `checkbox`" class="checkbox check-all">
       <label
         ><input
           type="checkbox"
@@ -27,7 +29,7 @@
     <div class="checkbox" v-for="({ uuid, naam }, key) in options" :key="key">
       <label
         ><input
-          type="checkbox"
+          :type="type"
           :value="uuid"
           v-model="model"
           :aria-describedby="`description-${instanceId}`"
@@ -39,42 +41,43 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance } from "vue";
-import { useCheckboxGroup } from "./use-checkbox-group";
+import { computed, getCurrentInstance, useModel } from "vue";
+import { useOptionGroup } from "./use-option-group";
 import type { OptionProps } from "./types";
 
 const instanceId = getCurrentInstance()?.uid;
 
-const { groupRef, setCustomValidity, onInvalid } = useCheckboxGroup();
+const { groupRef, setCustomValidity, onInvalid } = useOptionGroup();
 
-const props = defineProps<{
-  title: string;
-  options: OptionProps[];
-  modelValue: string[];
-  required?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    type?: string;
+    required?: boolean;
+    title: string;
+    options: OptionProps[];
+    modelValue: string | string[];
+  }>(),
+  {
+    type: "checkbox"
+  }
+);
 
-const emit = defineEmits<{
-  (e: "update:modelValue", payload: string[]): void;
-}>();
-
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value)
-});
+const model = useModel(props, "modelValue");
 
 const itemIds = computed(() => props.options.map((option) => option.uuid));
 
 const allSelected = computed(
   () =>
+    Array.isArray(model.value) &&
     !!itemIds.value?.length &&
     model.value?.filter((id) => itemIds.value.includes(id)).length === itemIds.value?.length
 );
 
 const toggleAll = () => {
-  model.value = allSelected.value
-    ? model.value?.filter((id) => !itemIds.value.includes(id)) || []
-    : [...new Set([...(model.value || []), ...itemIds.value])];
+  model.value =
+    Array.isArray(model.value) && allSelected.value
+      ? model.value?.filter((id) => !itemIds.value.includes(id)) || []
+      : [...new Set([...(model.value || []), ...itemIds.value])];
 };
 </script>
 

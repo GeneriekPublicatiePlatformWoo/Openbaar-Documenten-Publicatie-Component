@@ -2,7 +2,7 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-if="!loading" @submit.prevent="submit">
-    <section v-if="mijnOrganisaties?.length && mijnInformatiecategorieen?.length">
+    <section v-if="!forbidden">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
@@ -11,8 +11,8 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-organisaties="mijnOrganisaties"
-        :mijn-informatiecategorieen="mijnInformatiecategorieen"
+        :mijn-organisaties="mijnOrganisaties || []"
+        :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
       />
 
       <alert-inline v-if="documentenError"
@@ -29,7 +29,7 @@
     </section>
 
     <alert-inline v-else
-      >U bent niet gekoppeld aan een actieve gebruikersgroep. Neem contact op met uw
+      >U bent niet gekoppeld aan een (juiste) gebruikersgroep. Neem contact op met uw
       beheerder.</alert-inline
     >
 
@@ -102,8 +102,7 @@ const error = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!waardelijstenUserError.value ||
-    !mijnOrganisaties.value?.length || // not linked to organisaties through gebruikersgroep:
-    !mijnInformatiecategorieen.value?.length // not linked to informatiecategorieen through gebruikersgroep:
+    forbidden.value
 );
 
 // Publicatie
@@ -135,9 +134,23 @@ const {
 const {
   mijnOrganisaties,
   mijnInformatiecategorieen,
+  mijnWaardelijstenUuids,
   loadingWaardelijstenUser,
   waardelijstenUserError
 } = useWaardelijstenUser();
+
+const forbidden = computed(
+  () =>
+    !mijnOrganisaties.value?.length || // Not assigned to any organisatie
+    !mijnInformatiecategorieen.value?.length || // Not assigned to any informatiecategorie
+    (publicatie.value.publisher &&
+      !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) || // Not assigned to publisher organisatie
+    !publicatie.value.informatieCategorieen.every(
+      (
+        uuid: string // Not assigned to every informatiecategorie of publicatie
+      ) => mijnWaardelijstenUuids.value.includes(uuid)
+    )
+);
 
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {
