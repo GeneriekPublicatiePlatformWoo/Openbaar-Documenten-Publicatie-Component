@@ -7,6 +7,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Openbaarheid en Verantwoording: De Impact van de Wet open overheid op Bestuurlijke Transparantie",
                 VerkorteTitel = "De Impact van de Wet open overheid op Bestuurlijke Transparantie",
                 Omschrijving = "",
@@ -18,6 +19,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Inzicht voor Iedereen: Toepassing en Resultaten van de Wet open overheid",
                 VerkorteTitel = "Toepassing en Resultaten van de Wet open overheid",
                 Omschrijving = "",
@@ -28,6 +30,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Open Overheid: Transparantie als Standaard in Bestuurlijk Nederland",
                 VerkorteTitel = "Transparantie als Standaard in Bestuurlijk Nederland",
                 Omschrijving = "",
@@ -38,6 +41,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "De Wet open overheid: Een Nieuwe Norm voor Openbare Informatie",
                 VerkorteTitel = "Een Nieuwe Norm voor Openbare Informatie",
                 Omschrijving = "",
@@ -48,6 +52,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Inzicht in Overheid: De Toekomst van Transparantie met de Woo",
                 VerkorteTitel = "De Toekomst van Transparantie met de Woo",
                 Omschrijving = "",
@@ -58,6 +63,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Toegang tot Informatie: De Praktische Uitwerking van de Woo",
                 VerkorteTitel = "De Praktische Uitwerking van de Woo",
                 Omschrijving = "",
@@ -68,6 +74,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Openbaarheid en Verantwoording: De Impact van de Wet open overheid op Bestuurlijke Transparantie",
                 VerkorteTitel = "Openbaarheid en Verantwoording",
                 Omschrijving = "",
@@ -78,6 +85,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Verantwoording en Openheid: Hoe de Woo de Overheid Hervormt",
                 VerkorteTitel = "Hoe de Woo de Overheid Hervormt",
                 Omschrijving = "",
@@ -88,6 +96,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "De Wet open overheid in de Praktijk: Successen en Uitdagingen",
                 VerkorteTitel = "Successen en Uitdagingen",
                 Omschrijving = "",
@@ -98,6 +107,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Publieke Toegang tot Overheidsinformatie: Het Effect van de Woo",
                 VerkorteTitel = "Het Effect van de Woo",
                 Omschrijving = "",
@@ -108,6 +118,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "De Kracht van Openbaarheid: Verantwoord Bestuur door de Wet open overheid",
                 VerkorteTitel = "Verantwoord Bestuur door de Wet open overheid",
                 Omschrijving = "",
@@ -118,6 +129,7 @@
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Publisher = "",
                 OfficieleTitel = "Transparantie als Fundament: De Woo en de Weg naar Open Overheid",
                 VerkorteTitel = "De Woo en de Weg naar Open Overheid",
                 Omschrijving = "",

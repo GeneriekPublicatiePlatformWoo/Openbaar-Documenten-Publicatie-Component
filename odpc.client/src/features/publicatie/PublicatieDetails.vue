@@ -2,7 +2,7 @@
   <simple-spinner v-show="loading"></simple-spinner>
 
   <form v-if="!loading" @submit.prevent="submit">
-    <section v-if="mijnInformatiecategorieen?.length">
+    <section v-if="mijnOrganisaties?.length && mijnInformatiecategorieen?.length">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
@@ -11,6 +11,7 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
+        :mijn-organisaties="mijnOrganisaties"
         :mijn-informatiecategorieen="mijnInformatiecategorieen"
       />
 
@@ -27,7 +28,10 @@
       />
     </section>
 
-    <alert-inline v-else>U bent niet gekoppeld aan een actieve gebruikersgroep. Neem contact op met uw beheerder.</alert-inline>
+    <alert-inline v-else
+      >U bent niet gekoppeld aan een actieve gebruikersgroep. Neem contact op met uw
+      beheerder.</alert-inline
+    >
 
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
@@ -98,7 +102,8 @@ const error = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!waardelijstenUserError.value ||
-    !mijnInformatiecategorieen.value?.length // not linked to active gebruikersgroep
+    !mijnOrganisaties.value?.length || // not linked to organisaties through gebruikersgroep:
+    !mijnInformatiecategorieen.value?.length // not linked to informatiecategorieen through gebruikersgroep:
 );
 
 // Publicatie
@@ -127,8 +132,12 @@ const {
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
 // Waardelijsten user
-const { mijnInformatiecategorieen, loadingWaardelijstenUser, waardelijstenUserError } =
-  useWaardelijstenUser();
+const {
+  mijnOrganisaties,
+  mijnInformatiecategorieen,
+  loadingWaardelijstenUser,
+  waardelijstenUserError
+} = useWaardelijstenUser();
 
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {

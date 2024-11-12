@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { useModel } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
 import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
 import { PublicatieStatus, type Publicatie } from "../types";
@@ -75,15 +75,11 @@ import type { OptionProps } from "@/components/checkbox-group/types";
 const props = defineProps<{
   modelValue: Publicatie;
   disabled: boolean;
+  mijnOrganisaties: OptionProps[];
   mijnInformatiecategorieen: OptionProps[];
 }>();
 
-const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();
-
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value)
-});
+const model = useModel(props, "modelValue");
 </script>
 
 <style lang="scss" scoped>

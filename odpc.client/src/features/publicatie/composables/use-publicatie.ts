@@ -7,10 +7,11 @@ const API_URL = `/api/v1`;
 
 export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
+    publisher: "385b6bac-ae67-4b69-8e5a-1456ded384e7",
+    verantwoordelijke: "385b6bac-ae67-4b69-8e5a-1456ded384e7",
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
-    registratiedatum: new Date().toISOString().split("T")[0],
     status: "gepubliceerd",
     informatieCategorieen: []
   });
