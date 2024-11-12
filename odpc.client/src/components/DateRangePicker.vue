@@ -13,44 +13,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { ref, watch, useModel } from "vue";
 
 const props = defineProps<{ fromDate: string; untilDate: string }>();
 
-const emit = defineEmits<{
-  (e: "update:fromDate", payload: string): void;
-  (e: "update:untilDate", payload: string): void;
-}>();
-
-const fromDate = computed<string>({
-  get: () => props.fromDate,
-  set: (value) => emit("update:fromDate", value)
-});
-const untilDate = computed<string>({
-  get: () => props.untilDate,
-  set: (value) => emit("update:untilDate", value)
-});
-
-const today = ref(new Date().toISOString().split("T")[0]);
+const fromDate = useModel(props, "fromDate");
+const untilDate = useModel(props, "untilDate");
 
 const fromDateRef = ref<HTMLInputElement>();
 const untilDateRef = ref<HTMLInputElement>();
 
+const today = ref(new Date().toISOString().split("T")[0]);
+
 watch(fromDate, (value) => {
-  if (!fromDateRef.value || !untilDateRef.value) return;
+  if (!untilDateRef.value) return;
 
   if (value) {
     if (value > today.value) {
-      fromDateRef.value.value = "";
-      fromDateRef.value.dispatchEvent(new Event("input"));
+      fromDate.value = "";
       return;
     }
 
     untilDateRef.value.min = value;
 
     if (untilDate.value && untilDate.value < value) {
-      untilDateRef.value.value = value;
-      untilDateRef.value.dispatchEvent(new Event("input"));
+      untilDate.value = value;
     }
   } else {
     untilDateRef.value.removeAttribute("min");
@@ -58,20 +45,18 @@ watch(fromDate, (value) => {
 });
 
 watch(untilDate, (value) => {
-  if (!fromDateRef.value || !untilDateRef.value) return;
+  if (!fromDateRef.value) return;
 
   if (value) {
     if (value > today.value) {
-      untilDateRef.value.value = "";
-      untilDateRef.value.dispatchEvent(new Event("input"));
+      untilDate.value = "";
       return;
     }
 
     fromDateRef.value.max = value;
 
     if (fromDate.value && value < fromDate.value) {
-      fromDateRef.value.value = value;
-      fromDateRef.value.dispatchEvent(new Event("input"));
+      fromDate.value = value;
     }
   } else {
     fromDateRef.value.max = today.value;
