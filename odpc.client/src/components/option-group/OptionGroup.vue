@@ -13,7 +13,7 @@
       {{ type === "radio" ? "Kies één optie." : "Kies minimaal één optie." }}
     </p>
 
-    <div v-if="type === `checkbox`" class="checkbox check-all">
+    <div v-if="type === `checkbox`" class="input-option check-all">
       <label
         ><input
           type="checkbox"
@@ -26,7 +26,7 @@
       </label>
     </div>
 
-    <div class="checkbox" v-for="({ uuid, naam }, key) in options" :key="key">
+    <div class="input-option" v-for="({ uuid, naam }, key) in options" :key="key">
       <label
         ><input
           :type="type"
@@ -52,10 +52,10 @@ const { groupRef, setCustomValidity, onInvalid } = useOptionGroup();
 const props = withDefaults(
   defineProps<{
     type?: string;
-    required?: boolean;
     title: string;
     options: OptionProps[];
     modelValue: string | string[];
+    required?: boolean;
   }>(),
   {
     type: "checkbox"
@@ -64,20 +64,15 @@ const props = withDefaults(
 
 const model = useModel(props, "modelValue");
 
-const itemIds = computed(() => props.options.map((option) => option.uuid));
+const uuids = computed(() => props.options.map((option) => option.uuid));
 
-const allSelected = computed(
-  () =>
-    Array.isArray(model.value) &&
-    !!itemIds.value?.length &&
-    model.value?.filter((id) => itemIds.value.includes(id)).length === itemIds.value?.length
-);
+const allSelected = computed(() => uuids.value.every((uuid) => model.value.includes(uuid)));
 
 const toggleAll = () => {
   model.value =
     Array.isArray(model.value) && allSelected.value
-      ? model.value?.filter((id) => !itemIds.value.includes(id)) || []
-      : [...new Set([...(model.value || []), ...itemIds.value])];
+      ? model.value.filter((uuid) => !uuids.value.includes(uuid))
+      : [...new Set([...model.value, ...uuids.value])];
 };
 </script>
 

@@ -1,6 +1,6 @@
 import { computed } from "vue";
 import { useFetchApi } from "@/api";
-import type { OptionProps } from "@/components/checkbox-group/types";
+import type { OptionProps } from "@/components/option-group/types";
 
 const API_URL = `/api/v1`;
 

@@ -8,14 +8,14 @@
   <fieldset v-else>
     <legend>Waardelijsten</legend>
 
-    <checkbox-group
+    <option-group
       v-if="organisaties.length"
       :title="WAARDELIJSTEN.ORGANISATIE"
       :options="organisaties"
       v-model="model"
     />
 
-    <checkbox-group
+    <option-group
       v-if="informatiecategorieen.length"
       :title="WAARDELIJSTEN.INFORMATIECATEGORIE"
       :options="informatiecategorieen"
@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { computed, useModel, watch } from "vue";
-import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
+import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import { WAARDELIJSTEN, type WaardelijstItem } from "../types";

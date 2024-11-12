@@ -56,20 +56,20 @@
       </div>
     </details>
 
-    <checkbox-group
+    <option-group
       type="radio"
-      :required="true"
       title="Organisaties"
       :options="mijnOrganisaties"
       v-model="model.publisher"
+      :required="true"
     />
 
-    <checkbox-group
+    <option-group
       type="checkbox"
-      :required="true"
       title="Informatiecategorieën"
       :options="mijnInformatiecategorieen"
       v-model="model.informatieCategorieen"
+      :required="true"
     />
   </fieldset>
 </template>
@@ -77,9 +77,9 @@
 <script setup lang="ts">
 import { useModel } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
-import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
+import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import { PublicatieStatus, type Publicatie } from "../types";
-import type { OptionProps } from "@/components/checkbox-group/types";
+import type { OptionProps } from "@/components/option-group/types";
 
 const props = defineProps<{
   modelValue: Publicatie;

@@ -1,4 +1,4 @@
-import type { OptionProps } from "@/components/checkbox-group/types";
+import type { OptionProps } from "@/components/option-group/types";
 
 export type Gebruikersgroep = {
   uuid?: string;
