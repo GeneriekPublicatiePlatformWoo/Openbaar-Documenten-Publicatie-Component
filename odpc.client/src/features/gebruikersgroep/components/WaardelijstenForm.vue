@@ -56,8 +56,8 @@ const loaded = computed(
 );
 
 const waardelijstUuids = computed(() => [
-  ...(organisaties.value.map((item) => item.uuid) || []),
-  ...(informatiecategorieen.value.map((item) => item.uuid) || [])
+  ...organisaties.value.map((item) => item.uuid),
+  ...informatiecategorieen.value.map((item) => item.uuid)
 ]);
 
 // Remove uuids from model that are not present/active anymore in ODRC
