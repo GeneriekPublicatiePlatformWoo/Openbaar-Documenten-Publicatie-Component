@@ -58,7 +58,7 @@
 
     <option-group
       type="radio"
-      title="Organisaties"
+      title="Organisatie"
       :options="mijnOrganisaties"
       v-model="model.publisher"
       :required="true"

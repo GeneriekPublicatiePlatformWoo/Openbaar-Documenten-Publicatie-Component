@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loadingGebruikersgroep"></simple-spinner>
 
-  <form v-show="!loadingGebruikersgroep" @submit.prevent="submit" ref="formRef">
+  <default-form v-show="!loadingGebruikersgroep" @submit.prevent="submit">
     <section>
       <alert-inline v-if="gebruikersgroepError"
         >Er is iets misgegaan bij het ophalen van de gebruikersgroep...</alert-inline
@@ -43,7 +43,7 @@
     <prompt-modal :dialog="dialog" confirm-message="Ja, verwijderen" cancel-message="Nee, behouden">
       <p>Weet u zeker dat u deze gebruikersgroep wilt verwijderen?</p>
     </prompt-modal>
-  </form>
+  </default-form>
 </template>
 
 <script setup lang="ts">
@@ -52,6 +52,7 @@ import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
+import DefaultForm from "@/components/DefaultForm.vue";
 import toast from "@/stores/toast";
 import GebruikersgroepForm from "./components/GebruikersgroepForm.vue";
 import WaardelijstenForm from "./components/WaardelijstenForm.vue";

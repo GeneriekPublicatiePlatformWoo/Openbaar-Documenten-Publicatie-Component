@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-if="!loading" @submit.prevent="submit">
+  <default-form v-if="!loading" @submit.prevent="submit">
     <section v-if="!forbidden">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
@@ -63,7 +63,7 @@
       <span>Weet u zeker dat u dit deze publicatie wilt intrekken?</span>
       <span><strong>Let op:</strong> deze actie kan niet ongedaan worden gemaakt.</span>
     </prompt-modal>
-  </form>
+  </default-form>
 </template>
 
 <script setup lang="ts">
@@ -74,6 +74,7 @@ import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
+import DefaultForm from "@/components/DefaultForm.vue";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
@@ -141,14 +142,16 @@ const {
 
 const forbidden = computed(
   () =>
-    !mijnOrganisaties.value?.length || // Not assigned to any organisatie
-    !mijnInformatiecategorieen.value?.length || // Not assigned to any informatiecategorie
+    // Not assigned to any organisatie
+    !mijnOrganisaties.value?.length ||
+    // Not assigned to any informatiecategorie
+    !mijnInformatiecategorieen.value?.length ||
+    // Not assigned to publisher organisatie
     (publicatie.value.publisher &&
-      !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) || // Not assigned to publisher organisatie
-    !publicatie.value.informatieCategorieen.every(
-      (
-        uuid: string // Not assigned to every informatiecategorie of publicatie
-      ) => mijnWaardelijstenUuids.value.includes(uuid)
+      !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) ||
+    // Not assigned to every informatiecategorie of publicatie
+    !publicatie.value.informatieCategorieen.every((uuid: string) =>
+      mijnWaardelijstenUuids.value.includes(uuid)
     )
 );
 

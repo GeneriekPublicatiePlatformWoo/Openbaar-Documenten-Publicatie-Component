@@ -112,6 +112,7 @@
             <dt>Publicatiedatum:</dt>
             <dd>
               {{
+                registratiedatum &&
                 Intl.DateTimeFormat("default", { dateStyle: "long" }).format(
                   Date.parse(registratiedatum)
                 )

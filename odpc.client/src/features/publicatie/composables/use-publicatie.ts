@@ -33,7 +33,10 @@ export const usePublicatie = (uuid?: string) => {
     // Fill required verantwoordelijke with publisher value and add to publicatie
     publicatie.value = {
       ...publicatie.value,
-      ...{ verantwoordelijke: publicatie.value.publisher }
+      ...{
+        verantwoordelijke: publicatie.value.publisher,
+        // opsteller: publicatie.value.publisher
+      }
     };
 
     uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();

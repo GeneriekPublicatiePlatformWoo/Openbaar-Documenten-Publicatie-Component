@@ -4,14 +4,11 @@
     ref="groupRef"
     :aria-labelledby="`label-${instanceId}`"
     :aria-required="required ? true : undefined"
-    @change="required && setCustomValidity()"
-    @invalid.capture="required && onInvalid()"
+    @change="setCustomValidity"
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
-    <p v-if="required" class="error" :id="`description-${instanceId}`">
-      {{ type === "radio" ? "Kies één optie." : "Kies minimaal één optie." }}
-    </p>
+    <p v-if="required" class="error" :id="`description-${instanceId}`">{{ getMessage(type) }}</p>
 
     <div v-if="type === `checkbox`" class="input-option check-all">
       <label
@@ -47,7 +44,7 @@ import type { OptionProps } from "./types";
 
 const instanceId = getCurrentInstance()?.uid;
 
-const { groupRef, setCustomValidity, onInvalid } = useOptionGroup();
+const { groupRef, setCustomValidity, getMessage } = useOptionGroup();
 
 const props = withDefaults(
   defineProps<{
