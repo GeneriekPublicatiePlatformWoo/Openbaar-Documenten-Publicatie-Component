@@ -8,9 +8,15 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
         [HttpPut("api/v1/publicaties/{uuid}")]
         public async Task<IActionResult> Put(Guid uuid, Publicatie publicatie, CancellationToken token)
         {
-            var categorieen = await waardelijstItemsService.GetAsync(token);
+            var waardelijstItems = await waardelijstItemsService.GetAsync(token);
 
-            if (publicatie.InformatieCategorieen != null && publicatie.InformatieCategorieen.Any(c => !categorieen.Contains(c)))
+            if (publicatie.Publisher != null && !waardelijstItems.Contains(publicatie.Publisher))
+            {
+                ModelState.AddModelError(nameof(publicatie.Publisher), "Gebruiker is niet geautoriseerd voor deze organisatie");
+                return BadRequest(ModelState);
+            }
+
+            if (publicatie.InformatieCategorieen != null && publicatie.InformatieCategorieen.Any(c => !waardelijstItems.Contains(c)))
             {
                 ModelState.AddModelError(nameof(publicatie.InformatieCategorieen), "Gebruiker is niet geautoriseerd voor deze informatiecategorieën");
                 return BadRequest(ModelState);
