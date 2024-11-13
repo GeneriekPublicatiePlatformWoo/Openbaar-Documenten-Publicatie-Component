@@ -56,7 +56,16 @@
       </div>
     </details>
 
-    <checkbox-group
+    <option-group
+      type="radio"
+      title="Organisatie"
+      :options="mijnOrganisaties"
+      v-model="model.publisher"
+      :required="true"
+    />
+
+    <option-group
+      type="checkbox"
       title="Informatiecategorieën"
       :options="mijnInformatiecategorieen"
       v-model="model.informatieCategorieen"
@@ -66,24 +75,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { useModel } from "vue";
 import AlertInline from "@/components/AlertInline.vue";
-import CheckboxGroup from "@/components/checkbox-group/CheckboxGroup.vue";
+import OptionGroup from "@/components/option-group/OptionGroup.vue";
 import { PublicatieStatus, type Publicatie } from "../types";
-import type { OptionProps } from "@/components/checkbox-group/types";
+import type { OptionProps } from "@/components/option-group/types";
 
 const props = defineProps<{
   modelValue: Publicatie;
   disabled: boolean;
+  mijnOrganisaties: OptionProps[];
   mijnInformatiecategorieen: OptionProps[];
 }>();
 
-const emit = defineEmits<{ (e: "update:modelValue", payload: Publicatie): void }>();
-
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value)
-});
+const model = useModel(props, "modelValue");
 </script>
 
 <style lang="scss" scoped>

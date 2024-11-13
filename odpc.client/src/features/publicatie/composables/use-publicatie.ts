@@ -7,10 +7,11 @@ const API_URL = `/api/v1`;
 
 export const usePublicatie = (uuid?: string) => {
   const publicatie = ref<Publicatie>({
+    publisher: "",
+    verantwoordelijke: "",
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
-    registratiedatum: new Date().toISOString().split("T")[0],
     status: "gepubliceerd",
     informatieCategorieen: []
   });
@@ -29,6 +30,15 @@ export const usePublicatie = (uuid?: string) => {
   watch(publicatieData, (value) => (publicatie.value = value || publicatie.value));
 
   const submitPublicatie = async () => {
+    // Fill required verantwoordelijke with publisher value and add to publicatie
+    publicatie.value = {
+      ...publicatie.value,
+      ...{
+        verantwoordelijke: publicatie.value.publisher,
+        // opsteller: publicatie.value.publisher
+      }
+    };
+
     uuid ? await putPublicatie(publicatie).execute() : await postPublicatie(publicatie).execute();
 
     if (publicatieError.value) {

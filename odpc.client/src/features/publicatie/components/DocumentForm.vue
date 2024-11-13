@@ -53,7 +53,6 @@
           aria-required="true"
           :aria-describedby="`titelError-${index}`"
           :aria-invalid="!doc.officieleTitel"
-          @invalid="invalidHandler"
         />
 
         <span :id="`titelError-${index}`" class="error">Titel is een verplicht veld</span>
@@ -113,11 +112,6 @@ const model = computed<PublicatieDocument[]>({
   get: () => props.documenten,
   set: (value) => emit("update:documenten", value)
 });
-
-const invalidHandler = (event: Event) => {
-  const details = (event.target as HTMLInputElement).closest("details");
-  details && (details.open = true);
-};
 
 const dialog = useConfirmDialog();
 

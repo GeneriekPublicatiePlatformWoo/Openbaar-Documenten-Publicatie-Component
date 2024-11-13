@@ -3,6 +3,8 @@
     public class Publicatie
     {
         public Guid Uuid { get; set; }
+        public string? Publisher { get; set; }
+        public string? Verantwoordelijke { get; set; }
         public string? OfficieleTitel { get; set; }
         public string? VerkorteTitel { get; set; }
         public string? Omschrijving { get; set; }

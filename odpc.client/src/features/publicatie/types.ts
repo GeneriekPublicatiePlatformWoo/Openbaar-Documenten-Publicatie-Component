@@ -6,10 +6,12 @@ export const PublicatieStatus = Object.freeze({
 
 export type Publicatie = {
   uuid?: string;
+  publisher: string;
+  verantwoordelijke: string;
   officieleTitel: string;
   verkorteTitel: string;
   omschrijving: string;
-  registratiedatum: string;
+  registratiedatum?: string;
   status: keyof typeof PublicatieStatus;
   informatieCategorieen: string[];
 };

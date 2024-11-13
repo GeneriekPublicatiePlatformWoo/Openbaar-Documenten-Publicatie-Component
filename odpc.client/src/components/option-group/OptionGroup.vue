@@ -4,14 +4,13 @@
     ref="groupRef"
     :aria-labelledby="`label-${instanceId}`"
     :aria-required="required ? true : undefined"
-    @change="required && setCustomValidity()"
-    @invalid.capture="required && onInvalid()"
+    @change="setCustomValidity"
   >
     <summary :id="`label-${instanceId}`">{{ title }} {{ required ? "*" : "" }}</summary>
 
-    <p v-if="required" class="error" :id="`description-${instanceId}`">Kies minimaal één optie.</p>
+    <p v-if="required" class="error" :id="`description-${instanceId}`">{{ getMessage(type) }}</p>
 
-    <div class="checkbox check-all">
+    <div v-if="type === `checkbox`" class="input-option check-all">
       <label
         ><input
           type="checkbox"
@@ -24,10 +23,10 @@
       </label>
     </div>
 
-    <div class="checkbox" v-for="({ uuid, naam }, key) in options" :key="key">
+    <div class="input-option" v-for="({ uuid, naam }, key) in options" :key="key">
       <label
         ><input
-          type="checkbox"
+          :type="type"
           :value="uuid"
           v-model="model"
           :aria-describedby="`description-${instanceId}`"
@@ -39,42 +38,38 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance } from "vue";
-import { useCheckboxGroup } from "./use-checkbox-group";
+import { computed, getCurrentInstance, useModel } from "vue";
+import { useOptionGroup } from "./use-option-group";
 import type { OptionProps } from "./types";
 
 const instanceId = getCurrentInstance()?.uid;
 
-const { groupRef, setCustomValidity, onInvalid } = useCheckboxGroup();
+const { groupRef, setCustomValidity, getMessage } = useOptionGroup();
 
-const props = defineProps<{
-  title: string;
-  options: OptionProps[];
-  modelValue: string[];
-  required?: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: "update:modelValue", payload: string[]): void;
-}>();
-
-const model = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value)
-});
-
-const itemIds = computed(() => props.options.map((option) => option.uuid));
-
-const allSelected = computed(
-  () =>
-    !!itemIds.value?.length &&
-    model.value?.filter((id) => itemIds.value.includes(id)).length === itemIds.value?.length
+const props = withDefaults(
+  defineProps<{
+    type?: string;
+    title: string;
+    options: OptionProps[];
+    modelValue: string | string[];
+    required?: boolean;
+  }>(),
+  {
+    type: "checkbox"
+  }
 );
 
+const model = useModel(props, "modelValue");
+
+const uuids = computed(() => props.options.map((option) => option.uuid));
+
+const allSelected = computed(() => uuids.value.every((uuid) => model.value.includes(uuid)));
+
 const toggleAll = () => {
-  model.value = allSelected.value
-    ? model.value?.filter((id) => !itemIds.value.includes(id)) || []
-    : [...new Set([...(model.value || []), ...itemIds.value])];
+  model.value =
+    Array.isArray(model.value) && allSelected.value
+      ? model.value.filter((uuid) => !uuids.value.includes(uuid))
+      : [...new Set([...model.value, ...uuids.value])];
 };
 </script>
 

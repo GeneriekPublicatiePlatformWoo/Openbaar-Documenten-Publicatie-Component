@@ -11,9 +11,15 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
         [HttpPost("api/v1/publicaties")]
         public async Task<IActionResult> Post(Publicatie publicatie, CancellationToken token)
         {
-            var categorieen = await waardelijstItemsService.GetAsync(token);
+            var waardelijstItems = await waardelijstItemsService.GetAsync(token);
 
-            if (publicatie.InformatieCategorieen != null && publicatie.InformatieCategorieen.Any(c => !categorieen.Contains(c)))
+            if (publicatie.Publisher != null && !waardelijstItems.Contains(publicatie.Publisher))
+            {
+                ModelState.AddModelError(nameof(publicatie.Publisher), "Gebruiker is niet geautoriseerd voor deze organisatie");
+                return BadRequest(ModelState);
+            }
+
+            if (publicatie.InformatieCategorieen != null && publicatie.InformatieCategorieen.Any(c => !waardelijstItems.Contains(c)))
             {
                 ModelState.AddModelError(nameof(publicatie.InformatieCategorieen), "Gebruiker is niet geautoriseerd voor deze informatiecategorieën");
                 return BadRequest(ModelState);
@@ -24,9 +30,6 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
 
             response.EnsureSuccessStatusCode();
             var viewModel = await response.Content.ReadFromJsonAsync<Publicatie>(token);
-
-            // TODO deze regel kan eraf als deze story is geimplementeerd: https://github.com/GeneriekPublicatiePlatformWoo/registratie-component/issues/48
-            viewModel!.InformatieCategorieen = publicatie.InformatieCategorieen;
 
             // TODO deze regel kan eraf als deze story is geimplementeerd: https://github.com/GeneriekPublicatiePlatformWoo/registratie-component/issues/49
             viewModel!.Status = publicatie.Status;

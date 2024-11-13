@@ -1,8 +1,8 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <form v-if="!loading" @submit.prevent="submit">
-    <section v-if="mijnInformatiecategorieen?.length">
+  <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
+    <section v-if="!forbidden">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
       >
@@ -11,7 +11,8 @@
         v-else
         v-model="publicatie"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
-        :mijn-informatiecategorieen="mijnInformatiecategorieen"
+        :mijn-organisaties="mijnOrganisaties || []"
+        :mijn-informatiecategorieen="mijnInformatiecategorieen || []"
       />
 
       <alert-inline v-if="documentenError"
@@ -27,7 +28,10 @@
       />
     </section>
 
-    <alert-inline v-else>U bent niet gekoppeld aan een actieve gebruikersgroep. Neem contact op met uw beheerder.</alert-inline>
+    <alert-inline v-else
+      >U bent niet gekoppeld aan een (juiste) gebruikersgroep. Neem contact op met uw
+      beheerder.</alert-inline
+    >
 
     <div class="form-submit">
       <span class="required-message">Velden met (*) zijn verplicht</span>
@@ -98,7 +102,7 @@ const error = computed(
     !!publicatieError.value ||
     !!documentenError.value ||
     !!waardelijstenUserError.value ||
-    !mijnInformatiecategorieen.value?.length // not linked to active gebruikersgroep
+    forbidden.value
 );
 
 // Publicatie
@@ -127,8 +131,28 @@ const {
   useDocumenten(computed(() => props.uuid || publicatie.value?.uuid));
 
 // Waardelijsten user
-const { mijnInformatiecategorieen, loadingWaardelijstenUser, waardelijstenUserError } =
-  useWaardelijstenUser();
+const {
+  mijnOrganisaties,
+  mijnInformatiecategorieen,
+  mijnWaardelijstenUuids,
+  loadingWaardelijstenUser,
+  waardelijstenUserError
+} = useWaardelijstenUser();
+
+const forbidden = computed(
+  () =>
+    // Not assigned to any organisatie
+    !mijnOrganisaties.value?.length ||
+    // Not assigned to any informatiecategorie
+    !mijnInformatiecategorieen.value?.length ||
+    // Not assigned to publisher organisatie
+    (publicatie.value.publisher &&
+      !mijnWaardelijstenUuids.value.includes(publicatie.value.publisher)) ||
+    // Not assigned to every informatiecategorie of publicatie
+    !publicatie.value.informatieCategorieen.every((uuid: string) =>
+      mijnWaardelijstenUuids.value.includes(uuid)
+    )
+);
 
 const navigate = () => {
   if (previousRoute.value?.name === "publicaties") {
