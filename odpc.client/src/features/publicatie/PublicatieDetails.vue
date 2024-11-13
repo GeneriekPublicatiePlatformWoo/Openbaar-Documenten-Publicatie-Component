@@ -1,7 +1,7 @@
 <template>
   <simple-spinner v-show="loading"></simple-spinner>
 
-  <default-form v-if="!loading" @submit.prevent="submit">
+  <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
     <section v-if="!forbidden">
       <alert-inline v-if="publicatieError"
         >Er is iets misgegaan bij het ophalen van de publicatie...</alert-inline
@@ -63,7 +63,7 @@
       <span>Weet u zeker dat u dit deze publicatie wilt intrekken?</span>
       <span><strong>Let op:</strong> deze actie kan niet ongedaan worden gemaakt.</span>
     </prompt-modal>
-  </default-form>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -74,7 +74,6 @@ import { useConfirmDialog } from "@vueuse/core";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import PromptModal from "@/components/PromptModal.vue";
-import DefaultForm from "@/components/DefaultForm.vue";
 import toast from "@/stores/toast";
 import PublicatieForm from "./components/PublicatieForm.vue";
 import DocumentForm from "./components/DocumentForm.vue";
