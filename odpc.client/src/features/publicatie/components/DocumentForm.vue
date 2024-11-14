@@ -18,7 +18,7 @@
     >
       <template v-if="doc.uuid">
         <summary>
-          <template v-if="doc.status === PublicatieStatus.ingetrokken || disabled"
+          <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken || disabled"
             ><s :aria-describedby="`status-${index}`">{{ doc.bestandsnaam }}</s>
             <span :id="`status-${index}`" role="status">(ingetrokken)</span></template
           >
@@ -27,12 +27,20 @@
 
         <div v-if="!disabled" class="form-group form-group-radio">
           <label>
-            <input type="radio" v-model="doc.status" :value="PublicatieStatus.gepubliceerd" />
+            <input
+              type="radio"
+              v-model="doc.publicatiestatus"
+              :value="PublicatieStatus.gepubliceerd"
+            />
             Gepubliceerd
           </label>
 
           <label
-            ><input type="radio" v-model="doc.status" :value="PublicatieStatus.ingetrokken" />
+            ><input
+              type="radio"
+              v-model="doc.publicatiestatus"
+              :value="PublicatieStatus.ingetrokken"
+            />
             Ingetrokken</label
           >
         </div>

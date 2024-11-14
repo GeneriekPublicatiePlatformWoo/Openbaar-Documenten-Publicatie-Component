@@ -8,16 +8,16 @@ const API_URL = `/api/v1`;
 
 export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const getInitialDocument = (): PublicatieDocument => ({
+    identifier: "",
     publicatie: "",
     officieleTitel: "",
     verkorteTitel: "",
     omschrijving: "",
+    publicatiestatus: PublicatieStatus.gepubliceerd,
     creatiedatum: new Date().toISOString().split("T")[0],
     bestandsnaam: "",
     bestandsformaat: "",
-    bestandsomvang: 0,
-    bestandsdelen: [],
-    status: PublicatieStatus.gepubliceerd
+    bestandsomvang: 0
   });
 
   // Documenten

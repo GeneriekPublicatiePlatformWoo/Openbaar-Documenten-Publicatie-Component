@@ -1,38 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ODPC.Apis.Odrc;
 
 namespace ODPC.Features.Documenten.InitialiseerDocument
 {
     [ApiController]
-    public class InitialiseerDocumentController : ControllerBase
+    public class InitialiseerDocumentController(IOdrcClientFactory clientFactory) : ControllerBase
     {
+        private readonly IOdrcClientFactory _clientFactory = clientFactory;
+
         [HttpPost("api/v1/documenten")]
-        public IActionResult Post(PublicatieDocument document)
+        public async Task<IActionResult> Post(PublicatieDocument document, CancellationToken token)
         {
-            document.Uuid = Guid.NewGuid();
-            document.Creatiedatum = DateOnly.FromDateTime(DateTime.Now);
+            var client = _clientFactory.Create("Initialiseer document");
+            var response = await client.PostAsJsonAsync("/api/v1/documenten", document, token);
 
-            var halve = document.Bestandsomvang / 2;
-            var firstSize = Math.Ceiling(halve);
-            var secondSize = Math.Floor(halve);
+            response.EnsureSuccessStatusCode();
 
-            document.Bestandsdelen =
-            [
-                new()
-                {
-                    Omvang = firstSize,
-                    Url = $"/api/v1/documenten/{document.Uuid}/bestandsdelen/1",
-                    Volgnummer = 0
-                },
-                new()
-                {
-                    Omvang = secondSize,
-                    Url = $"/api/v1/documenten/{document.Uuid}/bestandsdelen/2",
-                    Volgnummer = 1
-                }
-            ];
+            var viewModel = await response.Content.ReadFromJsonAsync<PublicatieDocument>(token);
 
-            DocumentenMock.Documenten[document.Uuid] = document;
-            return Ok(document);
+            return Ok(viewModel);
         }
     }
 }

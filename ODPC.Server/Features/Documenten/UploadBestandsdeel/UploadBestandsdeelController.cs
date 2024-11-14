@@ -1,13 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net.Http;
+using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Mvc;
+using ODPC.Apis.Odrc;
 
 namespace ODPC.Features.Documenten.UploadBestandsdeel
 {
     [ApiController]
-    public class UploadBestandsdeelController : ControllerBase
+    public class UploadBestandsdeelController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpPut("api/v1/documenten/{uuid:guid}/bestandsdelen/{volgnummer:int}")]
-        public IActionResult Put(Guid uuid, int volgnummer)
+        private readonly IOdrcClientFactory _clientFactory = clientFactory;
+
+        [HttpPut("api/v1/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
+        public async Task<IActionResult> Put(Guid docUuid, Guid partUuid, CancellationToken token)
         {
+            if (Request.Form.Files.Count == 0)
+            {
+                return BadRequest("No file uploaded");
+            }
+
+            var file = Request.Form.Files[0];
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(file.OpenReadStream());
+
+            content.Add(fileContent, "inhoud", file.FileName);
+
+            var client = _clientFactory.Create("Upload bestandsdeel");
+            var response = await client.PutAsync("/api/v1/documenten/" + docUuid + "/bestandsdelen/" + partUuid, content, token);
+
+            response.EnsureSuccessStatusCode();
+
             return NoContent();
         }
     }

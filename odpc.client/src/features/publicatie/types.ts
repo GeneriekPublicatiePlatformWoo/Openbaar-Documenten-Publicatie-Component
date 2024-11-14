@@ -18,16 +18,17 @@ export type Publicatie = {
 
 export type PublicatieDocument = {
   uuid?: string;
+  identifier?: string;
   publicatie: string;
   officieleTitel: string;
   verkorteTitel?: string;
   omschrijving?: string;
+  publicatiestatus: keyof typeof PublicatieStatus;
   creatiedatum: string;
   bestandsnaam: string;
   bestandsformaat: string;
   bestandsomvang: number;
   bestandsdelen?: Bestandsdeel[];
-  status: keyof typeof PublicatieStatus;
 };
 
 export type Bestandsdeel = {
@@ -36,7 +37,7 @@ export type Bestandsdeel = {
   omvang: number;
 };
 
-export type MimeTypes = {
+export type MimeType = {
   identifier: string;
   name: string;
   mimeType: string;

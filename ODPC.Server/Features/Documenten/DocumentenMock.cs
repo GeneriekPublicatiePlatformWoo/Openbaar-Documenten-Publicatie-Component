@@ -9,6 +9,7 @@ namespace ODPC.Features.Documenten
             new()
             {
                 Uuid = Guid.NewGuid(),
+                Identifier = "",
                 Publicatie = PublicatiesMock.Publicaties.Keys.First(),
                 OfficieleTitel = "Belangrijk document",
                 VerkorteTitel = "Document",
@@ -17,7 +18,7 @@ namespace ODPC.Features.Documenten
                 Bestandsformaat = "DOCX",
                 Bestandsnaam = "belangrijk.docx",
                 Bestandsomvang = 100000,
-                Status = "gepubliceerd"
+                Publicatiestatus = "gepubliceerd"
             }
         }
         .ToDictionary(x => x.Uuid);
