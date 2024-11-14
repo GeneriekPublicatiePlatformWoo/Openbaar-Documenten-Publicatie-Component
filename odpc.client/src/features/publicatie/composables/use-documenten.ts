@@ -1,5 +1,6 @@
-import { ref, onMounted, watch, type ComputedRef } from "vue";
+import { ref, onMounted, watch, type ComputedRef, watchEffect } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
+import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
 import { mimeTypesMap, uploadFile } from "../service";
 import { PublicatieStatus, type PublicatieDocument } from "../types";
@@ -25,16 +26,20 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const documenten = ref<PublicatieDocument[]>([]);
   const files = ref<File[]>();
 
-  const {
-    get: getDocumenten,
-    data: documentenData,
-    isFetching: loadingDocumenten,
-    error: documentenError
-  } = useFetchApi(() => `${API_URL}/documenten/?publicatie=${pubUUID.value}`, {
-    immediate: false
-  }).json<PublicatieDocument[]>();
+  const loadingDocumenten = ref(false);
+  const documentenError = ref(false);
 
-  watch(documentenData, (value) => (documenten.value = value || documenten.value));
+  const getDocumenten = () => {
+    const { data, loading, error } = useAllPages<PublicatieDocument>(
+      `${API_URL}/documenten/?publicatie=${pubUUID.value}`
+    );
+
+    watchEffect(() => {
+      documenten.value = data.value || documenten.value;
+      loadingDocumenten.value = loading.value;
+      documentenError.value = error.value;
+    });
+  };
 
   watch(files, () => addDocumenten());
 
@@ -130,7 +135,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
 
   const removeDocument = (index: number) => documenten.value.splice(index, 1);
 
-  onMounted(async () => pubUUID.value && (await getDocumenten().execute()));
+  onMounted(() => pubUUID.value && getDocumenten());
 
   return {
     files,

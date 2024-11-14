@@ -1,19 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using ODPC.Apis.Odrc;
 
 namespace ODPC.Features.Documenten.DocumentenOverzicht
 {
     [ApiController]
-    public class DocumentenOverzichtController : ControllerBase
+    public class DocumentenOverzichtController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpGet("api/v1/documenten")]
-        public IActionResult Get([FromQuery] Guid publicatie)
-        {
-            var documenten = DocumentenMock.Documenten.Values
-                .Where(x=> x.Publicatie == publicatie)
-                .OrderBy(x=> x.Creatiedatum)
-                .ToList();
+        private readonly IOdrcClientFactory _clientFactory = clientFactory;
 
-            return Ok(documenten);
+        [HttpGet("api/v1/documenten")]
+        public async Task<IActionResult> Get([FromQuery] string publicatie, string? page, CancellationToken token)
+        {
+            // documenten ophalen uit het ODRC
+            var client = _clientFactory.Create("Documenten ophalen");
+            var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>("/api/v1/documenten?publicatie=" + publicatie + "&page=" + page, token);
+            if (json != null)
+            {
+                json.Previous = GetPathAndQuery(json.Previous);
+                json.Next = GetPathAndQuery(json.Next);
+            }
+            return Ok(json);
         }
+
+        private static string? GetPathAndQuery(string? url) => Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri)
+            ? uri.PathAndQuery
+            : url;
     }
 }
