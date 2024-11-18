@@ -24,12 +24,12 @@ const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
 
       body.append("inhoud", blob);
 
-      const { status } = await fetch(pathname, {
+      const { ok } = await fetch(pathname, {
         method: "PUT",
         body
       });
 
-      if (status !== 204) {
+      if (!ok) {
         throw new Error(`Error uploadDocument: ${url}`);
       }
 
