@@ -19,6 +19,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
                 json.Previous = UrlHelper.GetPathAndQuery(json.Previous);
                 json.Next = UrlHelper.GetPathAndQuery(json.Next);
             }
+
             return Ok(json);
         }
     }
