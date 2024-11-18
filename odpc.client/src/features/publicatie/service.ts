@@ -26,6 +26,8 @@ const parseUrl = (url: string) => {
 const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
   let blobStart = 0;
 
+  bestandsdelen.sort((a, b) => a.volgnummer - b.volgnummer);
+
   try {
     for (const { url, omvang } of bestandsdelen) {
       const { docUuid, partUuid } = parseUrl(url);
