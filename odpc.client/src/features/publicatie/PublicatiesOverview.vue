@@ -152,8 +152,8 @@ const searchParamsConfig = {
   page: "1",
   sorteer: "-registratiedatum",
   search: "",
-  registratiedatum__gte: "",
-  registratiedatum__lte: ""
+  registratiedatumVanaf: "",
+  registratiedatumTot: ""
 };
 
 const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
@@ -165,13 +165,13 @@ const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error }
 watch(
   () => ({
     search: queryParams.value.search,
-    registratiedatum__gte: queryParams.value.registratiedatum__gte,
-    registratiedatum__lte: queryParams.value.registratiedatum__lte
+    registratiedatumVanaf: queryParams.value.registratiedatumVanaf,
+    registratiedatumTot: queryParams.value.registratiedatumTot
   }),
-  ({ search, registratiedatum__gte, registratiedatum__lte }) => {
+  ({ search, registratiedatumVanaf, registratiedatumTot }) => {
     searchString.value = search;
-    fromDate.value = registratiedatum__gte;
-    untilDate.value = registratiedatum__lte;
+    fromDate.value = registratiedatumVanaf;
+    untilDate.value = registratiedatumTot;
   },
   { once: true }
 );
@@ -181,8 +181,8 @@ const onSearch = () =>
   (queryParams.value = {
     ...queryParams.value,
     search: searchString.value,
-    registratiedatum__gte: fromDate.value,
-    registratiedatum__lte: untilDate.value
+    registratiedatumVanaf: fromDate.value,
+    registratiedatumTot: untilDate.value
   });
 </script>
 

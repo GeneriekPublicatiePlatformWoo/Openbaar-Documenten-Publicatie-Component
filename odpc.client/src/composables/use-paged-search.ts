@@ -4,7 +4,7 @@ import { useUrlSearchParams } from "@vueuse/core";
 import { useFetchApi, type PagedResult } from "@/api";
 
 const API_URL = `/api/v1`;
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 50;
 
 export const usePagedSearch = <T, QueryParams extends { page: string }>(
   endpoint: string,
