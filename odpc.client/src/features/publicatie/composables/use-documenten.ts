@@ -1,30 +1,16 @@
-import { ref, onMounted, watch, type ComputedRef, watchEffect } from "vue";
+import { ref, onMounted, type ComputedRef, watchEffect } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import { useAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
-import { mimeTypesMap, uploadFile } from "../service";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
+import { uploadFile } from "../service";
+import type { PublicatieDocument } from "../types";
 
 const API_URL = `/api/v1`;
 
 export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
-  const getInitialDocument = (): PublicatieDocument => ({
-    identifier: "",
-    publicatie: "",
-    officieleTitel: "",
-    verkorteTitel: "",
-    omschrijving: "",
-    publicatiestatus: PublicatieStatus.gepubliceerd,
-    creatiedatum: new Date().toISOString().split("T")[0],
-    bestandsnaam: "",
-    bestandsformaat: "",
-    bestandsomvang: 0
-  });
-
   // Documenten
-
+  const files = ref<File[]>([]);
   const documenten = ref<PublicatieDocument[]>([]);
-  const files = ref<File[]>();
 
   const loadingDocumenten = ref(false);
   const documentenError = ref(false);
@@ -39,31 +25,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
       loadingDocumenten.value = loading.value;
       documentenError.value = error.value;
     });
-  };
-
-  watch(files, () => addDocumenten());
-
-  const addDocumenten = () => {
-    const docs: PublicatieDocument[] = [];
-
-    try {
-      Array.from(files.value || []).forEach((file) => {
-        const doc = getInitialDocument();
-        const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
-
-        if (!bestandsformaat) throw new Error();
-
-        doc.officieleTitel = file.name.replace(/\.[^/.]+$/, ""); // file name minus extension as default title
-        doc.bestandsnaam = file.name;
-        doc.bestandsformaat = bestandsformaat;
-        doc.bestandsomvang = file.size;
-        docs.push(doc);
-      });
-    } catch {
-      return;
-    }
-
-    documenten.value = [...docs, ...documenten.value];
   };
 
   const submitDocumenten = async () => {
@@ -98,7 +59,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   };
 
   // Document
-
   const docUUID = ref<string>();
   const uploadingFile = ref(false);
 
@@ -133,8 +93,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     }
   };
 
-  const removeDocument = (index: number) => documenten.value.splice(index, 1);
-
   onMounted(() => pubUUID.value && getDocumenten());
 
   return {
@@ -145,7 +103,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     loadingDocument,
     documentError,
     uploadingFile,
-    submitDocumenten,
-    removeDocument
+    submitDocumenten
   };
 };

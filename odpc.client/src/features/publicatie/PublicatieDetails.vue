@@ -21,9 +21,8 @@
 
       <document-form
         v-else
-        v-model:documenten="documenten"
         v-model:files="files"
-        @removeDocument="removeDocument"
+        v-model:documenten="documenten"
         :disabled="initialStatus === PublicatieStatus.ingetrokken"
       />
     </section>
@@ -101,6 +100,7 @@ const error = computed(
   () =>
     !!publicatieError.value ||
     !!documentenError.value ||
+    !!documentError.value ||
     !!waardelijstenUserError.value ||
     forbidden.value
 );
@@ -122,9 +122,9 @@ const {
   loadingDocumenten,
   documentenError,
   loadingDocument,
+  documentError,
   uploadingFile,
-  submitDocumenten,
-  removeDocument
+  submitDocumenten
 } =
   // Get associated docs by uuid prop when existing pub, so no need to wait for pub fetch.
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.

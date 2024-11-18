@@ -10,19 +10,17 @@ namespace ODPC.Features.Informatiecategorieen.AlleInformatiecategorieen
         [HttpGet("api/v1/informatiecategorieen")]
         public async Task<IActionResult> Get([FromQuery] string? page, CancellationToken token)
         {
-            //infocategorien ophalen uit het ODRC
-            using var client = clientFactory.Create("Alle informatiecategorieen ophalen");
+            // infocategorien ophalen uit het ODRC
+            using var client = clientFactory.Create("Informatiecategorieen ophalen");
             var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>("/api/v1/informatiecategorieen?page=" + page, token);
+
             if (json != null)
             {
-                json.Previous = GetPathAndQuery(json.Previous);
-                json.Next = GetPathAndQuery(json.Next);
+                json.Previous = UrlHelper.GetPathAndQuery(json.Previous);
+                json.Next = UrlHelper.GetPathAndQuery(json.Next);
             }
+
             return Ok(json);
         }
-
-        private static string? GetPathAndQuery(string? url) => Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri) 
-            ? uri.PathAndQuery 
-            : url;
     }
 }

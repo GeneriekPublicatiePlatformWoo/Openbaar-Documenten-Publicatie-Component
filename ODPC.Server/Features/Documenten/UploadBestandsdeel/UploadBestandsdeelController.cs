@@ -8,8 +8,6 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
     [ApiController]
     public class UploadBestandsdeelController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        private readonly IOdrcClientFactory _clientFactory = clientFactory;
-
         [HttpPut("api/v1/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
         public async Task<IActionResult> Put(Guid docUuid, Guid partUuid, CancellationToken token)
         {
@@ -24,7 +22,7 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
 
             content.Add(fileContent, "inhoud", file.FileName);
 
-            var client = _clientFactory.Create("Upload bestandsdeel");
+            using var client = clientFactory.Create("Upload bestandsdeel");
             var response = await client.PutAsync("/api/v1/documenten/" + docUuid + "/bestandsdelen/" + partUuid, content, token);
 
             response.EnsureSuccessStatusCode();

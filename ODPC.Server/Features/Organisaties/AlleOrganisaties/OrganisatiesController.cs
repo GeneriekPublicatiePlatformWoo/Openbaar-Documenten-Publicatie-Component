@@ -13,16 +13,14 @@ namespace ODPC.Features.Organisaties.AlleOrganisaties
             // organisaties ophalen uit het ODRC
             using var client = clientFactory.Create("Organisaties ophalen");
             var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>("/api/v1/organisaties?page=" + page, token);
+
             if (json != null)
             {
-                json.Previous = GetPathAndQuery(json.Previous);
-                json.Next = GetPathAndQuery(json.Next);
+                json.Previous = UrlHelper.GetPathAndQuery(json.Previous);
+                json.Next = UrlHelper.GetPathAndQuery(json.Next);
             }
+
             return Ok(json);
         }
-
-        private static string? GetPathAndQuery(string? url) => Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri)
-            ? uri.PathAndQuery
-            : url;
     }
 }
