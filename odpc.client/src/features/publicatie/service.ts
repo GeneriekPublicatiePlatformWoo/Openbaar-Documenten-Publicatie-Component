@@ -2,8 +2,6 @@ import { ref } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
 import type { Bestandsdeel, MimeType } from "./types";
 
-const API_URL = `/api/v1`;
-
 const mimeTypesMap = ref<Map<string, MimeType> | null>(null);
 
 (async () => {
@@ -12,17 +10,6 @@ const mimeTypesMap = ref<Map<string, MimeType> | null>(null);
   mimeTypesMap.value = new Map(data.value?.map((type) => [type.mimeType, type]));
 })();
 
-const parseUrl = (url: string) => {
-  const regex = /\/documenten\/(?<docUuid>[a-f0-9-]+)\/bestandsdelen\/(?<partUuid>[a-f0-9-]+)/;
-  const match = url.match(regex);
-
-  if (match && match.groups) {
-    return match.groups;
-  } else {
-    throw new Error("Invalid URL format");
-  }
-};
-
 const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
   let blobStart = 0;
 
@@ -30,13 +17,14 @@ const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
 
   try {
     for (const { url, omvang } of bestandsdelen) {
-      const { docUuid, partUuid } = parseUrl(url);
+      const { pathname } = new URL(url);
+
       const body = new FormData();
       const blob = file.slice(blobStart, blobStart + omvang);
 
       body.append("inhoud", blob);
 
-      const { status } = await fetch(`${API_URL}/documenten/${docUuid}/bestandsdelen/${partUuid}`, {
+      const { status } = await fetch(pathname, {
         method: "PUT",
         body
       });
