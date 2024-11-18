@@ -6,6 +6,8 @@ using ODPC.Apis.Odrc;
 namespace ODPC.Features.Documenten.UploadBestandsdeel
 {
     [ApiController]
+    [DisableRequestSizeLimit]
+    // [RequestSizeLimit(52428800)]
     public class UploadBestandsdeelController(IOdrcClientFactory clientFactory) : ControllerBase
     {
         [HttpPut("api/v1/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
