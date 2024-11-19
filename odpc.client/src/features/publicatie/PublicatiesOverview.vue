@@ -90,7 +90,7 @@
           officieleTitel,
           verkorteTitel,
           registratiedatum,
-          status
+          publicatiestatus
         } in pagedResult?.results"
         :key="uuid"
       >
@@ -99,7 +99,7 @@
           :title="officieleTitel"
           class="card-link icon-after pen"
         >
-          <h2 v-if="status === PublicatieStatus.ingetrokken">
+          <h2 v-if="publicatiestatus === PublicatieStatus.ingetrokken">
             <s :aria-describedby="`status-${uuid}`">{{ officieleTitel }}</s>
             <span :id="`status-${uuid}`" role="status">(ingetrokken)</span>
           </h2>

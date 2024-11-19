@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Mvc;
+using ODPC.Apis.Odrc;
+using ODPC.Features.Documenten;
 
 namespace ODPC.Features.Publicaties.PublicatieBijwerken
 {
     [ApiController]
-    public class PublicatieBijwerkenController(IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
+    public class PublicatieBijwerkenController(IOdrcClientFactory clientFactory, IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
     {
-        [HttpPut("api/v1/publicaties/{uuid}")]
-        public async Task<IActionResult> Put(Guid uuid, Publicatie publicatie, CancellationToken token)
+        [HttpPut("api/{apiVersion}/publicaties/{uuid:guid}")]
+        public async Task<IActionResult> Put(string apiVersion, Guid uuid, Publicatie publicatie, CancellationToken token)
         {
             var waardelijstItems = await waardelijstItemsService.GetAsync(token);
 
@@ -22,8 +25,16 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
                 return BadRequest(ModelState);
             }
 
-            PublicatiesMock.Publicaties[uuid] = publicatie;
-            return Ok(publicatie);
+            using var client = clientFactory.Create("Publicatie bijwerken");
+            var url = "/api/" + apiVersion + "/publicaties/" + uuid;
+
+            var response = await client.PutAsJsonAsync(url, publicatie, token);
+
+            response.EnsureSuccessStatusCode();
+
+            var viewModel = await response.Content.ReadFromJsonAsync<Publicatie>(token);
+
+            return Ok(viewModel);
         }
     }
 }

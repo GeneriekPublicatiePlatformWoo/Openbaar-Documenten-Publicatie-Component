@@ -8,8 +8,8 @@
         public string? OfficieleTitel { get; set; }
         public string? VerkorteTitel { get; set; }
         public string? Omschrijving { get; set; }
+        public string? Publicatiestatus { get; set; }
         public DateTime Registratiedatum { get; set; }
-        public string? Status { get; set; }
         public List<string>? InformatieCategorieen { get; set; }
     }
 }

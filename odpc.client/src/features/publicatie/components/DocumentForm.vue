@@ -18,7 +18,7 @@
     >
       <template v-if="doc.uuid">
         <summary>
-          <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken || disabled"
+          <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken"
             ><s :aria-describedby="`status-${index}`">{{ doc.bestandsnaam }}</s>
             <span :id="`status-${index}`" role="status">(ingetrokken)</span></template
           >
