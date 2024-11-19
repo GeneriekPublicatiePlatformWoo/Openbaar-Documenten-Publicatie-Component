@@ -7,7 +7,7 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
     [DisableRequestSizeLimit]
     public class UploadBestandsdeelController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpPut("api/v1/bestandsdelen")]
+        [HttpPut("api/v1/documenten/bestandsdelen")]
         public async Task<IActionResult> Put(CancellationToken token)
         {
             var form = await Request.ReadFormAsync(token);
@@ -17,15 +17,15 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
                 return BadRequest("No file uploaded");
             }
 
-            var url = form["url"].ToString();
+            var endpoint = form["url"].ToString();
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(endpoint))
             {
-                return BadRequest("No url");
+                return BadRequest("No upload url");
             }
             else
             {
-                url = UrlHelper.GetPathAndQuery(url);
+                endpoint = UrlHelper.GetPathAndQuery(endpoint);
             }
 
             var file = form.Files[0];
@@ -35,7 +35,7 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
             content.Add(fileContent, "inhoud", file.FileName);
 
             using var client = clientFactory.Create("Upload bestandsdeel");
-            var response = await client.PutAsync(url, content, token);
+            var response = await client.PutAsync(endpoint, content, token);
 
             response.EnsureSuccessStatusCode();
 

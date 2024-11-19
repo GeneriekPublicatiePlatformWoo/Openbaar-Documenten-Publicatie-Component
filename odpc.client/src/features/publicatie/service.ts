@@ -25,7 +25,7 @@ const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
       body.append("url", url);
       body.append("inhoud", blob);
       
-      const { ok } = await fetch(`${API_URL}/bestandsdelen`, {
+      const { ok } = await fetch(`${API_URL}/documenten/bestandsdelen`, {
         method: "PUT",
         body
       });
