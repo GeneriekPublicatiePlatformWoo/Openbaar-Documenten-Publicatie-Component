@@ -7,12 +7,14 @@ namespace ODPC.Features.Organisaties.AlleOrganisaties
     [ApiController]
     public class OrganisatiesController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpGet("api/v1/organisaties")]
-        public async Task<IActionResult> Get([FromQuery] string? page, CancellationToken token)
+        [HttpGet("api/{apiVersion}/organisaties")]
+        public async Task<IActionResult> Get(string apiVersion, [FromQuery] string? page, CancellationToken token)
         {
             // organisaties ophalen uit het ODRC
             using var client = clientFactory.Create("Organisaties ophalen");
-            var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>("/api/v1/organisaties?page=" + page, token);
+            var url = "/api/" + apiVersion + "/organisaties?page=" + page;
+
+            var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>(url, token);
 
             if (json != null)
             {
