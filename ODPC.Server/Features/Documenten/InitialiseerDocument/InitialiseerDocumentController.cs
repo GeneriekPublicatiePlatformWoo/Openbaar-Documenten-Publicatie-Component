@@ -1,38 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using ODPC.Apis.Odrc;
+using ODPC.Features.Publicaties;
 
 namespace ODPC.Features.Documenten.InitialiseerDocument
 {
     [ApiController]
-    public class InitialiseerDocumentController : ControllerBase
+    public class InitialiseerDocumentController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpPost("api/v1/documenten")]
-        public IActionResult Post(PublicatieDocument document)
+        [HttpPost("api/{apiVersion}/documenten")]
+        public async Task<IActionResult> Post(string apiVersion, PublicatieDocument document, CancellationToken token)
         {
-            document.Uuid = Guid.NewGuid();
-            document.Creatiedatum = DateOnly.FromDateTime(DateTime.Now);
+            using var client = clientFactory.Create("Initialiseer document");
+            var url = "/api/" + apiVersion + "/documenten";
 
-            var halve = document.Bestandsomvang / 2;
-            var firstSize = Math.Ceiling(halve);
-            var secondSize = Math.Floor(halve);
+            var response = await client.PostAsJsonAsync(url, document, token);
 
-            document.Bestandsdelen =
-            [
-                new()
-                {
-                    Omvang = firstSize,
-                    Url = $"/api/v1/documenten/{document.Uuid}/bestandsdelen/1",
-                    Volgnummer = 0
-                },
-                new()
-                {
-                    Omvang = secondSize,
-                    Url = $"/api/v1/documenten/{document.Uuid}/bestandsdelen/2",
-                    Volgnummer = 1
-                }
-            ];
+            response.EnsureSuccessStatusCode();
 
-            DocumentenMock.Documenten[document.Uuid] = document;
-            return Ok(document);
+            var viewModel = await response.Content.ReadFromJsonAsync<PublicatieDocument>(token);
+
+            return Ok(viewModel);
         }
     }
 }

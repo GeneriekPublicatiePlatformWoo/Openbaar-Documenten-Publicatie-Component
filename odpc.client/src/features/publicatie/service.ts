@@ -1,11 +1,11 @@
 import { ref } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
-import type { Bestandsdeel, MimeTypes } from "./types";
+import type { Bestandsdeel, MimeType } from "./types";
 
-const mimeTypesMap = ref<Map<string, MimeTypes> | null>(null);
+const mimeTypesMap = ref<Map<string, MimeType> | null>(null);
 
 (async () => {
-  const { data } = await useFetchApi(() => `/api/v1/formats`).json<MimeTypes[]>();
+  const { data } = await useFetchApi(() => "/api/v1/formats").json<MimeType[]>();
 
   mimeTypesMap.value = new Map(data.value?.map((type) => [type.mimeType, type]));
 })();
@@ -13,16 +13,23 @@ const mimeTypesMap = ref<Map<string, MimeTypes> | null>(null);
 const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
   let blobStart = 0;
 
+  bestandsdelen.sort((a, b) => a.volgnummer - b.volgnummer);
+
   try {
     for (const { url, omvang } of bestandsdelen) {
+      const { pathname, search } = new URL(url);
+
       const body = new FormData();
       const blob = file.slice(blobStart, blobStart + omvang);
-
+      
       body.append("inhoud", blob);
+      
+      const { ok } = await fetch(pathname + search, {
+        method: "PUT",
+        body
+      });
 
-      const { error } = await useFetchApi(url).put(body);
-
-      if (error.value) {
+      if (!ok) {
         throw new Error(`Error uploadDocument: ${url}`);
       }
 

@@ -1,64 +1,25 @@
-import { ref, onMounted, watch, type ComputedRef } from "vue";
+import { ref, onMounted, type ComputedRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
+import { fetchAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
-import { mimeTypesMap, uploadFile } from "../service";
-import { PublicatieStatus, type PublicatieDocument } from "../types";
-
-const API_URL = `/api/v1`;
+import { uploadFile } from "../service";
+import type { PublicatieDocument } from "../types";
 
 export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
-  const getInitialDocument = (): PublicatieDocument => ({
-    publicatie: "",
-    officieleTitel: "",
-    verkorteTitel: "",
-    omschrijving: "",
-    creatiedatum: new Date().toISOString().split("T")[0],
-    bestandsnaam: "",
-    bestandsformaat: "",
-    bestandsomvang: 0,
-    bestandsdelen: [],
-    status: PublicatieStatus.gepubliceerd
-  });
-
   // Documenten
-
+  const files = ref<File[]>([]);
   const documenten = ref<PublicatieDocument[]>([]);
-  const files = ref<File[]>();
 
-  const {
-    get: getDocumenten,
-    data: documentenData,
-    isFetching: loadingDocumenten,
-    error: documentenError
-  } = useFetchApi(() => `${API_URL}/documenten/?publicatie=${pubUUID.value}`, {
-    immediate: false
-  }).json<PublicatieDocument[]>();
+  const loadingDocumenten = ref(false);
+  const documentenError = ref(false);
 
-  watch(documentenData, (value) => (documenten.value = value || documenten.value));
+  const getDocumenten = () => {
+    loadingDocumenten.value = true;
 
-  watch(files, () => addDocumenten());
-
-  const addDocumenten = () => {
-    const docs: PublicatieDocument[] = [];
-
-    try {
-      Array.from(files.value || []).forEach((file) => {
-        const doc = getInitialDocument();
-        const bestandsformaat = mimeTypesMap.value?.get(file.type)?.identifier;
-
-        if (!bestandsformaat) throw new Error();
-
-        doc.officieleTitel = file.name.replace(/\.[^/.]+$/, ""); // file name minus extension as default title
-        doc.bestandsnaam = file.name;
-        doc.bestandsformaat = bestandsformaat;
-        doc.bestandsomvang = file.size;
-        docs.push(doc);
-      });
-    } catch {
-      return;
-    }
-
-    documenten.value = [...docs, ...documenten.value];
+    fetchAllPages<PublicatieDocument>(`/api/v1/documenten/?publicatie=${pubUUID.value}`)
+      .then((results) => (documenten.value = results))
+      .catch(() => (documentenError.value = true))
+      .finally(() => (loadingDocumenten.value = false));
   };
 
   const submitDocumenten = async () => {
@@ -93,7 +54,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   };
 
   // Document
-
   const docUUID = ref<string>();
   const uploadingFile = ref(false);
 
@@ -103,7 +63,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
-  } = useFetchApi(() => `${API_URL}/documenten${docUUID.value ? "/" + docUUID.value : ""}`, {
+  } = useFetchApi(() => `/api/v1/documenten${docUUID.value ? "/" + docUUID.value : ""}`, {
     immediate: false
   }).json<PublicatieDocument>();
 
@@ -128,9 +88,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     }
   };
 
-  const removeDocument = (index: number) => documenten.value.splice(index, 1);
-
-  onMounted(async () => pubUUID.value && (await getDocumenten().execute()));
+  onMounted(() => pubUUID.value && getDocumenten());
 
   return {
     files,
@@ -140,7 +98,6 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     loadingDocument,
     documentError,
     uploadingFile,
-    submitDocumenten,
-    removeDocument
+    submitDocumenten
   };
 };

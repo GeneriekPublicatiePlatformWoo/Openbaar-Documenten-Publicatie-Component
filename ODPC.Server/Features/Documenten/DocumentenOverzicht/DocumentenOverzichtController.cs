@@ -1,19 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Mvc;
+using ODPC.Apis.Odrc;
 
 namespace ODPC.Features.Documenten.DocumentenOverzicht
 {
     [ApiController]
-    public class DocumentenOverzichtController : ControllerBase
+    public class DocumentenOverzichtController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpGet("api/v1/documenten")]
-        public IActionResult Get([FromQuery] Guid publicatie)
+        [HttpGet("api/{apiVersion}/documenten")]
+        public async Task<IActionResult> Get(string apiVersion, [FromQuery] string publicatie, string? page, CancellationToken token)
         {
-            var documenten = DocumentenMock.Documenten.Values
-                .Where(x=> x.Publicatie == publicatie)
-                .OrderBy(x=> x.Creatiedatum)
-                .ToList();
+            // documenten ophalen uit het ODRC
+            using var client = clientFactory.Create("Documenten ophalen");
+            var url = "/api/" + apiVersion + "/documenten?publicatie=" + publicatie + "&page=" + page;
 
-            return Ok(documenten);
+            var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>(url, token);
+
+            return Ok(json);
         }
     }
 }

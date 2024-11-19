@@ -7,15 +7,15 @@ namespace ODPC.Features.Organisaties.MijnOrganisaties
 {
     public class MijnOrganisatiesController(IOdrcClientFactory clientFactory, IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
     {
-        [HttpGet("api/v1/mijn-organisaties")]
-        public async IAsyncEnumerable<JsonObject> Get([EnumeratorCancellation] CancellationToken token)
+        [HttpGet("api/{apiVersion}/mijn-organisaties")]
+        public async IAsyncEnumerable<JsonObject> Get(string apiVersion, [EnumeratorCancellation] CancellationToken token)
         {
             var organisaties = await waardelijstItemsService.GetAsync(token);
 
             if (organisaties.Count == 0) yield break;
 
             using var client = clientFactory.Create("Eigen organisaties ophalen");
-            var url = "api/v1/organisaties";
+            var url = "/api/" + apiVersion + "/organisaties";
 
             // omdat we zelf moeten filteren obv van de waardelijstitems waar de gebruiker toegang toe heeft,
             // kunnen we geen paginering gebruiker. we lopen door alle pagina's van de ODRC
@@ -29,7 +29,8 @@ namespace ODPC.Features.Organisaties.MijnOrganisaties
                         yield return item;
                     }
                 }
-                url = page?.Next;
+
+                url = UrlHelper.GetPathAndQuery(page?.Next);
             }
         }
     }
