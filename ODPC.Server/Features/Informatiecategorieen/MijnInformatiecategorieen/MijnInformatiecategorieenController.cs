@@ -9,21 +9,22 @@ namespace ODPC.Features.Informatiecategorieen.MijnInformatiecategorieen
     [ApiController]
     public class MijnInformatiecategorieenController(IOdrcClientFactory clientFactory, IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
     {
-        [HttpGet("api/v1/mijn-informatiecategorieen")]
-        public async IAsyncEnumerable<JsonObject> Get([EnumeratorCancellation] CancellationToken token)
+        [HttpGet("api/{apiVersion}/mijn-informatiecategorieen")]
+        public async IAsyncEnumerable<JsonObject> Get(string apiVersion, [EnumeratorCancellation] CancellationToken token)
         {
             var categorieen = await waardelijstItemsService.GetAsync(token);
 
             if (categorieen.Count == 0) yield break;
 
             using var client = clientFactory.Create("Eigen informatiecategorieen ophalen");
-            var url = "api/v1/informatiecategorieen";
+            var url = "/api/" + apiVersion + "/informatiecategorieen";
 
             // omdat we zelf moeten filteren obv van de waardelijstitems waar de gebruiker toegang toe heeft,
             // kunnen we geen paginering gebruiker. we lopen door alle pagina's van de ODRC
             while (!string.IsNullOrWhiteSpace(url))
             {
                 var page = await client.GetFromJsonAsync<PagedResponseModel<JsonObject>>(url, token) ?? new() { Results = [] };
+
                 foreach (var item in page.Results)
                 {
                     if (item["uuid"]?.GetValue<string>() is string uuid && categorieen.Contains(uuid))
@@ -31,7 +32,8 @@ namespace ODPC.Features.Informatiecategorieen.MijnInformatiecategorieen
                         yield return item;
                     }
                 }
-                url = page?.Next;
+
+                url = UrlHelper.GetPathAndQuery(page?.Next);
             }
         }
     }

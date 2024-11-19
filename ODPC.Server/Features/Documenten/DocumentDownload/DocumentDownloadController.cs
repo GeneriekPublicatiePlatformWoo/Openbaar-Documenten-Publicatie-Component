@@ -6,11 +6,13 @@ namespace ODPC.Features.Documenten.DocumentDownload
 {
     public class DocumentDownloadController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpGet("api/v1/documenten/{uuid:guid}/download")]
-        public async Task<IActionResult> Get(Guid uuid, CancellationToken token)
+        [HttpGet("api/{apiVersion}/documenten/{uuid:guid}/download")]
+        public async Task<IActionResult> Get(string apiVersion, Guid uuid, CancellationToken token)
         {
             using var client = clientFactory.Create("Document downloaden");
-            var response = await client.GetAsync("/api/v1/documenten/" + uuid + "/download", token);
+            var url = "/api/" + apiVersion + "/documenten/" + uuid + "/download";
+
+            var response = await client.GetAsync(url, token);
 
             response.EnsureSuccessStatusCode();
 

@@ -1,11 +1,9 @@
-import { ref, onMounted, type ComputedRef, watchEffect } from "vue";
+import { ref, onMounted, type ComputedRef } from "vue";
 import { useFetchApi } from "@/api/use-fetch-api";
-import { useAllPages } from "@/composables/use-all-pages";
+import { fetchAllPages } from "@/composables/use-all-pages";
 import toast from "@/stores/toast";
 import { uploadFile } from "../service";
 import type { PublicatieDocument } from "../types";
-
-const API_URL = `/api/v1`;
 
 export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   // Documenten
@@ -16,15 +14,12 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
   const documentenError = ref(false);
 
   const getDocumenten = () => {
-    const { data, loading, error } = useAllPages<PublicatieDocument>(
-      `${API_URL}/documenten/?publicatie=${pubUUID.value}`
-    );
+    loadingDocumenten.value = true;
 
-    watchEffect(() => {
-      documenten.value = data.value || documenten.value;
-      loadingDocumenten.value = loading.value;
-      documentenError.value = error.value;
-    });
+    fetchAllPages<PublicatieDocument>(`/api/v1/documenten/?publicatie=${pubUUID.value}`)
+      .then((results) => (documenten.value = results))
+      .catch(() => (documentenError.value = true))
+      .finally(() => (loadingDocumenten.value = false));
   };
 
   const submitDocumenten = async () => {
@@ -68,7 +63,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     data: documentData,
     isFetching: loadingDocument,
     error: documentError
-  } = useFetchApi(() => `${API_URL}/documenten${docUUID.value ? "/" + docUUID.value : ""}`, {
+  } = useFetchApi(() => `/api/v1/documenten${docUUID.value ? "/" + docUUID.value : ""}`, {
     immediate: false
   }).json<PublicatieDocument>();
 

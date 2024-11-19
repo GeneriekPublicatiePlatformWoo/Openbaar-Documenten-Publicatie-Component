@@ -1,7 +1,7 @@
-﻿using System.Net.Http;
-using System.Reflection.Metadata;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using ODPC.Apis.Odrc;
+using ODPC.Features.Publicaties;
 
 namespace ODPC.Features.Documenten.UploadBestandsdeel
 {
@@ -9,8 +9,8 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
     [DisableRequestSizeLimit]
     public class UploadBestandsdeelController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpPut("api/v1/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
-        public async Task<IActionResult> Put(Guid docUuid, Guid partUuid, CancellationToken token)
+        [HttpPut("api/{apiVersion}/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
+        public async Task<IActionResult> Put(string apiVersion, Guid docUuid, Guid partUuid, CancellationToken token)
         {
             var form = await Request.ReadFormAsync(token);
 
@@ -26,7 +26,9 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
             content.Add(fileContent, "inhoud", file.FileName);
 
             using var client = clientFactory.Create("Upload bestandsdeel");
-            var response = await client.PutAsync("/api/v1/documenten/" + docUuid + "/bestandsdelen/" + partUuid, content, token);
+            var url = "/api/" + apiVersion + "/documenten/" + docUuid + "/bestandsdelen/" + partUuid;
+
+            var response = await client.PutAsync(url, content, token);
 
             response.EnsureSuccessStatusCode();
 

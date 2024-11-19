@@ -6,11 +6,13 @@ namespace ODPC.Features.Documenten.DocumentBijwerken
     [ApiController]
     public class DocumentBijwerkenController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpPut("api/v1/documenten/{uuid:guid}")]
-        public async Task<IActionResult> Put(Guid uuid, PublicatieDocument document, CancellationToken token)
+        [HttpPut("api/{apiVersion}/documenten/{uuid:guid}")]
+        public async Task<IActionResult> Put(string apiVersion, Guid uuid, PublicatieDocument document, CancellationToken token)
         {
             using var client = clientFactory.Create("Document bijwerken");
-            var response = await client.PutAsJsonAsync("/api/v1/documenten/" + uuid, document, token);
+            var url = "/api/" + apiVersion + "/documenten/" + uuid;
+
+            var response = await client.PutAsJsonAsync(url, document, token);
 
             response.EnsureSuccessStatusCode();
 
