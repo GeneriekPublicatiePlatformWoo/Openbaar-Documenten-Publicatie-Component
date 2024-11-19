@@ -16,12 +16,6 @@ namespace ODPC.Features.Informatiecategorieen.AlleInformatiecategorieen
 
             var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>(url, token);
 
-            if (json != null)
-            {
-                json.Previous = UrlHelper.GetPathAndQuery(json.Previous);
-                json.Next = UrlHelper.GetPathAndQuery(json.Next);
-            }
-
             return Ok(json);
         }
     }

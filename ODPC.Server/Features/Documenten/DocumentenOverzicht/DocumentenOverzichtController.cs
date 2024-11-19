@@ -15,12 +15,6 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
             var url = "/api/" + apiVersion + "/documenten?publicatie=" + publicatie + "&page=" + page;
 
             var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>(url, token);
-            
-            if (json != null)
-            {
-                json.Previous = UrlHelper.GetPathAndQuery(json.Previous);
-                json.Next = UrlHelper.GetPathAndQuery(json.Next);
-            }
 
             return Ok(json);
         }
