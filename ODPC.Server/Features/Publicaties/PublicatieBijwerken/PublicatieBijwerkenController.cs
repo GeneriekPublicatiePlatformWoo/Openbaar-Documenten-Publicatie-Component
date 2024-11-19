@@ -1,7 +1,5 @@
-﻿using System.Reflection.Metadata;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
-using ODPC.Features.Documenten;
 
 namespace ODPC.Features.Publicaties.PublicatieBijwerken
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
 
 namespace ODPC.Features.Publicaties.PublicatieRegistreren

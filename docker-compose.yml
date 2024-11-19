@@ -24,7 +24,7 @@ services:
       - postgres-db:/var/lib/postgresql/data
       - ./docker/odrc/db/init-db.sql:/docker-entrypoint-initdb.d/init_db.sql
       - ./docker/open-zaak/db/0001-init-open-zaak-db.sql:/docker-entrypoint-initdb.d/0001-init-open-zaak-db.sql
- #     - ./docker/open-zaak/db/0002-extensions.sh:/docker-entrypoint-initdb.d/0002-extensions.sh
+      - ./docker/open-zaak/db/0002-extensions.sh:/docker-entrypoint-initdb.d/0002-extensions.sh
     environment:
       - POSTGRES_PASSWORD=localdev
     restart: always
