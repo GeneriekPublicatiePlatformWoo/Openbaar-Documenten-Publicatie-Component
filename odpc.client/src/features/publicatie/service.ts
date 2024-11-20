@@ -26,7 +26,8 @@ const uploadFile = async (file: File, bestandsdelen: Bestandsdeel[]) => {
       
       const { ok } = await fetch(pathname + search, {
         method: "PUT",
-        body
+        body,
+        headers: { "is-api": "true" }
       });
 
       if (!ok) {
