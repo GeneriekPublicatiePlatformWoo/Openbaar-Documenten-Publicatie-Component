@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using ODPC.Apis.Odrc;
-using ODPC.Features.Publicaties;
 
 namespace ODPC.Features.Documenten.UploadBestandsdeel
 {
     [ApiController]
     [DisableRequestSizeLimit]
+    [RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
     public class UploadBestandsdeelController(IOdrcClientFactory clientFactory) : ControllerBase
     {
         [HttpPut("api/{apiVersion}/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
