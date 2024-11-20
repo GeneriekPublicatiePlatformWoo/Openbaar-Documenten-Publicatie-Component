@@ -8,7 +8,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
     public class DocumentenOverzichtController(IOdrcClientFactory clientFactory) : ControllerBase
     {
         [HttpGet("api/{apiVersion}/documenten")]
-        public async Task<IActionResult> Get(string apiVersion, [FromQuery] string publicatie, string? page, CancellationToken token)
+        public async Task<IActionResult> Get(string apiVersion, CancellationToken token, [FromQuery] string publicatie, string? page = "1")
         {
             // documenten ophalen uit het ODRC
             using var client = clientFactory.Create("Documenten ophalen");

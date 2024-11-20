@@ -8,7 +8,7 @@ namespace ODPC.Features.Organisaties.AlleOrganisaties
     public class OrganisatiesController(IOdrcClientFactory clientFactory) : ControllerBase
     {
         [HttpGet("api/{apiVersion}/organisaties")]
-        public async Task<IActionResult> Get(string apiVersion, [FromQuery] string? page, CancellationToken token)
+        public async Task<IActionResult> Get(string apiVersion, CancellationToken token, [FromQuery] string? page = "1")
         {
             // organisaties ophalen uit het ODRC
             using var client = clientFactory.Create("Organisaties ophalen");

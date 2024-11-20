@@ -23,7 +23,10 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
 
   const initQueryParams = () => {
     queryParams.value = paramKeys.reduce(
-      (result, key) => ({ ...result, [key]: urlSearchParams[key] || "" }),
+      (result, key) => ({
+        ...result,
+        [key]: urlSearchParams[key] ? decodeURIComponent(urlSearchParams[key] as string) : ""
+      }),
       {} as QueryParams
     );
   };
@@ -45,7 +48,9 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
       new URLSearchParams(
         paramKeys.reduce(
           (result, key) =>
-            queryParams.value[key] ? { ...result, [key]: queryParams.value[key] } : result,
+            queryParams.value[key]
+              ? { ...result, [key]: encodeURIComponent(queryParams.value[key] as string) }
+              : result,
           {}
         )
       )

@@ -8,7 +8,7 @@ namespace ODPC.Features.Informatiecategorieen.AlleInformatiecategorieen
     public class InformatiecategorieenController(IOdrcClientFactory clientFactory) : ControllerBase
     {
         [HttpGet("api/{apiVersion}/informatiecategorieen")]
-        public async Task<IActionResult> Get(string apiVersion, [FromQuery] string? page, CancellationToken token)
+        public async Task<IActionResult> Get(string apiVersion, CancellationToken token, [FromQuery] string? page = "1")
         {
             // infocategorien ophalen uit het ODRC
             using var client = clientFactory.Create("Informatiecategorieen ophalen");

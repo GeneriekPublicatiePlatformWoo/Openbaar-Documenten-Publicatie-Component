@@ -178,7 +178,7 @@ const submit = async () => {
     await submitPublicatie();
 
     // As soon as a publicatie gets status 'ingetrokken' in ODRC, the associated documents will
-    // be automatically set to 'ingetrokken' as well and then can no longer be updated from ODPC
+    // be automatically set to 'ingetrokken' as well and can no longer be updated from ODPC
     publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken &&
       (await submitDocumenten());
   } catch {
