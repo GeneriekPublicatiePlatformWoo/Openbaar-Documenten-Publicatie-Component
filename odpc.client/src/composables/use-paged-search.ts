@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 import { useUrlSearchParams } from "@vueuse/core";
 import { useFetchApi, type PagedResult } from "@/api";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 10;
 
 export const usePagedSearch = <T, QueryParams extends { page: string }>(
   endpoint: string,
@@ -31,13 +31,9 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
     );
   };
 
-  const onNext = () => {
-    queryParams.value.page = `${+queryParams.value.page + 1}`;
-  };
+  const onNext = () => (queryParams.value.page = `${+queryParams.value.page + 1}`);
 
-  const onPrev = () => {
-    queryParams.value.page = `${+queryParams.value.page - 1}`;
-  };
+  const onPrev = () => (queryParams.value.page = `${+queryParams.value.page - 1}`);
 
   const pageCount = computed(() =>
     pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0

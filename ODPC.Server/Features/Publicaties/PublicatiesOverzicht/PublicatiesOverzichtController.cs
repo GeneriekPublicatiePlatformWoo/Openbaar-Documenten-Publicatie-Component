@@ -29,7 +29,8 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
                 { "sorteer", sorteer },
                 { "search", search },
                 { "registratiedatumVanaf", registratiedatumVanaf },
-                { "registratiedatumTot", registratiedatumTot }
+                { "registratiedatumTot", registratiedatumTot },
+                { "pageSize", "10" }
             };
 
             var queryString = UrlHelper.BuildQueryString(parameters);
