@@ -9,6 +9,9 @@ namespace ODPC.Features.Documenten.DocumentDownload
         public async Task<IActionResult> Get(string apiVersion, Guid uuid, CancellationToken token)
         {
             using var client = clientFactory.Create("Document downloaden");
+
+            // TODO: check eigenaar
+
             var url = "/api/" + apiVersion + "/documenten/" + uuid + "/download";
 
             var response = await client.GetAsync(url, token);

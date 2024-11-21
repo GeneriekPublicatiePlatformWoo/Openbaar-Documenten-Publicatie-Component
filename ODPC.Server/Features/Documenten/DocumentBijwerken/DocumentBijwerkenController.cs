@@ -10,6 +10,9 @@ namespace ODPC.Features.Documenten.DocumentBijwerken
         public async Task<IActionResult> Put(string apiVersion, Guid uuid, PublicatieDocument document, CancellationToken token)
         {
             using var client = clientFactory.Create("Document bijwerken");
+
+            // TODO: check eigenaar
+
             var url = "/api/" + apiVersion + "/documenten/" + uuid;
 
             var response = await client.PutAsJsonAsync(url, document, token);
