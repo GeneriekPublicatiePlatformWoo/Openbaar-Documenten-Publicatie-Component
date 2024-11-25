@@ -8,8 +8,8 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
     [RequestFormLimits(MultipartBodyLengthLimit = long.MaxValue)]
     public class UploadBestandsdeelController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpPut("api/{apiVersion}/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
-        public async Task<IActionResult> Put(string apiVersion, Guid docUuid, Guid partUuid, CancellationToken token)
+        [HttpPut("api/{version}/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}")]
+        public async Task<IActionResult> Put(string version, Guid docUuid, Guid partUuid, CancellationToken token)
         {
             var form = await Request.ReadFormAsync(token);
 
@@ -25,7 +25,7 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
             content.Add(fileContent, "inhoud", file.FileName);
 
             using var client = clientFactory.Create("Upload bestandsdeel");
-            var url = "/api/" + apiVersion + "/documenten/" + docUuid + "/bestandsdelen/" + partUuid;
+            var url = $"/api/{version}/documenten/{docUuid}/bestandsdelen/{partUuid}";
 
             var response = await client.PutAsync(url, content, token);
 

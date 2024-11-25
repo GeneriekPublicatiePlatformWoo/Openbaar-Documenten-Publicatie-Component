@@ -6,8 +6,8 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
     [ApiController]
     public class PublicatieRegistrerenController(IOdrcClientFactory clientFactory, IGebruikerWaardelijstItemsService waardelijstItemsService) : ControllerBase
     {
-        [HttpPost("api/{apiVersion}/publicaties")]
-        public async Task<IActionResult> Post(string apiVersion, Publicatie publicatie, CancellationToken token)
+        [HttpPost("api/{version}/publicaties")]
+        public async Task<IActionResult> Post(string version, Publicatie publicatie, CancellationToken token)
         {
             var waardelijstItems = await waardelijstItemsService.GetAsync(token);
 
@@ -24,7 +24,7 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
             }
 
             using var client = clientFactory.Create("Publicatie registreren");
-            var url = "/api/" + apiVersion + "/publicaties";
+            var url = $"/api/{version}/publicaties";
 
             var response = await client.PostAsJsonAsync(url, publicatie, token);
 

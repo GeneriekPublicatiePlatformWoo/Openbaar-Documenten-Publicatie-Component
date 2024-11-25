@@ -48,7 +48,14 @@ const {
   loading: informatiecategorieenLoading
 } = useAllPages<WaardelijstItem>("/api/v1/informatiecategorieen");
 
-const error = computed(() => organisatiesError.value || informatiecategorieenError.value);
+const error = computed(
+  () =>
+    organisatiesError.value ||
+    !organisaties.value.length ||
+    informatiecategorieenError.value ||
+    !informatiecategorieen.value.length
+);
+
 const loading = computed(() => informatiecategorieenLoading.value || organisatiesLoading.value);
 
 const loaded = computed(

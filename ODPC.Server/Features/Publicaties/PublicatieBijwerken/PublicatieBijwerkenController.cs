@@ -10,8 +10,8 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
         IGebruikerWaardelijstItemsService waardelijstItemsService,
         OdpcUser user) : ControllerBase
     {
-        [HttpPut("api/{apiVersion}/publicaties/{uuid:guid}")]
-        public async Task<IActionResult> Put(string apiVersion, Guid uuid, Publicatie publicatie, CancellationToken token)
+        [HttpPut("api/{version}/publicaties/{uuid:guid}")]
+        public async Task<IActionResult> Put(string version, Guid uuid, Publicatie publicatie, CancellationToken token)
         {
             var waardelijstItems = await waardelijstItemsService.GetAsync(token);
 
@@ -29,22 +29,29 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
 
             using var client = clientFactory.Create("Publicatie bijwerken");
 
+            var url = $"/api/{version}/publicaties/{uuid}";
+
             // publicatie ophalen
-            var url = "/api/" + apiVersion + "/publicaties/" + uuid;
+            using var getResponse = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
 
-            var publicatieJson = await client.GetFromJsonAsync<Publicatie>(url, token);
+            if (!getResponse.IsSuccessStatusCode)
+            {
+                return StatusCode(502);
+            }
 
-            if (publicatieJson == null || publicatieJson.Eigenaar?.identifier != user.Id)
+            var json = await getResponse.Content.ReadFromJsonAsync<Publicatie>(token);
+
+            if (json?.Eigenaar?.identifier != user.Id)
             {
                 return NotFound();
             }
 
             // publicatie bijwerken
-            var response = await client.PutAsJsonAsync(url, publicatie, token);
+            var putResponse = await client.PutAsJsonAsync(url, publicatie, token);
 
-            response.EnsureSuccessStatusCode();
+            putResponse.EnsureSuccessStatusCode();
 
-            var viewModel = await response.Content.ReadFromJsonAsync<Publicatie>(token);
+            var viewModel = await putResponse.Content.ReadFromJsonAsync<Publicatie>(token);
 
             return Ok(viewModel);
         }

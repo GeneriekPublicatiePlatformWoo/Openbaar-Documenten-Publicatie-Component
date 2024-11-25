@@ -6,11 +6,11 @@ namespace ODPC.Features.Documenten.InitialiseerDocument
     [ApiController]
     public class InitialiseerDocumentController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpPost("api/{apiVersion}/documenten")]
-        public async Task<IActionResult> Post(string apiVersion, PublicatieDocument document, CancellationToken token)
+        [HttpPost("api/{version}/documenten")]
+        public async Task<IActionResult> Post(string version, PublicatieDocument document, CancellationToken token)
         {
             using var client = clientFactory.Create("Initialiseer document");
-            var url = "/api/" + apiVersion + "/documenten";
+            var url = $"/api/{version}/documenten";
 
             var response = await client.PostAsJsonAsync(url, document, token);
 

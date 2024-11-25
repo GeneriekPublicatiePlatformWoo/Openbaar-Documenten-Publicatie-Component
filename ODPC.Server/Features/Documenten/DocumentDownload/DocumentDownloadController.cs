@@ -1,28 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
+using ODPC.Authentication;
 
 namespace ODPC.Features.Documenten.DocumentDownload
 {
-    public class DocumentDownloadController(IOdrcClientFactory clientFactory) : ControllerBase
+    public class DocumentDownloadController(IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
     {
-        [HttpGet("api/{apiVersion}/documenten/{uuid:guid}/download")]
-        public async Task<IActionResult> Get(string apiVersion, Guid uuid, CancellationToken token)
+        [HttpGet("api/{version}/documenten/{uuid:guid}/download")]
+        public async Task<IActionResult> Get(string version, Guid uuid, CancellationToken token)
         {
-            using var client = clientFactory.Create("Document downloaden");
+            using var client = clientFactory.Create("Document ophalen");
 
-            // TODO: check eigenaar
+            var url = $"/api/{version}/documenten/{uuid}";
 
-            var url = "/api/" + apiVersion + "/documenten/" + uuid + "/download";
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
 
-            var response = await client.GetAsync(url, token);
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode(502);
+            }
 
-            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadFromJsonAsync<PublicatieDocument>(token);
 
-            var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/octet-stream";
-            var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('"') ?? "woo_document";
-            var fileStream = await response.Content.ReadAsStreamAsync(token);
+            if (json?.Eigenaar?.identifier != user.Id)
+            {
+                return NotFound();
+            }
 
-            return File(fileStream, contentType, fileName);
+            return new DocumentDownloadResult(Request.Path, "Document downloaden");
         }
     }
 }

@@ -9,9 +9,9 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
     [ApiController]
     public class PublicatiesOverzichtController(IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
     {
-        [HttpGet("api/{apiVersion}/publicaties")]
+        [HttpGet("api/{version}/publicaties")]
         public async Task<IActionResult> Get(
-            string apiVersion,
+            string version,
             CancellationToken token,
             [FromQuery] string? page = "1",
             [FromQuery] string? sorteer = "-registratiedatum",
@@ -33,11 +33,16 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
                 { "pageSize", "10" }
             };
 
-            var queryString = UrlHelper.BuildQueryString(parameters);
+            var url = $"/api/{version}/publicaties?{UrlHelper.BuildQueryString(parameters)}";
 
-            var url = $"/api/{apiVersion}/publicaties?{queryString}";
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
 
-            var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>(url, token);
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode(502);
+            }
+
+            var json = await response.Content.ReadFromJsonAsync<PagedResponseModel<JsonNode>>(token);
 
             return Ok(json);
         }

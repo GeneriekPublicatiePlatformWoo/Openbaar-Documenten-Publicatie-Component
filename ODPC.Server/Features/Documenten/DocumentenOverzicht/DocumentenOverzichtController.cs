@@ -1,18 +1,17 @@
-﻿using System;
+﻿using System.Net;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
 using ODPC.Authentication;
-using ODPC.Features.Publicaties;
 
 namespace ODPC.Features.Documenten.DocumentenOverzicht
 {
     [ApiController]
     public class DocumentenOverzichtController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpGet("api/{apiVersion}/documenten")]
+        [HttpGet("api/{version}/documenten")]
         public async Task<IActionResult> Get(
-            string apiVersion,
+            string version,
             [FromQuery] string publicatie,
             OdpcUser user,
             CancellationToken token,
@@ -21,27 +20,18 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
             // documenten ophalen uit het ODRC
             using var client = clientFactory.Create("Documenten ophalen");
 
-            var noResult = new PagedResponseModel<JsonNode>
-            {
-                Results = new List<JsonNode>(),
-                Count = 0,
-                Next = null,
-                Previous = null
-            };
+            var url = $"/api/{version}/documenten?publicatie={publicatie}&eigenaar={WebUtility.UrlEncode(user.Id)}&page={page}";
 
-            // TODO: hiervoor komt filter op eigenaar in ODRC
-            var publicatieUrl = "/api/" + apiVersion + "/publicaties/" + publicatie;
-            var publicatieJson = await client.GetFromJsonAsync<Publicatie>(publicatieUrl, token);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
 
-            if (publicatieJson == null || publicatieJson.Eigenaar?.identifier != user.Id)
+            if (!response.IsSuccessStatusCode)
             {
-                return Ok(noResult);
+                return StatusCode(502);
             }
 
-            var documentenUrl = "/api/" + apiVersion + "/documenten?publicatie=" + publicatie + "&page=" + page;
-            var documentenJson = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>(documentenUrl, token);
+            var json = await response.Content.ReadFromJsonAsync<PagedResponseModel<JsonNode>>(token);
 
-            return documentenJson != null ? Ok(documentenJson) : Ok(noResult);
+            return Ok(json);
         }
     }
 }

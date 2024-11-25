@@ -1,25 +1,40 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ODPC.Apis.Odrc;
+using ODPC.Authentication;
 
 namespace ODPC.Features.Documenten.DocumentBijwerken
 {
     [ApiController]
-    public class DocumentBijwerkenController(IOdrcClientFactory clientFactory) : ControllerBase
+    public class DocumentBijwerkenController(IOdrcClientFactory clientFactory, OdpcUser user) : ControllerBase
     {
-        [HttpPut("api/{apiVersion}/documenten/{uuid:guid}")]
-        public async Task<IActionResult> Put(string apiVersion, Guid uuid, PublicatieDocument document, CancellationToken token)
+        [HttpPut("api/{version}/documenten/{uuid:guid}")]
+        public async Task<IActionResult> Put(string version, Guid uuid, PublicatieDocument document, CancellationToken token)
         {
             using var client = clientFactory.Create("Document bijwerken");
 
-            // TODO: check eigenaar
+            var url = $"/api/{version}/documenten/{uuid}";
 
-            var url = "/api/" + apiVersion + "/documenten/" + uuid;
+            // document ophalen
+            using var getResponse = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
 
-            var response = await client.PutAsJsonAsync(url, document, token);
+            if (!getResponse.IsSuccessStatusCode)
+            {
+                return StatusCode(502);
+            }
 
-            response.EnsureSuccessStatusCode();
+            var json = await getResponse.Content.ReadFromJsonAsync<PublicatieDocument>(token);
 
-            var viewModel = await response.Content.ReadFromJsonAsync<PublicatieDocument>(token);
+            if (json?.Eigenaar?.identifier != user.Id)
+            {
+                return NotFound();
+            }
+
+            // document bijwerken
+            var putResponse = await client.PutAsJsonAsync(url, document, token);
+
+            putResponse.EnsureSuccessStatusCode();
+
+            var viewModel = await putResponse.Content.ReadFromJsonAsync<PublicatieDocument>(token);
 
             return Ok(viewModel);
         }
