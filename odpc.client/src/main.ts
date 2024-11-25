@@ -1,4 +1,4 @@
-import "./assets/simple.css";
+import "./assets/base.css";
 import "./assets/design-tokens.scss";
 import "./assets/main.scss";
 

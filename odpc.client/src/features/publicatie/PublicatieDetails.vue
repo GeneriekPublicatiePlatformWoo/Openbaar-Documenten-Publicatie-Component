@@ -113,7 +113,7 @@ const { publicatie, publicatieError, loadingPublicatie, submitPublicatie } = use
 // Store initial publicatie status in seperate ref to manage UI-state
 const initialStatus = ref<keyof typeof PublicatieStatus>(PublicatieStatus.gepubliceerd);
 
-watch(loadingPublicatie, () => (initialStatus.value = publicatie.value.status));
+watch(loadingPublicatie, () => (initialStatus.value = publicatie.value.publicatiestatus));
 
 // Documenten
 const {
@@ -163,12 +163,12 @@ const navigate = () => {
 };
 
 const submit = async () => {
-  if (publicatie.value.status === PublicatieStatus.ingetrokken) {
+  if (publicatie.value.publicatiestatus === PublicatieStatus.ingetrokken) {
     const { isCanceled } = await dialog.reveal();
 
     if (isCanceled) {
       // Reset publicatie status in model to 'gepubliceerd' when user doesn't want to retract
-      publicatie.value.status = PublicatieStatus.gepubliceerd;
+      publicatie.value.publicatiestatus = PublicatieStatus.gepubliceerd;
 
       return;
     }
@@ -177,7 +177,10 @@ const submit = async () => {
   try {
     await submitPublicatie();
 
-    await submitDocumenten();
+    // As soon as a publicatie gets status 'ingetrokken' in ODRC, the associated documents will
+    // be automatically set to 'ingetrokken' as well and can no longer be updated from ODPC
+    publicatie.value.publicatiestatus !== PublicatieStatus.ingetrokken &&
+      (await submitDocumenten());
   } catch {
     return;
   }

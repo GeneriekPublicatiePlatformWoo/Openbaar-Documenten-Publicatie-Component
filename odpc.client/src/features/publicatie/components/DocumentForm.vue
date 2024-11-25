@@ -18,7 +18,7 @@
     >
       <template v-if="doc.uuid">
         <summary>
-          <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken || disabled"
+          <template v-if="doc.publicatiestatus === PublicatieStatus.ingetrokken"
             ><s :aria-describedby="`status-${index}`">{{ doc.bestandsnaam }}</s>
             <span :id="`status-${index}`" role="status">(ingetrokken)</span></template
           >
@@ -147,14 +147,15 @@ const filesSelected = (event: Event | DragEvent) => {
       : [...((event.target as HTMLInputElement).files || [])];
 
   const unknownType = selectedFiles.some((file) => !mimeTypesMap.value?.get(file.type));
+  const emptyFile = selectedFiles.some((file) => !file.size);
 
-  if (!selectedFiles.length || unknownType) {
+  if (!selectedFiles.length || unknownType || emptyFile) {
     event instanceof DragEvent
       ? event.dataTransfer?.clearData()
       : ((event.target as HTMLInputElement).value = "");
 
     toast.add({
-      text: "Onbekend bestandsformaat.",
+      text: "Onbekend formaat of leeg bestand.",
       type: "error"
     });
 

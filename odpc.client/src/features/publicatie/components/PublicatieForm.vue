@@ -5,12 +5,20 @@
     <template v-if="model.uuid">
       <div v-if="!disabled" class="form-group form-group-radio">
         <label>
-          <input type="radio" v-model="model.status" :value="PublicatieStatus.gepubliceerd" />
+          <input
+            type="radio"
+            v-model="model.publicatiestatus"
+            :value="PublicatieStatus.gepubliceerd"
+          />
           Gepubliceerd
         </label>
 
         <label
-          ><input type="radio" v-model="model.status" :value="PublicatieStatus.ingetrokken" />
+          ><input
+            type="radio"
+            v-model="model.publicatiestatus"
+            :value="PublicatieStatus.ingetrokken"
+          />
           Ingetrokken</label
         >
       </div>

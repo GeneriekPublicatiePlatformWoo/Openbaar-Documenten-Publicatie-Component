@@ -3,8 +3,7 @@ import { useRouter } from "vue-router";
 import { useUrlSearchParams } from "@vueuse/core";
 import { useFetchApi, type PagedResult } from "@/api";
 
-const API_URL = `/api/v1`;
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export const usePagedSearch = <T, QueryParams extends { page: string }>(
   endpoint: string,
@@ -24,18 +23,17 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
 
   const initQueryParams = () => {
     queryParams.value = paramKeys.reduce(
-      (result, key) => ({ ...result, [key]: urlSearchParams[key] || "" }),
+      (result, key) => ({
+        ...result,
+        [key]: urlSearchParams[key] ? decodeURIComponent(urlSearchParams[key] as string) : ""
+      }),
       {} as QueryParams
     );
   };
 
-  const onNext = () => {
-    queryParams.value.page = `${+queryParams.value.page + 1}`;
-  };
+  const onNext = () => (queryParams.value.page = `${+queryParams.value.page + 1}`);
 
-  const onPrev = () => {
-    queryParams.value.page = `${+queryParams.value.page - 1}`;
-  };
+  const onPrev = () => (queryParams.value.page = `${+queryParams.value.page - 1}`);
 
   const pageCount = computed(() =>
     pagedResult.value?.count ? Math.ceil(pagedResult.value.count / PAGE_SIZE) : 0
@@ -46,7 +44,9 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
       new URLSearchParams(
         paramKeys.reduce(
           (result, key) =>
-            queryParams.value[key] ? { ...result, [key]: queryParams.value[key] } : result,
+            queryParams.value[key]
+              ? { ...result, [key]: encodeURIComponent(queryParams.value[key] as string) }
+              : result,
           {}
         )
       )
@@ -77,7 +77,7 @@ export const usePagedSearch = <T, QueryParams extends { page: string }>(
   });
 
   const { get, data, isFetching, error } = useFetchApi(
-    () => `${API_URL}/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
+    () => `/api/v1/${endpoint}/${searchParams.value.size ? "?" + searchParams.value : ""}`,
     {
       immediate: false
     }

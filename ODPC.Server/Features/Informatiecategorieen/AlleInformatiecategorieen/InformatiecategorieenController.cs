@@ -7,14 +7,21 @@ namespace ODPC.Features.Informatiecategorieen.AlleInformatiecategorieen
     [ApiController]
     public class InformatiecategorieenController(IOdrcClientFactory clientFactory) : ControllerBase
     {
-        [HttpGet("api/{apiVersion}/informatiecategorieen")]
-        public async Task<IActionResult> Get(string apiVersion, [FromQuery] string? page, CancellationToken token)
+        [HttpGet("api/{version}/informatiecategorieen")]
+        public async Task<IActionResult> Get(string version, CancellationToken token, [FromQuery] string? page = "1")
         {
             // infocategorien ophalen uit het ODRC
             using var client = clientFactory.Create("Informatiecategorieen ophalen");
-            var url = "/api/" + apiVersion + "/informatiecategorieen?page=" + page;
+            var url = $"/api/{version}/informatiecategorieen?page={page}";
 
-            var json = await client.GetFromJsonAsync<PagedResponseModel<JsonNode>>(url, token);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return StatusCode(502);
+            }
+
+            var json = await response.Content.ReadFromJsonAsync<PagedResponseModel<JsonNode>>(token);
 
             return Ok(json);
         }
