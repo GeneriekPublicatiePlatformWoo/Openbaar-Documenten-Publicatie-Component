@@ -10,9 +10,10 @@ namespace ODPC.Features.Documenten.InitialiseerDocument
         public async Task<IActionResult> Post(string version, PublicatieDocument document, CancellationToken token)
         {
             using var client = clientFactory.Create("Initialiseer document");
+
             var url = $"/api/{version}/documenten";
 
-            var response = await client.PostAsJsonAsync(url, document, token);
+            using var response = await client.PostAsJsonAsync(url, document, token);
 
             response.EnsureSuccessStatusCode();
 

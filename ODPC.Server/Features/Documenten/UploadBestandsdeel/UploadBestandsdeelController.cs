@@ -25,9 +25,10 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
             content.Add(fileContent, "inhoud", file.FileName);
 
             using var client = clientFactory.Create("Upload bestandsdeel");
+
             var url = $"/api/{version}/documenten/{docUuid}/bestandsdelen/{partUuid}";
 
-            var response = await client.PutAsync(url, content, token);
+            using var response = await client.PutAsync(url, content, token);
 
             response.EnsureSuccessStatusCode();
 

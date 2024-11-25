@@ -30,7 +30,7 @@ namespace ODPC.Features.Documenten.DocumentBijwerken
             }
 
             // document bijwerken
-            var putResponse = await client.PutAsJsonAsync(url, document, token);
+            using var putResponse = await client.PutAsJsonAsync(url, document, token);
 
             putResponse.EnsureSuccessStatusCode();
 

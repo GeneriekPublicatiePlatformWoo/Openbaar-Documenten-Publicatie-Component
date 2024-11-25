@@ -22,12 +22,7 @@ namespace ODPC.Features.Documenten.DocumentDownload
 
             var json = await response.Content.ReadFromJsonAsync<PublicatieDocument>(token);
 
-            if (json?.Eigenaar?.identifier != user.Id)
-            {
-                return NotFound();
-            }
-
-            return new DocumentDownloadResult(Request.Path, "Document downloaden");
+            return json?.Eigenaar?.identifier != user.Id ? NotFound() : new DocumentDownloadResult(Request.Path, "Document downloaden");
         }
     }
 }

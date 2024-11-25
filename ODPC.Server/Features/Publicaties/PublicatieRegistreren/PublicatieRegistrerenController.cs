@@ -24,9 +24,10 @@ namespace ODPC.Features.Publicaties.PublicatieRegistreren
             }
 
             using var client = clientFactory.Create("Publicatie registreren");
+
             var url = $"/api/{version}/publicaties";
 
-            var response = await client.PostAsJsonAsync(url, publicatie, token);
+            using var response = await client.PostAsJsonAsync(url, publicatie, token);
 
             response.EnsureSuccessStatusCode();
 

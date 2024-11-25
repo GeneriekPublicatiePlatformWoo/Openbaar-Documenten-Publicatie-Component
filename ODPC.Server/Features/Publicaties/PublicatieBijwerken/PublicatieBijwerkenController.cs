@@ -47,7 +47,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
             }
 
             // publicatie bijwerken
-            var putResponse = await client.PutAsJsonAsync(url, publicatie, token);
+            using var putResponse = await client.PutAsJsonAsync(url, publicatie, token);
 
             putResponse.EnsureSuccessStatusCode();
 
