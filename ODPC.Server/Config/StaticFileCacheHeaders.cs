@@ -41,6 +41,6 @@ public static partial class StaticFileCacheHeaders
     }
 
     private static bool HasHash(this string fileName) => s_hashHashRegex.IsMatch(fileName);
-    [GeneratedRegex(@"^[\w]+-[a-zA-Z0-9]{8}\.[\w]+$")]
+    [GeneratedRegex(@"^[\w]+-[a-zA-Z0-9|-|_]{8}\.[\w]+$")]
     private static partial Regex HashRegex();
 }
