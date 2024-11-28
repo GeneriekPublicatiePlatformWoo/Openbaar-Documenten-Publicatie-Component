@@ -32,7 +32,7 @@ namespace ODPC.Features.Publicaties.PublicatieBijwerken
             var url = $"/api/{version}/publicaties/{uuid}";
 
             // publicatie ophalen
-            using var getResponse = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+            using var getResponse = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!getResponse.IsSuccessStatusCode)
             {

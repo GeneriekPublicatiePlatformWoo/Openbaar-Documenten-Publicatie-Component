@@ -14,7 +14,7 @@ namespace ODPC.Features.Informatiecategorieen.AlleInformatiecategorieen
             using var client = clientFactory.Create("Informatiecategorieen ophalen");
             var url = $"/api/{version}/informatiecategorieen?page={page}";
 
-            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!response.IsSuccessStatusCode)
             {

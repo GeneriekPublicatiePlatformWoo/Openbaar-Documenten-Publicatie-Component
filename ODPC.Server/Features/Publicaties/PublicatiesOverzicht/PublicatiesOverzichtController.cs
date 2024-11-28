@@ -35,7 +35,7 @@ namespace ODPC.Features.Publicaties.PublicatiesOverzicht
 
             var url = $"/api/{version}/publicaties?{UrlHelper.BuildQueryString(parameters)}";
 
-            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!response.IsSuccessStatusCode)
             {
