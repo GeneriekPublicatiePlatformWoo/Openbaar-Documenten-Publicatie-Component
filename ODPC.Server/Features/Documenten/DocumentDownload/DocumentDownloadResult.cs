@@ -10,8 +10,13 @@ namespace ODPC.Features.Documenten.DocumentDownload
             var response = context.HttpContext.Response;
             var token = context.HttpContext.RequestAborted;
 
+            var config = context.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
             using var client = context.HttpContext.RequestServices.GetRequiredService<IOdrcClientFactory>().Create(reason);
-            using var httpResponse = await client.GetAsync(path, HttpCompletionOption.ResponseContentRead, token); ;
+            var timeoutInMinutes = int.TryParse(config["DOWNLOAD_TIMEOUT_MINUTES"], out var m)
+                ? m
+                : 10;
+            client.Timeout = TimeSpan.FromMinutes(timeoutInMinutes);
+            using var httpResponse = await client.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, token);
 
             response.StatusCode = (int)httpResponse.StatusCode;
             response.Headers.ContentLength = httpResponse.Content.Headers.ContentLength;
