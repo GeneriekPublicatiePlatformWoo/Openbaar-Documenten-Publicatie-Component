@@ -13,7 +13,7 @@ namespace ODPC.Features.Documenten.DocumentDownload
 
             var url = $"/api/{version}/documenten/{uuid}";
 
-            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!response.IsSuccessStatusCode)
             {

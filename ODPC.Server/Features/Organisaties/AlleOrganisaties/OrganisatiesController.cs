@@ -14,7 +14,7 @@ namespace ODPC.Features.Organisaties.AlleOrganisaties
             using var client = clientFactory.Create("Organisaties ophalen");
             var url = $"/api/{version}/organisaties?page={page}";
 
-            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!response.IsSuccessStatusCode)
             {

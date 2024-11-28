@@ -22,7 +22,7 @@ namespace ODPC.Features.Documenten.DocumentenOverzicht
 
             var url = $"/api/{version}/documenten?publicatie={publicatie}&eigenaar={WebUtility.UrlEncode(user.Id)}&page={page}";
 
-            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+            using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!response.IsSuccessStatusCode)
             {

@@ -15,7 +15,7 @@ namespace ODPC.Features.Documenten.DocumentBijwerken
             var url = $"/api/{version}/documenten/{uuid}";
 
             // document ophalen
-            using var getResponse = await client.GetAsync(url, HttpCompletionOption.ResponseContentRead, token);
+            using var getResponse = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
 
             if (!getResponse.IsSuccessStatusCode)
             {
