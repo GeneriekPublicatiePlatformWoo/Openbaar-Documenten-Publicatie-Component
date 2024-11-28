@@ -3,6 +3,7 @@ using ODPC.Apis.Odrc;
 using ODPC.Authentication;
 using ODPC.Data;
 using ODPC.Features;
+using ODPC.Features.Documenten.UploadBestandsdeel;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -65,6 +66,7 @@ try
 
     app.MapOdpcAuthEndpoints();
     app.MapHealthChecks("/healthz").AllowAnonymous();
+    UploadBestandsdeelEndpoint.Map(app);
     app.MapFallbackToIndexHtml();
 
     await using (var scope = app.Services.CreateAsyncScope())
