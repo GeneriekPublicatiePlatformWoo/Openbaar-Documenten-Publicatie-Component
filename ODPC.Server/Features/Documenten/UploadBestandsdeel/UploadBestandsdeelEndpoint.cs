@@ -18,8 +18,6 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
                 using var content = new StreamContent(request.Body);
                 content.Headers.Add("Content-Type", request.Headers.ContentType.AsEnumerable());
                 content.Headers.ContentLength = request.Headers.ContentLength;
-                content.Headers.Add("Content-Disposition", request.Headers.ContentDisposition.AsEnumerable());
-                content.Headers.Add("Content-Encoding", request.Headers.ContentEncoding.AsEnumerable());
 
                 using var requestMessage = new HttpRequestMessage(HttpMethod.Put, request.Path);
                 requestMessage.Content = content;
