@@ -62,7 +62,7 @@ try
 
     app.UseAuthorization();
 
-    app.MapControllers().RequireAuthorization();
+    app.MapControllers();
 
     app.MapOdpcAuthEndpoints();
     app.MapHealthChecks("/healthz").AllowAnonymous();

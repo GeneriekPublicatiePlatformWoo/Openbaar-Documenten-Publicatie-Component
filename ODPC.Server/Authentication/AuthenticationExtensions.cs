@@ -106,7 +106,8 @@ namespace ODPC.Authentication
                 });
             }
             services.AddAuthorizationBuilder()
-                .AddPolicy(AdminPolicy.Name, policy => policy.RequireRole(authOptions.AdminRole));
+                .AddPolicy(AdminPolicy.Name, policy => policy.RequireRole(authOptions.AdminRole))
+                .AddFallbackPolicy("LoggedIn", policy => policy.RequireAuthenticatedUser());
             services.AddDistributedMemoryCache();
             services.AddOpenIdConnectAccessTokenManagement();
         }

@@ -10,7 +10,7 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
             async (HttpRequest request, IOdrcClientFactory clientFactory, IConfiguration config, CancellationToken token) =>
             {
                 using var client = clientFactory.Create("Upload bestandsdeel");
-                var timeoutInMinutes = int.TryParse(config["ODRC_UPLOAD_TIMEOUT_MINUTES"], out var m)
+                var timeoutInMinutes = int.TryParse(config["UPLOAD_TIMEOUT_MINUTES"], out var m)
                     ? m
                     : 10;
                 client.Timeout = TimeSpan.FromMinutes(timeoutInMinutes);
