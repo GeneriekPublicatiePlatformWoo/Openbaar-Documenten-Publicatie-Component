@@ -91,11 +91,11 @@
     "pk": 2,
     "fields": {
         "label": "Woo Publications (docker)",
-        "oas": "http://host.docker.internal:8000/catalogi/api/v1/",
+        "oas": "http://odrc.proxy/catalogi/api/v1/",
         "oas_file": "",
         "uuid": "120d62ff-5f95-44ee-8439-19c162a020c1",
         "api_type": "orc",
-        "api_root": "http://host.docker.internal:8000/catalogi/api/v1/",
+        "api_root": "http://odrc.proxy/catalogi/api/v1/",
         "client_id": "",
         "secret": "",
         "auth_type": "no_auth",
