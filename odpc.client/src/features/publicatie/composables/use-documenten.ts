@@ -12,6 +12,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
 
   const loadingDocumenten = ref(false);
   const documentenError = ref(false);
+  const progress = ref(0);
 
   const getDocumenten = () => {
     loadingDocumenten.value = true;
@@ -72,7 +73,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
       uploadingFile.value = true;
 
       try {
-        await uploadFile(files.value[index], documentData.value.bestandsdelen);
+        await uploadFile(files.value[index], documentData.value.bestandsdelen, progress);
       } catch {
         toast.add({
           text: "Het document kon niet worden geupload, probeer het nogmaals...",
@@ -98,6 +99,7 @@ export const useDocumenten = (pubUUID: ComputedRef<string | undefined>) => {
     loadingDocument,
     documentError,
     uploadingFile,
-    submitDocumenten
+    submitDocumenten,
+    progress
   };
 };

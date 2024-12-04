@@ -7,7 +7,7 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
     {
         public static void Map(IEndpointRouteBuilder builder) => builder.MapPut(
             "api/{version}/documenten/{docUuid:guid}/bestandsdelen/{partUuid:guid}",
-            async (HttpRequest request, IOdrcClientFactory clientFactory, IConfiguration config, CancellationToken token) =>
+            async (HttpRequest request, IOdrcClientFactory clientFactory, IConfiguration config, ILogger<UploadBestandsdeelEndpoint> logger, CancellationToken token) =>
             {
                 using var client = clientFactory.Create("Upload bestandsdeel");
                 var timeoutInMinutes = int.TryParse(config["UPLOAD_TIMEOUT_MINUTES"], out var m)
@@ -20,9 +20,14 @@ namespace ODPC.Features.Documenten.UploadBestandsdeel
                 content.Headers.ContentLength = request.Headers.ContentLength;
 
                 using var requestMessage = new HttpRequestMessage(HttpMethod.Put, request.Path);
+                requestMessage.Headers.Add("X-Acel-Buffering", "no");
                 requestMessage.Content = content;
                 using var response = await client.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, token);
-
+                if (!response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    logger.LogError("error in response: {body}" + json);
+                }
                 response.EnsureSuccessStatusCode();
                 return Results.NoContent();
             })

@@ -20,7 +20,12 @@ COPY ["odpc.client/nuget.config", "odpc.client/"]
 COPY ["ODPC.Server/ODPC.csproj", "ODPC.Server/"]
 COPY ["odpc.client/odpc.client.esproj", "odpc.client/"]
 RUN dotnet restore "./ODPC.Server/ODPC.csproj"
-COPY . .
+COPY ["odpc.client/package*.json", "odpc.client/"]
+WORKDIR "/src/odpc.client"
+RUN npm install
+WORKDIR /src
+COPY odpc.client/ odpc.client/
+COPY ODPC.Server/ ODPC.Server/
 WORKDIR "/src/ODPC.Server"
 RUN dotnet build "./ODPC.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

@@ -18,6 +18,7 @@ namespace ODPC.Features.Organisaties.AlleOrganisaties
 
             if (!response.IsSuccessStatusCode)
             {
+                var error = await response.Content.ReadAsStringAsync();
                 return StatusCode(502);
             }
 

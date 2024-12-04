@@ -1,5 +1,7 @@
 <template>
-  <simple-spinner v-show="loading"></simple-spinner>
+  <simple-spinner v-show="loading && !progress"></simple-spinner>
+
+  <div v-if="loading && progress" style="font-size: 4rem">{{ progress }}%</div>
 
   <form v-if="!loading" @submit.prevent="submit" v-form-invalid-handler>
     <section v-if="!forbidden">
@@ -124,7 +126,8 @@ const {
   loadingDocument,
   documentError,
   uploadingFile,
-  submitDocumenten
+  submitDocumenten,
+  progress
 } =
   // Get associated docs by uuid prop when existing pub, so no need to wait for pub fetch.
   // Publicatie.uuid is used when new pub and associated docs: docs submit waits for pub submit/publicatie.uuid.

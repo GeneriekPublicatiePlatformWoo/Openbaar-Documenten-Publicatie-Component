@@ -7,7 +7,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=localdev
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-      - ODRC_BASE_URL=http://odrc.proxy/
+      - ODRC_BASE_URL=http://host.docker.internal:8000/
       - ODRC_API_KEY=insecure-ea1a8d297e3b2d3313b8a30b18959c3
       - OIDC_ADMIN_ROLE=odpc-admin
     image: ${DOCKER_REGISTRY-}odpc
@@ -18,7 +18,7 @@ services:
       - "62230:8080"
     depends_on:
       - postgres-db
-      - odrc.proxy
+      # - odrc.local
   postgres-db:
     image: postgis/postgis:${PG_VERSION:-16-master}
     volumes:
@@ -38,7 +38,7 @@ services:
       - redis-data:/data
 
   openzaak-web.local:
-    image: openzaak/open-zaak:${OPENZAAK_VERSION:-1.14.0}
+    image: openzaak/open-zaak:${OPENZAAK_VERSION:-latest}
     environment: &openzaak_web_env
       - DJANGO_SETTINGS_MODULE=openzaak.conf.patched_settings
       - SECRET_KEY=${SECRET_KEY:-django-insecure-^#9nzgn*@-@0szv+$$)6th!i+$$ks^+bt@&ejcgzqt==7af(a(u3}
@@ -59,6 +59,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - NOTIFICATIONS_DISABLED=true
       - JWT_EXPIRY=99999999999 # Roughly 3170 years. This is required for tests with time frozen to work
+      - DOCUMENTEN_UPLOAD_CHUNK_SIZE=100 
       - CELERY_WORKER_CONCURRENCY=${CELERY_WORKER_CONCURRENCY:-2}
       - DEBUG=True
     volumes:
