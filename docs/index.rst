@@ -1,17 +1,21 @@
-.. GPP-app documentation master file, created by
-   sphinx-quickstart on Mon Dec  9 11:17:06 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. _`Wet open overheid (Woo)` : https://wetten.overheid.nl/BWBR0045754/
+.. _`Common Ground`: https://commonground.nl/
 
-GPP-app documentation
-=====================
+**<<Under construction!>>**
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+GPP App
+================
 
+The Dutch government wishes to be open and transparent to its citizens. To achieve this,
+the law `Wet open overheid (Woo)`_ was established, 
+requiring government organisations to actively and digitally publish their documents and thus create *public records*.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+To support govenment organisations in executing this law, the "Generic Publications Platform Woo (GPP-Woo)" was developed. 
+This platform is an aggregation of four components, including the 'GPP App' component. This component provides public servants with a web-based user interface to manulaly upload and publish public records.
 
+For a full publication platform, two additional components are required:
+
+* `GPP Publications <https://github.com/GPP-Woo/GPP-publicatiebank>`_, a storage repository and JSON API to manage and expose public records including their metadata.
+* `GPP Citizen Portal <https://github.com/GPP-Woo/GPP-burgerportaal>`_, a component which provides citizens with a website where they can browse and search through public records.
+
+All components are designed in line with the `Common Ground`_ model.
