@@ -164,17 +164,17 @@ const searchParamsConfig = {
 const addDay = (v: string) => {
   if (!v) return v;
   const date = new Date(v);
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 2)
-    .toISOString()
-    .substring(0, 10);
+  const nextDateUtc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + 1));
+  return nextDateUtc.toISOString();
 };
 
 const subtractDay = (v: string) => {
   if (!v) return v;
   const date = new Date(v);
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    .toISOString()
-    .substring(0, 10);
+  const previousDateUtc = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() - 1)
+  );
+  return previousDateUtc.toISOString();
 };
 
 const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
