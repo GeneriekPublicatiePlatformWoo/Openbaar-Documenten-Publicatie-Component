@@ -141,8 +141,8 @@ const untilDateInclusive = ref("");
 // we zoeken met een datum in een datum-tijd veld, daarom corrigeren we de datum hier
 const untilDateExclusive = computed({
   get: () => addDay(untilDateInclusive.value),
-  set: (v) => untilDateInclusive.value = subtractDay(v)
-})
+  set: (v) => (untilDateInclusive.value = subtractDay(v))
+});
 
 const sortingOptions = {
   officiele_titel: "Title (a-z)",
@@ -162,16 +162,20 @@ const searchParamsConfig = {
 };
 
 const addDay = (v: string) => {
-  if(!v) return v
-  const date = new Date(v)
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 2).toISOString().substring(0, 10)
-}
+  if (!v) return v;
+  const date = new Date(v);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 2)
+    .toISOString()
+    .substring(0, 10);
+};
 
 const subtractDay = (v: string) => {
-  if(!v) return v
-  const date = new Date(v)
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString().substring(0, 10)
-}
+  if (!v) return v;
+  const date = new Date(v);
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    .toISOString()
+    .substring(0, 10);
+};
 
 const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
   Publicatie,
