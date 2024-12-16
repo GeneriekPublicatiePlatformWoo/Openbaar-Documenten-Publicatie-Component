@@ -17,7 +17,7 @@
         <input type="text" id="zoeken" v-model="searchString" @keydown.enter.prevent="onSearch" />
       </div>
 
-      <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDate" />
+      <date-range-picker v-model:from-date="fromDate" v-model:until-date="untilDateInclusive" />
 
       <div class="form-group-button">
         <button
@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import SimpleSpinner from "@/components/SimpleSpinner.vue";
 import AlertInline from "@/components/AlertInline.vue";
 import DateRangePicker from "@/components/DateRangePicker.vue";
@@ -137,7 +137,12 @@ import { PublicatieStatus, type Publicatie } from "./types";
 
 const searchString = ref("");
 const fromDate = ref("");
-const untilDate = ref("");
+const untilDateInclusive = ref("");
+// we zoeken met een datum in een datum-tijd veld, daarom corrigeren we de datum hier
+const untilDateExclusive = computed({
+  get: () => addDay(untilDateInclusive.value),
+  set: (v) => untilDateInclusive.value = subtractDay(v)
+})
 
 const sortingOptions = {
   officiele_titel: "Title (a-z)",
@@ -156,6 +161,18 @@ const searchParamsConfig = {
   registratiedatumTot: ""
 };
 
+const addDay = (v: string) => {
+  if(!v) return v
+  const date = new Date(v)
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 2).toISOString().substring(0, 10)
+}
+
+const subtractDay = (v: string) => {
+  if(!v) return v
+  const date = new Date(v)
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString().substring(0, 10)
+}
+
 const { pagedResult, queryParams, pageCount, onNext, onPrev, isFetching, error } = usePagedSearch<
   Publicatie,
   typeof searchParamsConfig
@@ -171,7 +188,7 @@ watch(
   ({ search, registratiedatumVanaf, registratiedatumTot }) => {
     searchString.value = search;
     fromDate.value = registratiedatumVanaf;
-    untilDate.value = registratiedatumTot;
+    untilDateExclusive.value = registratiedatumTot;
   },
   { once: true }
 );
@@ -182,7 +199,7 @@ const onSearch = () =>
     ...queryParams.value,
     search: searchString.value,
     registratiedatumVanaf: fromDate.value,
-    registratiedatumTot: untilDate.value
+    registratiedatumTot: untilDateExclusive.value
   });
 </script>
 

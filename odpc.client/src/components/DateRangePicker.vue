@@ -6,7 +6,7 @@
   </div>
 
   <div class="form-group">
-    <label for="untilDate">Datum tot</label>
+    <label for="untilDate">Datum tot en met</label>
 
     <input type="date" id="untilDate" ref="untilDateRef" v-model="untilDate" :max="today" />
   </div>
